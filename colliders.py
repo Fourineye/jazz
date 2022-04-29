@@ -1,7 +1,7 @@
 import pygame
 from pygame import Vector2
 
-from pygame_engine.utils import dist_to
+from pygame_engine.utils import direction_to, dist_to
 
 
 class Collider:
@@ -11,14 +11,15 @@ class Collider:
             self.vertices = [Vector2(0, 0)]
         self.edges = []
         self.normals = []
-        self.radius = 0
+        if not hasattr(self, "radius"):
+            self.radius = 0
         self.color = "white"
 
         self._facing = Vector2(1, 0)
-        self._left = self.vertices[0][0]
-        self._right = self.vertices[0][0]
-        self._top = self.vertices[0][1]
-        self._bottom = self.vertices[0][1]
+        self._left = 0
+        self._right = 0
+        self._top = 0
+        self._bottom = 0
         self._center = Vector2()
 
         self._size = len(self.vertices)
@@ -41,6 +42,11 @@ class Collider:
                 self.edges.append([self.vertices[0], self.vertices[1]])
             for edge in self.edges:
                 self.normals.append(Vector2(edge[1] - edge[0]).normalize().rotate(90))
+        else:
+            self._left = -self.radius
+            self._right = self.radius
+            self._top = -self.radius
+            self._bottom = self.radius
 
     def draw(self, surface, offset=None):
         draw_verts = [self.pos + vert + offset for vert in self.vertices]
@@ -72,17 +78,25 @@ class Collider:
             pygame.draw.circle(surface, "gray", self.pos + vert + offset, 2)
         pygame.draw.circle(surface, "red", self.pos + offset, 5)
         pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2)
-        pygame.draw.rect(surface, "yellow", self.rect, 1)
+        pygame.draw.rect(
+            surface,
+            "yellow",
+            pygame.Rect(
+                self.rect.topleft + offset,
+                Vector2(self.size[0], self.size[1]),
+            ),
+            1,
+        )
 
     def move(self, direction):
         self._pos += Vector2(direction)
 
     def rotate(self, degrees):
         self._facing.rotate_ip(degrees)
-        self._left = self._center.x
-        self._right = self._center.x
-        self._top = self._center.y
-        self._bottom = self._center.y
+        self._left = 0
+        self._right = 0
+        self._top = 0
+        self._bottom = 0
         self._center = Vector2()
         for vert in self.vertices:
             vert.rotate_ip(degrees)
@@ -122,15 +136,20 @@ class Collider:
         return min_v, max_v
 
     def collide_circle(self, collider):
-        return dist_to(self.center, collider.center) <= self.radius + collider.radius
+        return (
+            dist_to(self.center, collider.center) <= self.radius + collider.radius + 10
+        )
 
     def collide_rect(self, collider):
-        return (
-            self.top < collider.bottom
-            and self.bottom > collider.top
-            and self.left < collider.right
-            and self.right > collider.left
-        )
+        if (
+            (self.top) < (collider.bottom)
+            and (self.bottom) > (collider.top)
+            and (self.left) < (collider.right)
+            and (self.right) > (collider.left)
+        ):
+            return True
+        else:
+            return False
 
     def collide_sat(self, collider):
         if not isinstance(collider, Collider):
@@ -167,12 +186,16 @@ class Collider:
             p1 = self.project(axis)
             p2 = collider.project(axis)
             if p1[1] < p2[0] or p2[1] < p1[0]:
-                return False
+                return 0, Vector2()
             axis_depth = min(p2[1] - p1[0], p1[1] - p2[0])
             if axis_depth < depth:
                 depth = axis_depth
                 normal = axis
-        return depth, normal
+        normal.normalize_ip()
+        if normal.dot(direction_to(self.center, collider.center)) > 0:
+            return depth, normal
+        else:
+            return depth, -normal
 
     @property
     def pos(self):
@@ -202,10 +225,22 @@ class Collider:
     def center(self):
         return self._pos + self._center
 
+    # @property
+    # def rect(self):
+    #     return pygame.Rect(
+    #         self.left - 10,
+    #         self.top - 10,
+    #         self.right - self.left + 20,
+    #         self.bottom - self.top + 20,
+    #     )
+
     @property
     def rect(self):
         return pygame.Rect(
-            self.left, self.top, self.right - self.left, self.bottom - self.top
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
         )
 
     @property
@@ -243,13 +278,15 @@ class RectCollider(Collider):
 
 class CircleCollider(Collider):
     def __init__(self, pos, radius):
-        Collider.__init__(self, pos)
         self.radius = radius
+        Collider.__init__(self, pos)
 
     def project(self, axis):
         proj = (self.pos).dot(axis)
         min_v = proj - self.radius
         max_v = proj + self.radius
+        if min_v > max_v:
+            min_v, max_v = max_v, min_v
         return min_v, max_v
 
     def draw(self, surface, offset=None):
@@ -262,22 +299,6 @@ class CircleCollider(Collider):
         pygame.draw.circle(surface, "red", self.pos + offset, 5)
         pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2)
         pygame.draw.rect(surface, "yellow", self.rect, 1)
-
-    @property
-    def top(self):
-        return self._pos.y - self.radius
-
-    @property
-    def right(self):
-        return self._pos.x + self.radius
-
-    @property
-    def bottom(self):
-        return self._pos.y + self.radius
-
-    @property
-    def left(self):
-        return self._pos.x - self.radius
 
 
 class PolyCollider(Collider):

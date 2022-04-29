@@ -95,8 +95,19 @@ class GameObject:
             and self.y < rect.bottom
         )
 
-    def on_collide(self, collider):
-        pass
+    def rotate(self, degrees):
+        self.facing.rotate_ip(degrees)
+
+    def rotate_around(self, degrees, center):
+        center = Vector2(center)
+        arm = self.pos - center
+        arm.rotate_ip(degrees)
+        self.pos = center + arm
+        self.rotate(degrees)
+
+    def set_rotation(self, degrees):
+        angle = self._facing.angle_to(Vector2(1, 0).rotate(degrees))
+        self.rotate(angle)
 
     # Properties
 
@@ -154,6 +165,15 @@ class GameObject:
     def center(self):
         return self.rect.center
 
+    @property
+    def facing(self):
+        return self._facing
+
+    @facing.setter
+    def facing(self, new_facing):
+        angle = new_facing.angle_to(Vector2(1, 0))
+        self.set_rotation(angle)
+
 
 class Entity(GameObject):
     """Basic active object in the game space"""
@@ -161,6 +181,7 @@ class Entity(GameObject):
     def __init__(self, pos: Vector2, name="Entity", final=True, **kwargs):
         GameObject.__init__(self, pos, name, False, **kwargs)
         collider_type = kwargs.get("collider", "Rectangle")
+        self.static = kwargs.get("static", True)
 
         self.groups = kwargs.get("groups", [])
         for group in self.groups:
@@ -197,11 +218,11 @@ class Entity(GameObject):
                         self.frames.append(frame)
                     else:
                         self.frames.append(load_image(frame))
-                self.image = self.frames[self.frame]
+                self.source = self.frames[self.frame]
             if isinstance(self.asset, pygame.Surface):
-                self.image = self.asset
+                self.source = self.asset
             else:
-                self.image = load_image(self.asset)
+                self.source = load_image(self.asset)
 
         self.image = self.source.copy()
         # self.old_collider = self.collider.copy()
@@ -235,15 +256,7 @@ class Entity(GameObject):
         """
         if offset is None:
             offset = Vector2()
-        if isinstance(self.collider, pygame.Rect):
-            pygame.draw.rect(
-                surface,
-                "red",
-                (self.collider.topleft + offset, self.collider.size),
-                width=1,
-            )
-        else:
-            self.collider.debug_draw(surface, offset)
+        self.collider.debug_draw(surface, offset)
 
     def add_group(self, group):
         """
@@ -279,7 +292,7 @@ class Entity(GameObject):
         self.game_input = False
         self.do_kill = True
 
-    def collide(self, collider):
+    def collide_sat(self, collider):
         """
         Checks collision with an object.
 
@@ -289,11 +302,44 @@ class Entity(GameObject):
         Returns:
             bool: Whether the Entity collides with the rect.
         """
-        if isinstance(self.collider, pygame.Rect):
-            return self.collider.colliderect(collider.rect)
-        elif isinstance(self.collider, Collider):
-            if self.collider.collide_rect(collider.rect):
+        if isinstance(collider, Entity):
+            if self.collider.collide_rect(collider.collider):
                 return self.collider.collide_sat(collider.collider)
+            else:
+                return False
+        elif isinstance(collider, Collider):
+            if self.collider.collide_rect(collider):
+                return self.collider.collide_sat(collider)
+            else:
+                return False
+        elif isinstance(collider, pygame.Rect):
+            if self.collider.collide_rect(collider):
+                return self.collider.collide_sat(
+                    RectCollider(collider.center, collider.w, collider.h)
+                )
+            else:
+                return False
+        else:
+            print("Invalid Collider:", collider)
+
+    def collide_rect(self, collider):
+        if isinstance(collider, Entity):
+            if self.collider.collide_rect(collider.collider):
+                return True
+            else:
+                return False
+        elif isinstance(collider, Collider):
+            if self.collider.collide_rect(collider):
+                return True
+            else:
+                return False
+        elif isinstance(collider, pygame.Rect):
+            if self.collider.collide_rect(collider):
+                return True
+            else:
+                return False
+        else:
+            print("Invalid Collider:", collider)
 
     def move(self, direction: Vector2):
         """
@@ -306,8 +352,10 @@ class Entity(GameObject):
 
     def rotate(self, degrees):
         self._facing.rotate_ip(degrees)
-        self.collider.rotate(degrees)
-        self.image = pygame.transform.rotate(self.source, self._facing.angle_to((1, 0)))
+        self.collider.rotate(-degrees)
+        self.image = pygame.transform.rotate(
+            self.source, -self._facing.angle_to((1, 0))
+        )
         self._draw_offset = -Vector2(
             self.image.get_width() / 2, self.image.get_height() / 2
         )
@@ -342,12 +390,33 @@ class Entity(GameObject):
         elif isinstance(self.collider, Collider):
             return self.collider.rect
 
+    @property
+    def top(self):
+        return self.collider.top
+
+    @property
+    def right(self):
+        return self.collider.right
+
+    @property
+    def bottom(self):
+        return self.collider.bottom
+
+    @property
+    def left(self):
+        return self.collider.left
+
+    @property
+    def center(self):
+        return self.collider.center
+
 
 class KinematicEntity(Entity):
     """A Entity that is intended to be moved with code."""
 
     def __init__(self, pos: Vector2, name="KinematicEntity", final=True, **kwargs):
         Entity.__init__(self, pos, name, False, **kwargs)
+        self.static = kwargs.get("static", False)
         collision_groups = kwargs.get("collision_groups", None)
         if collision_groups is None:
             self._collision_groups = []
@@ -374,7 +443,6 @@ class KinematicEntity(Entity):
         Args:
             direction (Vector2): The vector to move along.
         """
-        self.old_collider = self.collider.copy()
         self.pos = self.pos + direction
 
     def move_and_collide(self, direction: Vector2, collision_group=None):
@@ -386,130 +454,26 @@ class KinematicEntity(Entity):
             collision_group (EntityGroup, optional): An optional group to check collisions against,
                 if left blank it will default to the Entity's collision_groups. Defaults to None.
         """
-        self.collider = self.collider.copy()
         self.pos = self.pos + direction
         collisions = []
         if collision_group is None:
             for group in self._collision_groups:
-                collisions += group.collide_entity(self)
+                collisions += group.collide_object(self)
         else:
-            collisions = collision_group.collide_entity(self)
+            collisions = collision_group.collide_object(self)
 
         if collisions:
-            shortest_time = 1
-            actual_move = Vector2(self.old_pos)
-            new_direction = Vector2()
+            collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
             for entity in collisions:
-                dx, dy = 0, 0
-                if self.old_collider.left <= entity.collider.left:
-                    dx = entity.collider.left - self.old_collider.right
-                elif self.old_collider.left > entity.collider.left:
-                    dx = self.old_collider.left - entity.collider.right
-
-                if self.old_collider.top <= entity.collider.top:
-                    dy = entity.collider.top - self.old_collider.bottom
-                elif self.old_collider.top > entity.collider.top:
-                    dy = self.old_collider.top - entity.collider.bottom
-
-                x_time, y_time = 0, 0
-
-                if direction.x != 0:
-                    x_time = abs(dx / direction.x)
-                if direction.y != 0:
-                    y_time = abs(dy / direction.y)
-
-                if direction.x != 0 and direction.y == 0:
-                    shortest_time = min(x_time, shortest_time)
-                    new_direction.x = direction.x * shortest_time
-                elif direction.y != 0 and direction.x == 0:
-                    shortest_time = min(y_time, shortest_time)
-                    new_direction.y = direction.y * shortest_time
-                else:
-                    shortest_time = min(x_time, y_time, shortest_time)
-                    new_direction.x = direction.x * shortest_time
-                    new_direction.y = direction.y * shortest_time
-
-            actual_move += new_direction
-            self.pos = Vector2(actual_move)
-
-    def move_and_slide(self, direction: Vector2, collision_group=None):
-        """
-        A function to move the Entity checking for collsions, sliding along any collisions.
-
-        Args:
-            direction (Vector2): The vector to move along.
-            collision_group (EntityGroup, optional): An optional group to check collisions against,
-                if left blank it will default to the Entity's collision_groups. Defaults to None.
-        """
-        self.old_collider = self.collider.copy()
-        self.pos = self.pos + direction
-        collisions = []
-
-        if collision_group is None:
-            for layer in self._collision_groups:
-                collisions += layer.collide_entity(self)
-        else:
-            collisions = collision_group.collide_entity(self)
-
-        if collisions:
-            shortest_time = 1
-            actual_move = Vector2(self.old_pos)
-            new_direction = Vector2()
-            next_dir = Vector2()
-            vertical_wall, horizontal_wall = False, False
-            for entity in collisions:
-                dx, dy = 0, 0
-                if self.old_collider.left <= entity.collider.left:
-                    dx = entity.collider.left - self.old_collider.right
-                elif self.old_collider.left > entity.collider.left:
-                    dx = self.old_collider.left - entity.collider.right
-
-                if self.old_collider.top <= entity.collider.top:
-                    dy = entity.collider.top - self.old_collider.bottom
-                elif self.old_collider.top > entity.collider.top:
-                    dy = self.old_collider.top - entity.collider.bottom
-
-                x_time, y_time = 0, 0
-
-                if direction.x != 0:
-                    x_time = abs(dx / direction.x)
-                if direction.y != 0:
-                    y_time = abs(dy / direction.y)
-
-                if direction.x != 0 and direction.y == 0:
-                    shortest_time = min(x_time, shortest_time)
-                    new_direction.x = direction.x * shortest_time
-                elif direction.y != 0 and direction.x == 0:
-                    shortest_time = min(y_time, shortest_time)
-                    new_direction.y = direction.y * shortest_time
-                else:
-                    shortest_time = min(x_time, y_time, shortest_time)
-                    new_direction.x = direction.x * shortest_time
-                    new_direction.y = direction.y * shortest_time
-                    if x_time < y_time:
-                        vertical_wall = True
-                    if y_time < x_time:
-                        horizontal_wall = True
-
-            if vertical_wall:
-                next_dir.y = direction.y * (1 - shortest_time)
-            if horizontal_wall:
-                next_dir.x = direction.x * (1 - shortest_time)
-            actual_move += new_direction
-            self.pos = Vector2(actual_move)
-            if next_dir.magnitude() != 0:
-                self.move_and_collide(next_dir, collision_group)
-
-    @property
-    def pos(self):
-        """Returns _pos attribute."""
-        return Vector2(self._pos)
-
-    @pos.setter
-    def pos(self, pos: Vector2):
-        self.old_pos = Vector2(self.pos)
-        self._pos = Vector2(pos)
-        self.collider.center = Vector2(pos)
+                depth, normal = self.collide_sat(entity)
+                if depth != 0:
+                    if not self.static and not entity.static:
+                        self.move(-normal * (depth + 1) / 2)
+                        entity.move_and_collide(normal * (depth + 1) / 2)
+                    elif self.static and not entity.static:
+                        entity.move_and_collide(normal * (depth + 1))
+                    elif entity.static:
+                        self.move(-normal * (depth + 1))
 
 
 class EntityGroup:
@@ -544,6 +508,8 @@ class EntityGroup:
         Args:
             entity (Entity): The entity to be added to the group.
         """
+        if not isinstance(entity, Entity):
+            raise ValueError("Only Entity objects may be added to an EntityGroup")
         if entity not in self._entities:
             self._entities.append(entity)
             if self not in entity.groups:
@@ -576,7 +542,7 @@ class EntityGroup:
         for entity in entities:
             self.add(entity)
 
-    def collide_entity(self, collider: Entity, do_kill=False):
+    def collide_object(self, collider: Entity, do_kill=False):
         """
         Checks an Entity for collision with all Entities in group.
 
@@ -591,29 +557,11 @@ class EntityGroup:
         collisions = []
         for entity in self._entities:
             if entity is not collider:
-                if collider.collide(entity):
-                    collisions.append(entity)
-                    if do_kill:
-                        self.remove(entity)
-                        entity.remove_group(self)
-        return collisions
-
-    def collide_rect(self, collider: pygame.Rect, do_kill=False):
-        """
-        Checks a Rect for collision with all Entities in group.
-
-        Args:
-            collider (pygame.Rect): Rect to check collision with.
-            do_kill (bool, optional): Whether Entities that collide with the collider are
-                removed from the group. Defaults to False.
-
-        Returns:
-            list: List of all Entities that collide with the collider.
-        """
-        collisions = []
-        for entity in self._entities:
-            if entity.rect is not collider:
-                if entity.collide(collider):
+                if isinstance(collider, pygame.Rect):
+                    collision = entity.collide_rect(collider)
+                else:
+                    collision = collider.collide_rect(entity)
+                if collision:
                     collisions.append(entity)
                     if do_kill:
                         self.remove(entity)
@@ -669,7 +617,7 @@ class KinematicEntityDefunct(Entity):
         collisions = []
         if collision_group is None:
             for group in self._collision_groups:
-                collisions += group.collide_entity(self)
+                collisions += group.collide_object(self)
         else:
             collisions = collision_group.collide_entity(self)
 

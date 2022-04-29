@@ -175,7 +175,7 @@ class Scene:
 
     name = "unnamed"
 
-    def __init__(self, root):
+    def __init__(self, root : Application):
         self.camera = Camera()
         self._groups = {}
         self._objects = {}
@@ -256,6 +256,7 @@ class Scene:
         """
         if name not in self.keys():
             obj.scene = self
+            obj.root = self.root
             self._objects[name] = obj
             self.camera.add(obj)
         else:
