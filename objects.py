@@ -7,8 +7,7 @@ from random import randint
 import pygame
 from pygame import Vector2
 
-from pygame_engine.colliders import (CircleCollider, Collider, PolyCollider,
-                                     RectCollider)
+from pygame_engine.colliders import CircleCollider, Collider, PolyCollider, RectCollider
 from pygame_engine.input_handler import InputHandler
 from pygame_engine.utils import dist_to, load_image
 
@@ -169,10 +168,15 @@ class GameObject:
     def facing(self):
         return self._facing
 
+    # @facing.setter
+    # def facing(self, new_facing):
+    #     angle = new_facing.angle_to(Vector2(1, 0))
+    #     self.set_rotation(angle)
+
     @facing.setter
     def facing(self, new_facing):
-        angle = new_facing.angle_to(Vector2(1, 0))
-        self.set_rotation(angle)
+        angle = self._facing.angle_to(new_facing)
+        self.rotate(angle)
 
 
 class Entity(GameObject):
@@ -306,21 +310,21 @@ class Entity(GameObject):
             if self.collider.collide_rect(collider.collider):
                 return self.collider.collide_sat(collider.collider)
             else:
-                return False
+                return False, False
         elif isinstance(collider, Collider):
             if self.collider.collide_rect(collider):
                 return self.collider.collide_sat(collider)
             else:
-                return False
+                return False, False
         elif isinstance(collider, pygame.Rect):
             if self.collider.collide_rect(collider):
                 return self.collider.collide_sat(
                     RectCollider(collider.center, collider.w, collider.h)
                 )
             else:
-                return False
+                return False, False
         else:
-            print("Invalid Collider:", collider)
+            raise ValueError(f"Invalid Collider: {collider}")
 
     def collide_rect(self, collider):
         if isinstance(collider, Entity):
@@ -352,10 +356,8 @@ class Entity(GameObject):
 
     def rotate(self, degrees):
         self._facing.rotate_ip(degrees)
-        self.collider.rotate(-degrees)
-        self.image = pygame.transform.rotate(
-            self.source, -self._facing.angle_to((1, 0))
-        )
+        self.collider.rotate(degrees)
+        self.image = pygame.transform.rotate(self.source, self._facing.angle_to((1, 0)))
         self._draw_offset = -Vector2(
             self.image.get_width() / 2, self.image.get_height() / 2
         )

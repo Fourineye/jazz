@@ -67,3 +67,10 @@ def direction_to(vec1, vec2):
     if direction.magnitude():
         direction.normalize_ip()
     return direction
+
+
+def key_from_value(search_dict, search_value):
+    for key, value in search_dict.items():
+        if value == search_value:
+            return key
+    return False

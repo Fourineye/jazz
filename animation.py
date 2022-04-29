@@ -6,6 +6,7 @@ import pygame
 from pygame import USEREVENT
 from pygame.event import Event
 
+from pygame_engine.engine import Application, Scene
 from pygame_engine.utils import clamp, map_range
 
 
@@ -77,7 +78,9 @@ class Animation:
         self.obj = obj
         self.values = values
         self.frames = frames
-        self.end_event = Event(USEREVENT, {"source": "Animation", "flag": flag, 'obj': obj})
+        self.end_event = Event(
+            USEREVENT, {"source": "Animation", "flag": flag, "obj": obj}
+        )
 
     def play_frame(self, frame: int):
         """
@@ -102,6 +105,8 @@ class AnimationManager:
     """
 
     def __init__(self, animations=None, tweens=None, **kwargs):
+        self.scene: Scene = None
+        self.root: Application = None
         self.game_process = kwargs.get("game_process", True)
         self.pause_process = kwargs.get("pause_process", False)
         if animations is None:
@@ -114,6 +119,7 @@ class AnimationManager:
             self.tweens = tweens
         self.active_animation = None
         self.playing = False
+        self.play_time = 0
         self.loop = False
         self.frame = 0
 
@@ -135,6 +141,7 @@ class AnimationManager:
         else:
             self.active_animation = new_animation
             self.playing = True
+            self.play_time = 0
             self.loop = loop
             self.frame = 0
 

@@ -28,7 +28,7 @@ class BaseUI:
         self.rect.x = x
         self.rect.y = y
 
-    def input(self, game_input):
+    def input(self, INPUT):
         pass
 
     def process(self, _delta):
@@ -52,17 +52,17 @@ class UIContainer:
             self.elements = []
         self.visible = visible
 
-    def _process(self, delta):
+    def process(self, delta):
         if not self.visible:
             return
         for element in self.elements:
-            element._process(delta)
+            element.process(delta)
 
-    def _input(self, game_input):
+    def input(self, INPUT):
         if not self.visible:
             return
         for element in self.elements[::-1]:
-            if element._input(game_input):
+            if element.input(INPUT):
                 return
 
     def draw(self, surface, offset=None):
@@ -79,14 +79,14 @@ class UIContainer:
 
     def add(self, element):
         self.elements.append(element)
-        element.process = False
+        element.game_process = False
         element.pause_process = False
-        element.input = False
+        element.game_input = False
 
     def remove(self, element):
         self.elements.remove(element)
-        element.process = True
-        element.input = True
+        element.game_process = True
+        element.game_input = True
 
 
 # Vertical Container
@@ -123,13 +123,13 @@ class Vbox(BaseUI):
             self.image, self.color, self.image.get_rect(), border_radius=self.radius
         )
 
-    def input(self, game_input):
+    def input(self, INPUT):
         if self.visible:
             for button in self.buttons:
-                if button.input(game_input):
+                if button.input(INPUT):
                     return True
-            if game_input.mouse.just_pressed[1]:
-                if self.rect.collidepoint(game_input.mouse.pos):
+            if INPUT.mouse.click("left"):
+                if self.rect.collidepoint(INPUT.mouse.pos):
                     return True
         return False
 
@@ -188,11 +188,11 @@ class SimpleButton(BaseUI):
 
         self.update_image()
 
-    def input(self, game_input):
+    def input(self, INPUT):
         if not self.visible:
             return
-        if game_input.mouse.just_pressed[1]:
-            if self.rect.collidepoint(game_input.mouse.pos):
+        if INPUT.mouse.click("left"):
+            if self.rect.collidepoint(INPUT.mouse.pos):
                 if not self.on_release:
                     if callable(self.callback):
                         self.callback()
@@ -200,8 +200,8 @@ class SimpleButton(BaseUI):
                 self.pressed = True
                 self.color = self.pressed_color
                 return True
-        if game_input.mouse.just_released[1]:
-            if self.rect.collidepoint(game_input.mouse.pos):
+        if INPUT.mouse.release("left"):
+            if self.rect.collidepoint(INPUT.mouse.pos):
                 if self.on_release and self.pressed:
                     if callable(self.callback):
                         self.callback()
@@ -355,9 +355,9 @@ class InputBox(BaseUI):
         self.clear_on_first_input = flags & 16 == 16
         self.clear = self.clear_on_first_input
 
-    def input(self, game_input):
-        if game_input.just_pressed(0, True):
-            if self.rect.collidepoint(game_input.mouse_pos):
+    def input(self, INPUT):
+        if INPUT.just_pressed(0, True):
+            if self.rect.collidepoint(INPUT.mouse_pos):
                 self.active = True
                 # pg.key.start_text_input()
             else:
@@ -366,17 +366,17 @@ class InputBox(BaseUI):
                 if not self.clear:
                     self.clear = self.clear_on_input
 
-        if game_input._just_pressed and self.active:
+        if INPUT._just_pressed and self.active:
             if self.clear:
                 self.text_content = ""
                 self.clear = False
-            for keypress in game_input._just_pressed:
+            for keypress in INPUT._just_pressed:
                 if keypress == pg.K_BACKSPACE:
                     self.text_content = self.text_content[:-1]
                 elif keypress == pg.K_RETURN:
                     self.active = False
                 else:
-                    self.text_content += pygame.key.name(keypress)
+                    self.text_content += pg.key.name(keypress)
             self.update_text()
 
     def draw(self, surface, offset=None):
