@@ -58,8 +58,8 @@ class ParticleEmitter(GameObject):
     def __init__(
         self, pos: Vector2, name="ParticleEmitter", active=False, rate=1, **kwargs
     ):
-        GameObject.__init__(self, pos, name)
-        self._pos = pos
+        GameObject.__init__(self, pos, name, **kwargs)
+        self._pos = Vector2(pos)
         self._particles = []
         self.active = active
         self.rate = rate
@@ -104,7 +104,7 @@ class ParticleEmitter(GameObject):
             self.emit_particles(self.rate)
         for particle in self._particles[::-1]:
             if particle.process(delta):
-                del particle
+                self._particles.remove(particle)
 
     @property
     def pos(self):

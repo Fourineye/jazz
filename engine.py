@@ -112,7 +112,7 @@ class Application:
             self._active_scene.on_load()
             while self._active_scene.running:
                 self._quit_check()
-                self._input.update()
+                self._input.update(self._active_scene)
                 self._active_scene.game_input(self._input)
                 self._active_scene.game_process(self._delta)
                 self.display.fill((0, 0, 0))
@@ -428,6 +428,9 @@ class Scene:
 
         self.input(INPUT)
 
+    @property
+    def camera_offset(self):
+        return self.camera.offset
 
 class Camera:
     """Class that handles the drawing of objects onto the display."""

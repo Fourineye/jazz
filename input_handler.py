@@ -14,11 +14,11 @@ class InputHandler:
         self.key = Keyboard()
         self.user_events = []
 
-    def update(self):
+    def update(self, scene=None):
         """Called every frame to update user input."""
         self.user_events = []
-        self.mouse.update()
-        self.key.update()
+        self.mouse.update(scene)
+        self.key.update(scene)
 
         for event in pygame.event.get(pygame.USEREVENT):
             self.user_events.append(event)
@@ -44,14 +44,17 @@ class Mouse:
         self._pressed = [False] * 6
         self._just_released = [False] * 6
         self._pos = Vector2()
+        self._world_offset = Vector2()
         self.rel = Vector2()
 
-    def update(self):
+    def update(self, scene=None):
         """Called every frame to update mouse inputs."""
         self._just_pressed = {}
         self._just_released = {}
         self._pos = Vector2(pygame.mouse.get_pos())
         self.rel = Vector2(pygame.mouse.get_rel())
+        if scene is not None:
+            self._world_offset = scene.camera_offset
         for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
             button = event.button - 1
             if button < len(Mouse.BUTTONS):
@@ -103,6 +106,10 @@ class Mouse:
         pygame.mouse.set_pos(new_pos)
 
     @property
+    def global_pos(self):
+        return self.pos - self._world_offset
+
+    @property
     def dx(self):
         """Retruns the x compnent of rel."""
         return self.rel.x
@@ -121,7 +128,7 @@ class Keyboard:
         self._pressed = [False] * 200
         self._just_released = {}
 
-    def update(self):
+    def update(self, scene=None):
         """Called every frame to update keyboard inputs."""
         self._just_pressed = {}
         self._just_released = {}
