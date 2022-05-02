@@ -107,9 +107,10 @@ class Application:
         if self._next_scene is None:
             raise Exception("No scenes have been added to the game")
 
+        scene_transfer_data = None
         while self.running:
             self._active_scene = self._load_scene(self._next_scene)
-            self._active_scene.on_load()
+            self._active_scene.on_load(scene_transfer_data)
             while self._active_scene.running:
                 self._quit_check()
                 self._input.update(self._active_scene)
@@ -119,7 +120,7 @@ class Application:
                 self._active_scene.render()
                 pygame.display.flip()
                 self._delta = self._clock.tick(self.fps_max) / 1000
-            self._active_scene.on_unload()
+            scene_transfer_data = self._active_scene.on_unload()
         pygame.quit()
 
     def stop(self):
@@ -175,7 +176,7 @@ class Scene:
 
     name = "unnamed"
 
-    def __init__(self, root : Application):
+    def __init__(self, root: Application):
         self.camera = Camera()
         self._groups = {}
         self._objects = {}
@@ -211,7 +212,7 @@ class Scene:
         """Returns items obect of _objects attribute."""
         return self._objects.items()
 
-    def on_load(self):
+    def on_load(self, data):
         """
         Empty method that can be overwritten by a child class to add
         additional attributes and will be called on loading into the
@@ -431,6 +432,7 @@ class Scene:
     @property
     def camera_offset(self):
         return self.camera.offset
+
 
 class Camera:
     """Class that handles the drawing of objects onto the display."""

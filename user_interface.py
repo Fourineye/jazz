@@ -289,10 +289,11 @@ class TextBox(BaseUI):
         surface.blit(self.image, self.rect)
 
     def set_text(self, text):
-        self.text_content = text
-        self.text = SYS_FONT.render(text, True, self.text_color)
-        self.text_size = self.text.get_size()
-        self.update_text()
+        if self.text_content != text:
+            self.text_content = text
+            self.text = SYS_FONT.render(text, True, self.text_color)
+            self.text_size = self.text.get_size()
+            self.update_text()
 
     def update_text(self):
         draw_pos = [self.padding, self.padding]

@@ -24,6 +24,9 @@ class Tween:
         self.time = 0
         self.loop = kwargs.get("loop", False)
         self.playing = kwargs.get("playing", False)
+        self.end_event = Event(
+            USEREVENT, {"source": "Tween", "flag": kwargs.get("flag", None)}
+        )
 
     def process(self, delta: float):
         """
@@ -35,6 +38,12 @@ class Tween:
         """
         if not self.playing:
             return
+
+        if self.time >= self.a_time:
+            if self.loop:
+                self.time -= self.a_time
+            else:
+                self.time = self.a_time
         if len(self.values) > 2:
             a_time = self.a_time / self.last_val
             i = int(map_range(self.time, 0, self.a_time, 0, self.last_val))
@@ -48,11 +57,13 @@ class Tween:
             v_start, v_end = self.values[0], self.values[1]
         value = map_range(self.time, t_start, t_end, v_start, v_end)
         setattr(self.obj, self.prop, value)
-        self.time += delta
+
         if self.time >= self.a_time:
             self.time = 0
+            pygame.event.post(self.end_event)
             if not self.loop:
                 self.playing = False
+        self.time += delta
 
     def play(self, from_beginning=True):
         """Starts the tween animation

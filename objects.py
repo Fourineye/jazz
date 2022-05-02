@@ -2,6 +2,7 @@
 Module to provide a base for active game entities.
 """
 
+from hashlib import new
 from random import randint
 
 import pygame
@@ -99,9 +100,9 @@ class GameObject:
 
     def rotate_around(self, degrees, center):
         center = Vector2(center)
-        arm = self.pos - center
+        arm = self._pos - center
         arm.rotate_ip(degrees)
-        self.pos = center + arm
+        self._pos = center + arm
         self.rotate(degrees)
 
     def set_rotation(self, degrees):
@@ -205,34 +206,21 @@ class Entity(GameObject):
             self.collider = PolyCollider(pos, vertices)
             self.collider.recenter()
 
-        self.source = pygame.Surface(self.collider.size)
-        self.source.fill((255, 0, 255))
-        self.source.set_colorkey((255, 0, 255))
+        temp_source = pygame.Surface(self.collider.size)
+        temp_source.fill((255, 0, 255))
+        temp_source.set_colorkey((255, 0, 255))
         self.asset = kwargs.get("asset", None)
 
         if self.asset is None:
             self.collider.color = self._color
-            self.collider.draw(self.source, -(self.pos) + self.collider.size / 2)
+            self.collider.draw(temp_source, -(self.pos) + self.collider.size / 2)
+            self.source = temp_source
         else:
-            if isinstance(self.asset, list):
-                self.frame = 0
-                self.frames = []
-                for frame in self.asset:
-                    if isinstance(frame, pygame.Surface):
-                        self.frames.append(frame)
-                    else:
-                        self.frames.append(load_image(frame))
-                self.source = self.frames[self.frame]
             if isinstance(self.asset, pygame.Surface):
                 self.source = self.asset
             else:
                 self.source = load_image(self.asset)
 
-        self.image = self.source.copy()
-        # self.old_collider = self.collider.copy()
-        self._draw_offset = Vector2(
-            -self.image.get_width() / 2, -self.image.get_height() / 2
-        )
         if final:
             self.on_init(**kwargs)
 
@@ -411,6 +399,26 @@ class Entity(GameObject):
     @property
     def center(self):
         return self.collider.center
+
+    @property
+    def source(self):
+        return self._source
+
+    @source.setter
+    def source(self, new_source):
+        if not isinstance(new_source, pygame.Surface):
+            new_source = load_image(new_source)
+        self._source = new_source
+        if self._facing.angle_to((1, 0)) != 0:
+            self.image = pygame.transform.rotate(
+                self.source, self._facing.angle_to((1, 0))
+            )
+        else:
+            self.image = self.source.copy()
+
+        self._draw_offset = -Vector2(
+            self.image.get_width() / 2, self.image.get_height() / 2
+        )
 
 
 class KinematicEntity(Entity):

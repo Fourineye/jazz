@@ -225,15 +225,6 @@ class Collider:
     def center(self):
         return self._pos + self._center
 
-    # @property
-    # def rect(self):
-    #     return pygame.Rect(
-    #         self.left - 10,
-    #         self.top - 10,
-    #         self.right - self.left + 20,
-    #         self.bottom - self.top + 20,
-    #     )
-
     @property
     def rect(self):
         return pygame.Rect(
