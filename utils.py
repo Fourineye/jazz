@@ -74,3 +74,8 @@ def key_from_value(search_dict, search_value):
         if value == search_value:
             return key
     return False
+
+
+def scale_double(surface):
+    width, height = surface.get_size()
+    return pygame.transform.scale(surface, (width * 2, height * 2))

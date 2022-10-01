@@ -262,6 +262,7 @@ class Scene:
             self.camera.add(obj)
         else:
             print("name already exists")
+            obj.kill()
 
     def remove_object(self, name=None, obj_=None):
         """
@@ -280,6 +281,7 @@ class Scene:
 
         if obj:
             self.camera.remove(obj)
+            obj.kill()
 
     def add_group(self, name: str, group: EntityGroup):
         """
@@ -373,8 +375,11 @@ class Scene:
             delta (float): Time since the last frame in seconds.
         """
         kill_items = []
+        # Create copies of the objects and ui dicts for iteration
+        objects = list(self._objects.items())
+        ui_objects = list(self._ui.items())
 
-        for name, obj in self._objects.items():
+        for name, obj in objects:
             if hasattr(obj, "process"):
                 if obj.game_process:
                     if self._paused:
@@ -385,7 +390,7 @@ class Scene:
             if getattr(obj, "do_kill", False):
                 kill_items.append(name)
 
-        for name, obj in self._ui.items():
+        for name, obj in ui_objects:
             if hasattr(obj, "process"):
                 if obj.game_process:
                     if self._paused:

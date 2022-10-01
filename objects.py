@@ -2,13 +2,13 @@
 Module to provide a base for active game entities.
 """
 
-from hashlib import new
 from random import randint
 
 import pygame
 from pygame import Vector2
 
-from pygame_engine.colliders import CircleCollider, Collider, PolyCollider, RectCollider
+from pygame_engine.colliders import (CircleCollider, Collider, PolyCollider,
+                                     RectCollider)
 from pygame_engine.input_handler import InputHandler
 from pygame_engine.utils import dist_to, load_image
 
@@ -16,7 +16,7 @@ from pygame_engine.utils import dist_to, load_image
 class GameObject:
     """Simplest object in pygame_engine"""
 
-    def __init__(self, pos: Vector2, name="Object", final=True, **kwargs):
+    def __init__(self, pos: Vector2, name="Object", **kwargs):
         # Engine Attributes
         self.name = name
         self.scene = None
@@ -38,8 +38,6 @@ class GameObject:
         self._facing = Vector2(1, 0)
         self._z = kwargs.get("z", 0)
         self._color = kwargs.get("color", (255, 255, 255))
-        if final:
-            self.on_init(**kwargs)
 
     def __repr__(self):
         return f"{self.name} at {self.x}, {self.y}"
@@ -102,7 +100,7 @@ class GameObject:
         center = Vector2(center)
         arm = self._pos - center
         arm.rotate_ip(degrees)
-        self._pos = center + arm
+        self.pos = center + arm
         self.rotate(degrees)
 
     def set_rotation(self, degrees):
@@ -169,11 +167,6 @@ class GameObject:
     def facing(self):
         return self._facing
 
-    # @facing.setter
-    # def facing(self, new_facing):
-    #     angle = new_facing.angle_to(Vector2(1, 0))
-    #     self.set_rotation(angle)
-
     @facing.setter
     def facing(self, new_facing):
         angle = self._facing.angle_to(new_facing)
@@ -183,8 +176,8 @@ class GameObject:
 class Entity(GameObject):
     """Basic active object in the game space"""
 
-    def __init__(self, pos: Vector2, name="Entity", final=True, **kwargs):
-        GameObject.__init__(self, pos, name, False, **kwargs)
+    def __init__(self, pos: Vector2, name="Entity", **kwargs):
+        GameObject.__init__(self, pos, name, **kwargs)
         collider_type = kwargs.get("collider", "Rectangle")
         self.static = kwargs.get("static", True)
 
@@ -220,9 +213,6 @@ class Entity(GameObject):
                 self.source = self.asset
             else:
                 self.source = load_image(self.asset)
-
-        if final:
-            self.on_init(**kwargs)
 
     def draw(self, surface: pygame.Surface, offset=None):
         """
@@ -424,8 +414,8 @@ class Entity(GameObject):
 class KinematicEntity(Entity):
     """A Entity that is intended to be moved with code."""
 
-    def __init__(self, pos: Vector2, name="KinematicEntity", final=True, **kwargs):
-        Entity.__init__(self, pos, name, False, **kwargs)
+    def __init__(self, pos: Vector2, name="KinematicEntity", **kwargs):
+        Entity.__init__(self, pos, name, **kwargs)
         self.static = kwargs.get("static", False)
         collision_groups = kwargs.get("collision_groups", None)
         if collision_groups is None:
@@ -434,8 +424,6 @@ class KinematicEntity(Entity):
             self._collision_groups = [collision_groups]
         else:
             self._collision_groups = collision_groups
-        if final:
-            self.on_init(**kwargs)
 
     def add_collision_group(self, group):
         """

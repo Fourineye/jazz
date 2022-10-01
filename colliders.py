@@ -41,7 +41,16 @@ class Collider:
             else:
                 self.edges.append([self.vertices[0], self.vertices[1]])
             for edge in self.edges:
-                self.normals.append(Vector2(edge[1] - edge[0]).normalize().rotate(90))
+                new = True
+                new_normal = Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                for normal in self.normals:
+                    if abs(new_normal.dot(normal)) == 1:
+                        new = False
+                        break
+                if new:
+                    self.normals.append(
+                        Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                    )
         else:
             self._left = -self.radius
             self._right = self.radius
@@ -61,12 +70,6 @@ class Collider:
                 self.color,
                 self.pos + edge[0] + offset,
                 self.pos + edge[1] + offset,
-            )
-        for i, edge in enumerate(self.edges):
-            start = edge[0] + (edge[1] - edge[0]) / 2
-            end = start + self.normals[i] * 10
-            pygame.draw.aaline(
-                surface, "red", self.pos + start + offset, self.pos + end + offset
             )
         pygame.draw.aaline(
             surface,
@@ -109,7 +112,16 @@ class Collider:
         self.normals = []
         if self.edges:
             for edge in self.edges:
-                self.normals.append(Vector2(edge[1] - edge[0]).normalize().rotate(90))
+                new = True
+                new_normal = Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                for normal in self.normals:
+                    if abs(new_normal.dot(normal)) == 1:
+                        new = False
+                        break
+                if new:
+                    self.normals.append(
+                        Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                    )
 
     def rotate_around(self, degrees, center):
         center = Vector2(center)
