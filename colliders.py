@@ -1,31 +1,30 @@
 import pygame
-from pygame import Vector2
 
-from pygame_engine.utils import direction_to, dist_to
+from pygame_engine.utils import direction_to, dist_to, line_intersection, line_circle, Vec2
 
 
 class Collider:
     def __init__(self, pos):
-        self._pos = Vector2(pos)
+        self._pos = Vec2(pos)
         if not hasattr(self, "vertices"):
-            self.vertices = [Vector2(0, 0)]
+            self.vertices = [Vec2(0, 0)]
         self.edges = []
         self.normals = []
         if not hasattr(self, "radius"):
             self.radius = 0
         self.color = "white"
 
-        self._facing = Vector2(1, 0)
+        self._facing = Vec2(1, 0)
         self._left = 0
         self._right = 0
         self._top = 0
         self._bottom = 0
-        self._center = Vector2()
+        self._center = Vec2()
 
         self._size = len(self.vertices)
         if self._size > 1:
             for i, vert in enumerate(self.vertices):
-                vert = Vector2(vert)
+                vert = Vec2(vert)
                 self._center += vert
                 self.vertices[i] = vert
                 self.radius = max(self.radius, vert.magnitude())
@@ -42,14 +41,14 @@ class Collider:
                 self.edges.append([self.vertices[0], self.vertices[1]])
             for edge in self.edges:
                 new = True
-                new_normal = Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
                 for normal in self.normals:
                     if abs(new_normal.dot(normal)) == 1:
                         new = False
                         break
                 if new:
                     self.normals.append(
-                        Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                        Vec2(edge[1] - edge[0]).normalize().rotate(90)
                     )
         else:
             self._left = -self.radius
@@ -63,7 +62,7 @@ class Collider:
 
     def debug_draw(self, surface, offset=None):
         if offset is None:
-            offset = Vector2()
+            offset = Vec2()
         for edge in self.edges:
             pygame.draw.aaline(
                 surface,
@@ -86,13 +85,13 @@ class Collider:
             "yellow",
             pygame.Rect(
                 self.rect.topleft + offset,
-                Vector2(self.size[0], self.size[1]),
+                Vec2(self.size[0], self.size[1]),
             ),
             1,
         )
 
     def move(self, direction):
-        self._pos += Vector2(direction)
+        self._pos += Vec2(direction)
 
     def rotate(self, degrees):
         self._facing.rotate_ip(degrees)
@@ -100,7 +99,7 @@ class Collider:
         self._right = 0
         self._top = 0
         self._bottom = 0
-        self._center = Vector2()
+        self._center = Vec2()
         for vert in self.vertices:
             vert.rotate_ip(degrees)
             self._center += vert
@@ -113,25 +112,25 @@ class Collider:
         if self.edges:
             for edge in self.edges:
                 new = True
-                new_normal = Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
                 for normal in self.normals:
                     if abs(new_normal.dot(normal)) == 1:
                         new = False
                         break
                 if new:
                     self.normals.append(
-                        Vector2(edge[1] - edge[0]).normalize().rotate(90)
+                        Vec2(edge[1] - edge[0]).normalize().rotate(90)
                     )
 
     def rotate_around(self, degrees, center):
-        center = Vector2(center)
+        center = Vec2(center)
         arm = self._pos - center
         arm.rotate_ip(degrees)
         self._pos = center + arm
         self.rotate(degrees)
 
     def set_rotation(self, degrees):
-        angle = self._facing.angle_to(Vector2(1, 0).rotate(degrees))
+        angle = self._facing.angle_to(Vec2(1, 0).rotate(degrees))
         self.rotate(angle)
 
     def project(self, axis):
@@ -174,7 +173,7 @@ class Collider:
 
         axes = self.normals + collider.normals
         if self._size == 1:
-            normal = Vector2()
+            normal = Vec2()
             min_dist = 1000000.0
             for vert in collider.vertices:
                 dist = collider.pos + vert - self.center
@@ -183,7 +182,7 @@ class Collider:
                     normal = dist.normalize()
             axes.append(normal)
         elif collider._size == 1:
-            normal = Vector2()
+            normal = Vec2()
             min_dist = 1000000.0
             for vert in self.vertices:
                 dist = self.pos + vert - collider.center
@@ -193,12 +192,12 @@ class Collider:
             axes.append(normal)
 
         depth = 1000000.0
-        normal = Vector2()
+        normal = Vec2()
         for axis in axes:
             p1 = self.project(axis)
             p2 = collider.project(axis)
             if p1[1] < p2[0] or p2[1] < p1[0]:
-                return 0, Vector2()
+                return 0, Vec2()
             axis_depth = min(p2[1] - p1[0], p1[1] - p2[0])
             if axis_depth < depth:
                 depth = axis_depth
@@ -208,14 +207,15 @@ class Collider:
             return depth, normal
         else:
             return depth, -normal
-
+           
+    
     @property
     def pos(self):
         return self._pos
 
     @pos.setter
     def pos(self, new_pos):
-        self._pos = Vector2(new_pos)
+        self._pos = Vec2(new_pos)
 
     @property
     def top(self):
@@ -248,7 +248,7 @@ class Collider:
 
     @property
     def size(self):
-        return Vector2(self.right - self.left, self.bottom - self.top)
+        return Vec2(self.right - self.left, self.bottom - self.top)
 
     @property
     def facing(self):
@@ -256,12 +256,12 @@ class Collider:
 
     @facing.setter
     def facing(self, new_facing):
-        angle = new_facing.angle_to(Vector2(1, 0))
+        angle = new_facing.angle_to(Vec2(1, 0))
         self.set_rotation(angle)
 
     @property
     def angle(self):
-        return self._facing.angle_to(Vector2(1, 0))
+        return self._facing.angle_to(Vec2(1, 0))
 
     @angle.setter
     def angle(self, new_angle):
@@ -297,7 +297,7 @@ class CircleCollider(Collider):
 
     def debug_draw(self, surface, offset=None):
         if offset is None:
-            offset = Vector2()
+            offset = Vec2()
         pygame.draw.circle(surface, self.color, self._pos + offset, self.radius, 1)
         pygame.draw.circle(surface, "red", self.pos + offset, 5)
         pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2)
@@ -307,17 +307,53 @@ class CircleCollider(Collider):
 class PolyCollider(Collider):
     def __init__(self, pos, vertices=None):
         if vertices is None or len(vertices) < 3:
-            raise Exception("A shape must be defnined for complex collider")
+            raise Exception("A shape must be defined for Polygon collider")
         self.vertices = vertices
         Collider.__init__(self, pos)
 
     def recenter(self):
         if self.center != self.pos:
             for i, vert in enumerate(self.vertices):
-                vert = Vector2(vert) - self._center
+                vert = Vec2(vert) - self._center
                 self.vertices[i] = vert
-            self._center = Vector2()
+            self._center = Vec2()
             self.edges = []
             for i in range(self._size):
                 j = (i + 1) % self._size
                 self.edges.append([self.vertices[i], self.vertices[j]])
+                
+class RayCollider(Collider):
+    def __init__(self, pos, length=1):
+        self.vertices = [(0, 0), (length, 0)]
+        self.length = length
+        Collider.__init__(self, pos)
+
+    def collide_ray(self, collider):
+        col_type = type(collider)
+        if not isinstance(collider, Collider):
+            collider = getattr(collider, "collider", None)
+        if isinstance(collider, pygame.Rect):
+            collider = RectCollider(collider.center, collider.width, collider.height)
+        if collider is None:
+            raise TypeError(f'{col_type} is an invalid collider')
+        
+        if isinstance(collider, CircleCollider):
+            return line_circle(self.pos, self.pos + self.vertices[1], collider.pos, collider.radius)
+        else:
+            collisions = []
+            for edge in collider.edges:
+                point = line_intersection(self.pos,
+                                          self.pos + self.vertices[1],
+                                          collider.pos + edge[0],
+                                          collider.pos + edge[1])
+                if point is not None:
+                    collisions.append(point)
+            if collisions:
+                closest_dist = self.length * 2
+                closest_collision = Vec2()
+                for point in collisions:
+                    if dist_to(self.pos, point) < closest_dist:
+                       closest_collision = point
+                       closest_dist = dist_to(self.pos, point)
+                return closest_collision
+        return None
