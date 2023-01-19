@@ -19,6 +19,7 @@ class GameObject:
     def __init__(self, pos: Vector2, name="Object", **kwargs):
         # Engine Attributes
         self.name = name
+        self.id = None
         self.scene = None
         self.root = None
 
@@ -106,6 +107,13 @@ class GameObject:
     def set_rotation(self, degrees):
         angle = self._facing.angle_to(Vector2(1, 0).rotate(degrees))
         self.rotate(angle)
+
+    def kill(self):
+        """Removes the Entity from all groups and queues it for deletion."""
+        self.game_process = False
+        self.pause_process = False
+        self.game_input = False
+        self.do_kill = True
 
     # Properties
 

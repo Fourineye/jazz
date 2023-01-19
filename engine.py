@@ -104,23 +104,40 @@ class Application:
         Holds the main game loop of the application. The loop continues as
         long as the running Attribute is True.
         """
+
+        # Check that app has scenes before running
         if self._next_scene is None:
             raise Exception("No scenes have been added to the game")
 
         scene_transfer_data = None
+
+        # Main app loop
         while self.running:
+            # Load next scene
             self._active_scene = self._load_scene(self._next_scene)
             self._active_scene.on_load(scene_transfer_data)
+
+            # Main scene loop
             while self._active_scene.running:
+                # Handle window events
                 self._quit_check()
+
+                # call hook functions
                 self._input.update(self._active_scene)
                 self._active_scene.game_input(self._input)
                 self._active_scene.game_process(self._delta)
+                
+                # render game window
                 self.display.fill((0, 0, 0))
                 self._active_scene.render()
                 pygame.display.flip()
+
+                # Control fps and record delta time
                 self._delta = self._clock.tick(self.fps_max) / 1000
+            
+            # Allow for transfer of data between scenes
             scene_transfer_data = self._active_scene.on_unload()
+
         pygame.quit()
 
     def stop(self):
@@ -258,13 +275,14 @@ class Scene:
         if name not in self.keys():
             obj.scene = self
             obj.root = self.root
+            obj.id = name
             self._objects[name] = obj
             self.camera.add(obj)
         else:
             print("name already exists")
             obj.kill()
 
-    def remove_object(self, name=None, obj_=None):
+    def remove_object(self, obj):
         """
         Remove an object from the scene either with the name or a reference to the object.
 
@@ -272,12 +290,10 @@ class Scene:
             name (str, optional): The name of the object to remove. Defaults to None.
             obj_ (object, optional): The object to remove. Defaults to None.
         """
-        if name and obj_ is None:
-            obj = self._objects.pop(name, None)
-        elif obj_ and name is None:
-            obj = self._objects.pop(obj_.name, None)
-        elif obj_ is None and name is None:
-            print("Must call function with a name or an object reference")
+        if isinstance(obj, str):
+            obj = self._objects.pop(obj, None)
+        else:
+            obj = self._objects.pop(getattr(obj, 'id', None), None)
 
         if obj:
             self.camera.remove(obj)
@@ -332,7 +348,7 @@ class Scene:
         else:
             print("name already exists")
 
-    def remove_ui(self, name=None, obj_=None):
+    def remove_ui(self, obj):
         """
         Remove an UI object from the scene either with the name or a reference to the object.
 
@@ -340,12 +356,14 @@ class Scene:
             name (str, optional): The name of the object to remove. Defaults to None.
             obj_ (object, optional): The object to remove. Defaults to None.
         """
-        if name and obj_ is None:
-            obj = self._ui.pop(name, None)
-        elif obj_ and name is None:
-            obj = self._ui.pop(obj_.name, None)
-        elif obj_ is None and name is None:
-            print("Must call function with a name or an object reference")
+        if isinstance(obj, str):
+            obj = self._ui.pop(obj, None)
+        else:
+            obj = self._ui.pop(getattr(obj, 'name', None), None)
+
+        if obj:
+            self.camera.remove(obj)
+            obj.kill()
 
         if obj:
             self.camera.remove(obj)
@@ -374,12 +392,19 @@ class Scene:
         Args:
             delta (float): Time since the last frame in seconds.
         """
+        # Empty list to hold objects for deletion
         kill_items = []
+
         # Create copies of the objects and ui dicts for iteration
-        objects = list(self._objects.items())
-        ui_objects = list(self._ui.items())
+        objects = list(self._objects.values())
+        ui_objects = list(self._ui.values())
 
-        for name, obj in objects:
+        # call process hook for all objects in the scene
+        for obj in objects:
+            # Check if object is queued for deletion
+            if getattr(obj, "do_kill", False):
+                kill_items.append(obj)
+            # check for process hook
             if hasattr(obj, "process"):
                 if obj.game_process:
                     if self._paused:
@@ -387,10 +412,11 @@ class Scene:
                             obj.process(delta)
                     else:
                         obj.process(delta)
-            if getattr(obj, "do_kill", False):
-                kill_items.append(name)
 
-        for name, obj in ui_objects:
+        # Call process hook for ui_objects
+        for obj in ui_objects:
+            if getattr(obj, "do_kill", False):
+                kill_items.append(obj)
             if hasattr(obj, "process"):
                 if obj.game_process:
                     if self._paused:
@@ -398,11 +424,13 @@ class Scene:
                             obj.process(delta)
                     else:
                         obj.process(delta)
-            if getattr(obj, "do_kill", False):
-                kill_items.append(name)
+
+        # call scene process hook
         self.process(delta)
+        # update camera
         self.camera.process(delta)
 
+        # delete objects queued for deletion
         for obj in kill_items:
             self.remove_object(obj)
 
@@ -414,7 +442,12 @@ class Scene:
         Args:
             INPUT (InputHandler): InputHandler passed from the engine.
         """
-        for _name, obj in self._ui.items():
+
+        # Create copies of the objects and ui dicts for iteration
+        objects = list(self._objects.values())
+        ui_objects = list(self._ui.values())
+
+        for obj in ui_objects:
             if hasattr(obj, "input"):
                 if obj.game_input:
                     if self._paused:
@@ -423,7 +456,7 @@ class Scene:
                     else:
                         obj.input(INPUT)
 
-        for _name, obj in self._objects.items():
+        for obj in objects:
             if hasattr(obj, "input"):
                 if obj.game_input:
                     if self._paused:

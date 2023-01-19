@@ -5,12 +5,20 @@ from pygame_engine.utils import color_mult, map_range
 pg.font.init()
 # Constants declaration
 SYS_FONT = pg.font.SysFont(pg.font.get_fonts()[0], 24)
+DEFAULT_FONT = SYS_FONT
 BUTTON_PRESSED = pg.USEREVENT
 H_CENTERED = 1
 V_CENTERED = 2
 ON_RELEASE = 4
 CLEAR_ON_INPUT = 8
 CLEAR_ON_FIRST_INPUT = 16
+
+
+def set_default_font(font):
+    global DEFAULT_FONT
+    if not isinstance(font, pg.font.Font):
+        raise TypeError("Must pass a Font object")
+    DEFAULT_FONT = font
 
 
 # Base UI Class
@@ -21,6 +29,7 @@ class BaseUI:
         self.game_input = kwargs.get("game_input", True)
         self.screen_layer = kwargs.get("screen_layer", True)
         self.visible = kwargs.get("visible", True)
+        self.font = kwargs.get("font", DEFAULT_FONT)
         self.image = pg.Surface((x_dim, y_dim))
         self.image.fill((255, 0, 255))
         self.image.set_colorkey((255, 0, 255))
@@ -109,6 +118,7 @@ class Vbox(BaseUI):
                 "button",
                 [event_tag, button],
                 flags,
+                font=self.font,
             )
 
             self.buttons.append(but)
@@ -171,11 +181,10 @@ class SimpleButton(BaseUI):
         self.radius = kwargs.get("radius", 3)
         self.padding = kwargs.get("padding", 5)
         self.text_color = kwargs.get("text_color", (255, 255, 255))
-        self.font = kwargs.get("font", SYS_FONT)
 
         self.text = self.font.render(text, True, self.text_color)
         self.text_size = self.text.get_size()
-        self.color = kwargs.get("color", (128, 128, 128))
+        self._color = kwargs.get("color", (128, 128, 128))
         self.unpressed_color = self.color
         self.pressed_color = color_mult(self.color, 0.9)
         self.hover_color = color_mult(self.color, 1.2)
@@ -198,7 +207,7 @@ class SimpleButton(BaseUI):
                         self.callback()
                     pg.event.post(self.event)
                 self.pressed = True
-                self.color = self.pressed_color
+                self._color = self.pressed_color
                 return True
         if INPUT.mouse.release("left"):
             if self.rect.collidepoint(INPUT.mouse.pos):
@@ -207,7 +216,7 @@ class SimpleButton(BaseUI):
                         self.callback()
                     pg.event.post(self.event)
                 self.pressed = False
-                self.color = self.unpressed_color
+                self._color = self.unpressed_color
                 return True
         return False
 
@@ -216,12 +225,12 @@ class SimpleButton(BaseUI):
             return
         mouse_pos = pg.mouse.get_pos()
         if self.rect.collidepoint(mouse_pos) and not self.pressed:
-            self.color = self.hover_color
+            self._color = self.hover_color
         elif not self.pressed:
-            self.color = self.unpressed_color
+            self._color = self.unpressed_color
         elif not self.rect.collidepoint(mouse_pos):
             self.pressed = False
-            self.color = self.unpressed_color
+            self._color = self.unpressed_color
         self.update_image()
 
     def draw(self, surface, offset=None):
@@ -264,6 +273,17 @@ class SimpleButton(BaseUI):
         )
         self.image.blit(self.text, draw_pos)
 
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.unpressed_color = self.color
+        self.pressed_color = color_mult(self.color, 0.9)
+        self.hover_color = color_mult(self.color, 1.2)
+
 
 # Text Box
 class TextBox(BaseUI):
@@ -274,16 +294,15 @@ class TextBox(BaseUI):
         self.padding = kwargs.get("padding", 5)
         self.color = kwargs.get("color", (128, 128, 128))
         self.text_color = kwargs.get("text_color", (255, 255, 255))
-        self.font = kwargs.get("font", SYS_FONT)
 
         self.text_content = text
-        self.text = SYS_FONT.render(text, True, self.text_color)
+        self.text = self.font.render(text, True, self.text_color)
         self.text_size = self.text.get_size()
 
         # Flags
         self.h_cent = flags & 1 == 1
         self.v_cent = flags & 2 == 2
-        self.update_text()
+        self.update_image()
 
     def draw(self, surface, offset=None):
         surface.blit(self.image, self.rect)
@@ -291,11 +310,11 @@ class TextBox(BaseUI):
     def set_text(self, text):
         if self.text_content != text:
             self.text_content = text
-            self.text = SYS_FONT.render(text, True, self.text_color)
+            self.text = self.font.render(text, True, self.text_color)
             self.text_size = self.text.get_size()
-            self.update_text()
+            self.update_image()
 
-    def update_text(self):
+    def update_image(self):
         draw_pos = [self.padding, self.padding]
         if self.h_cent:
             draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
@@ -310,7 +329,7 @@ class TextBox(BaseUI):
     def set_flags(self, flags):
         self.h_cent = flags & 1 == 1
         self.v_cent = flags & 2 == 2
-        self.update_text()
+        self.update_image()
 
     def append_text(self, text):
         self.text_content += text
@@ -345,7 +364,6 @@ class InputBox(BaseUI):
         self.active_color = kwargs.get("active_color", (192, 192, 192))
         self.padding = kwargs.get("padding", 5)
         self.radius = kwargs.get("radius", 3)
-        self.font = kwargs.get("font", SYS_FONT)
         self.text = self.font.render(text, True, self.text_color)
         self.text_size = self.text.get_size()
 
@@ -440,19 +458,19 @@ class MultilineTextBox(BaseUI):
         self.radius = kwargs.get("radius", 0)
         self.text_content = text
         self.text = []
-        self.font = kwargs.get("font", SYS_FONT)
         self.text_height = self.font.get_height()
         for string in text:
             self.text.append(self.font.render(string, True, self.text_color))
         self.bottom_align = kwargs.get("bottom_align", False)
         self.h_cent = flags & 1 == 1
         self.v_cent = flags & 2 == 2
+        self.update_image()
 
     def set_flags(self, flags):
         self.h_cent = flags & 1 == 1
         self.v_cent = flags & 2 == 2
 
-    def draw(self, surface, offset=None):
+    def update_image(self):
         # Set the intial draw position
         if self.bottom_align:
             draw_pos = [
@@ -498,6 +516,8 @@ class MultilineTextBox(BaseUI):
                     draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
                 self.image.blit(text, draw_pos)
                 draw_pos[1] += self.text_height + self.padding
+
+    def draw(self, surface, offset=None):
         # Draw the image onto the given surface
         surface.blit(self.image, self.rect)
 

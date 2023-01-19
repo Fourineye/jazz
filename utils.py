@@ -1,5 +1,6 @@
 from csv import reader
 from os import walk
+from random import randint
 
 import pygame
 
@@ -79,3 +80,10 @@ def key_from_value(search_dict, search_value):
 def scale_double(surface):
     width, height = surface.get_size()
     return pygame.transform.scale(surface, (width * 2, height * 2))
+
+
+def random_color():
+    r = randint(0, 255)
+    g = randint(0, 255)
+    b = randint(0, 255)
+    return (r, g, b)
