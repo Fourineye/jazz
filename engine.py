@@ -1,5 +1,9 @@
 """
 A module to make writing pygame programs easier.
+
+Name Ideas:
+Jazz
+
 """
 
 from random import randint
@@ -126,7 +130,7 @@ class Application:
                 self._input.update(self._active_scene)
                 self._active_scene.game_input(self._input)
                 self._active_scene.game_process(self._delta)
-                
+
                 # render game window
                 self.display.fill((0, 0, 0))
                 self._active_scene.render()
@@ -134,7 +138,7 @@ class Application:
 
                 # Control fps and record delta time
                 self._delta = self._clock.tick(self.fps_max) / 1000
-            
+
             # Allow for transfer of data between scenes
             scene_transfer_data = self._active_scene.on_unload()
 
@@ -229,7 +233,7 @@ class Scene:
         """Returns items obect of _objects attribute."""
         return self._objects.items()
 
-    def on_load(self, data):
+    def on_load(self, data) -> dict:
         """
         Empty method that can be overwritten by a child class to add
         additional attributes and will be called on loading into the
@@ -264,7 +268,7 @@ class Scene:
         """
         self.camera.render()
 
-    def add_object(self, name: str, obj):
+    def add_object(self, obj, name=None):
         """
         Add an object to the scene, give it a name, and add it to the camera.
 
@@ -275,8 +279,8 @@ class Scene:
         if name not in self.keys():
             obj.scene = self
             obj.root = self.root
-            obj.id = name
-            self._objects[name] = obj
+            obj.id = name if name is not None else obj.id
+            self._objects[obj.id] = obj
             self.camera.add(obj)
         else:
             print("name already exists")
@@ -293,7 +297,7 @@ class Scene:
         if isinstance(obj, str):
             obj = self._objects.pop(obj, None)
         else:
-            obj = self._objects.pop(getattr(obj, 'id', None), None)
+            obj = self._objects.pop(getattr(obj, "id", None), None)
 
         if obj:
             self.camera.remove(obj)
@@ -359,7 +363,7 @@ class Scene:
         if isinstance(obj, str):
             obj = self._ui.pop(obj, None)
         else:
-            obj = self._ui.pop(getattr(obj, 'name', None), None)
+            obj = self._ui.pop(getattr(obj, "name", None), None)
 
         if obj:
             self.camera.remove(obj)

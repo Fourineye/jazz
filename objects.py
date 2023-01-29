@@ -2,14 +2,20 @@
 Module to provide a base for active game entities.
 """
 
+import uuid
 from random import randint
 
 import pygame
 
-from pygame_engine.colliders import (CircleCollider, Collider, PolyCollider,
-                                     RectCollider, RayCollider)
+from pygame_engine.colliders import (
+    CircleCollider,
+    Collider,
+    PolyCollider,
+    RayCollider,
+    RectCollider,
+)
 from pygame_engine.input_handler import InputHandler
-from pygame_engine.utils import dist_to, load_image, direction_to, Vec2
+from pygame_engine.utils import Vec2, direction_to, dist_to, load_image
 
 
 class GameObject:
@@ -18,7 +24,7 @@ class GameObject:
     def __init__(self, pos: Vec2, name="Object", **kwargs):
         # Engine Attributes
         self.name = name
-        self.id = None
+        self.id = str(uuid.uuid1())
         self.scene = None
         self.root = None
 
@@ -204,7 +210,6 @@ class Entity(GameObject):
         elif collider_type == "Polygon":
             vertices = kwargs.get("vertices", [(-3, -2), (3, -2), (0, 4)])
             self.collider = PolyCollider(pos, vertices)
-            
 
         temp_source = pygame.Surface(self.collider.size)
         temp_source.fill((255, 0, 255))
@@ -573,14 +578,13 @@ class EntityGroup:
                         entity.remove_group(self)
         return collisions
 
+
 class Ray(GameObject):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args,
-                         color=(255, 0, 255),
-                         **kwargs)
-        self.length = kwargs.get('length', 1)
+        super().__init__(*args, color=(255, 0, 255), **kwargs)
+        self.length = kwargs.get("length", 1)
         self.collider = RayCollider(self.pos, self.length)
-        initial_facing = kwargs.get('initial_facing', None)
+        initial_facing = kwargs.get("initial_facing", None)
         if initial_facing is not None:
             self.facing = initial_facing
         collision_groups = kwargs.get("collision_groups", None)
@@ -590,15 +594,15 @@ class Ray(GameObject):
             self._collision_groups = [collision_groups]
         else:
             self._collision_groups = collision_groups
-    
+
     def draw(self, surface, offset=None):
         pass
-    
+
     def debug_draw(self, surface, offset=None):
         if offset is None:
             offset = Vec2
         self.collider.debug_draw(surface, offset)
-        
+
     def collide_sat(self, collider):
         """
         Checks collision with an object.
@@ -660,7 +664,7 @@ class Ray(GameObject):
     def rotate(self, degrees):
         self._facing.rotate_ip(degrees)
         self.collider.rotate(degrees)
-    
+
     def look_at(self, target):
         if isinstance(target, tuple):
             self.facing = direction_to(self.pos, target)
@@ -682,19 +686,26 @@ class Ray(GameObject):
                 collisions += group.collide_object(self)
         else:
             collisions = collision_group.collide_object(self)
-        
+
         if collisions:
             closest_collision = Vec2(self.pos + self.collider.vertices[1])
             collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
             for entity in collisions:
                 point = self.collider.collide_ray(entity)
                 if point is not None:
-                    if self.length ** 2 >= (point - self.pos).dot(self.collider.vertices[1]) >= 0:
-                        if dist_to(self.pos, point) < dist_to(self.pos, closest_collision):
+                    if (
+                        self.length**2
+                        >= (point - self.pos).dot(self.collider.vertices[1])
+                        >= 0
+                    ):
+                        if dist_to(self.pos, point) < dist_to(
+                            self.pos, closest_collision
+                        ):
                             closest_collision = point
-                    
+
             if closest_collision != Vec2(self.pos + self.collider.vertices[1]):
                 return closest_collision
+
     # Properties
 
     @property
