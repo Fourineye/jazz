@@ -11,8 +11,7 @@ from random import randint
 import pygame
 from pygame import Vector2
 
-from pygame_engine.input_handler import InputHandler
-from pygame_engine.objects import Entity, EntityGroup
+from Jazz.input_handler import InputHandler
 
 
 class Application:
@@ -276,15 +275,19 @@ class Scene:
             name (str): The name to retrieve the object at a later point.
             obj (object): The Object to be added to the scene.
         """
-        if name not in self.keys():
+        if obj.id not in self.keys():
             obj.scene = self
             obj.root = self.root
-            obj.id = name if name is not None else obj.id
             self._objects[obj.id] = obj
             self.camera.add(obj)
         else:
-            print("name already exists")
-            obj.kill()
+            print("obj already in scene")
+            
+        if name is not None and name not in self.__dict__.keys():
+            name = name.split(" ")[0]
+            obj.name = name
+            self.__dict__.setdefault(name, obj)
+            
 
     def remove_object(self, obj):
         """
@@ -301,9 +304,11 @@ class Scene:
 
         if obj:
             self.camera.remove(obj)
+            self.__dict__.pop(obj.name, None)
             obj.kill()
+            
 
-    def add_group(self, name: str, group: EntityGroup):
+    def add_group(self, name: str, group):
         """
         Add a group to the scene, as well as any items in the group.
 
@@ -335,7 +340,7 @@ class Scene:
             print(f"Group not found : {name}")
         else:
             for obj in group:
-                self.remove_object(obj_=obj)
+                self.remove_object(obj)
 
     def add_ui(self, name: str, obj):
         """
@@ -581,7 +586,7 @@ class Camera:
         """
         if isinstance(target, Vector2):
             self.target = target
-        elif isinstance(target, Entity):
+        elif isinstance(target, object):
             self.target = target
         else:
             print("Target must either be a Vector2 or an Entity")

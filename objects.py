@@ -7,15 +7,15 @@ from random import randint
 
 import pygame
 
-from pygame_engine.colliders import (
+from Jazz.colliders import (
     CircleCollider,
     Collider,
     PolyCollider,
     RayCollider,
     RectCollider,
 )
-from pygame_engine.input_handler import InputHandler
-from pygame_engine.utils import Vec2, direction_to, dist_to, load_image
+from Jazz.input_handler import InputHandler
+from Jazz.utils import Vec2, direction_to, dist_to, load_image
 
 
 class GameObject:
@@ -125,7 +125,7 @@ class GameObject:
     @property
     def pos(self):
         """Returns _pos attribute."""
-        return self._pos
+        return Vec2(self._pos)
 
     @pos.setter
     def pos(self, pos):
@@ -239,7 +239,7 @@ class Entity(GameObject):
             offset = Vec2()
         surface.blit(self.image, self.draw_pos + Vec2(offset))
 
-    def debug_draw(self, surface, offset):
+    def debug_draw(self, surface, offset=None):
         """
         Method called in the scene render function to draw the Entity on a surface.
 
@@ -455,7 +455,7 @@ class KinematicEntity(Entity):
         """
         self.pos = self.pos + direction
 
-    def move_and_collide(self, direction: Vec2, collision_group=None):
+    def move_and_collide(self, direction: Vec2, collision_group=None, callback=None):
         """
         A function to move the Entity and check for collisions, stopping if one is found.
 
@@ -477,6 +477,8 @@ class KinematicEntity(Entity):
             for entity in collisions:
                 depth, normal = self.collide_sat(entity)
                 if depth != 0:
+                    if callable(callback):
+                        callback(entity)
                     if not self.static and not entity.static:
                         self.move(-normal * (depth + 1) / 2)
                         entity.move_and_collide(normal * (depth + 1) / 2)
@@ -578,11 +580,19 @@ class EntityGroup:
                         entity.remove_group(self)
         return collisions
 
+    def collide_ray(self, ray):
+        collisions = []
+        for entity in self._entities:
+            if entity is not ray:
+                collision = ray.collider.collide_ray(entity)
+                if collision is not None:
+                    collisions.append((entity, collision))
+        return collisions
 
 class Ray(GameObject):
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, color=(255, 0, 255), **kwargs)
-        self.length = kwargs.get("length", 1)
+    def __init__(self, pos, name, **kwargs):
+        super().__init__(pos, name, **kwargs)
+        self._length = kwargs.get("length", 1)
         self.collider = RayCollider(self.pos, self.length)
         initial_facing = kwargs.get("initial_facing", None)
         if initial_facing is not None:
@@ -594,6 +604,7 @@ class Ray(GameObject):
             self._collision_groups = [collision_groups]
         else:
             self._collision_groups = collision_groups
+        self._color = kwargs.get('color', (255, 0, 255))
 
     def draw(self, surface, offset=None):
         pass
@@ -683,28 +694,28 @@ class Ray(GameObject):
         collisions = []
         if collision_group is None:
             for group in self._collision_groups:
-                collisions += group.collide_object(self)
+                collisions += group.collide_ray(self)
         else:
-            collisions = collision_group.collide_object(self)
+            collisions = collision_group.collide_ray(self)
 
         if collisions:
-            closest_collision = Vec2(self.pos + self.collider.vertices[1])
-            collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
-            for entity in collisions:
-                point = self.collider.collide_ray(entity)
-                if point is not None:
-                    if (
+            closest_collision = (None, Vec2(self.global_end))
+            collisions.sort(key=lambda collision: dist_to(self.pos, collision[1]))
+            for entity, point in collisions:
+                if (
                         self.length**2
-                        >= (point - self.pos).dot(self.collider.vertices[1])
+                        >= dist_to(self.pos, point)
                         >= 0
+                ):
+                    if dist_to(self.pos, point) < dist_to(
+                       self.pos, closest_collision[1]
                     ):
-                        if dist_to(self.pos, point) < dist_to(
-                            self.pos, closest_collision
-                        ):
-                            closest_collision = point
+                       closest_collision = (entity, point)
 
-            if closest_collision != Vec2(self.pos + self.collider.vertices[1]):
+            if closest_collision[1] != Vec2(self.global_end):
                 return closest_collision
+        return None
+        
 
     # Properties
 
@@ -718,7 +729,24 @@ class Ray(GameObject):
         """Sets the _pos attribute and moves the collider to the new pos."""
         self._pos = Vec2(pos)
         self.collider.pos = Vec2(pos)
-
+    
+    @property
+    def length(self):
+        return self._length
+        
+    @length.setter
+    def length(self, length):
+        self._length = length
+        self.collider.length = length
+    
+    @property
+    def global_end(self):
+        return Vec2(self.pos + self.facing * self.length)
+    
+    @property
+    def local_end(self):
+        return Vec2(self.facing * self.length)
+    
     @property
     def draw_pos(self):
         """Returns the top left of self.image when centered on self.pos"""

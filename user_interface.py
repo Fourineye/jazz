@@ -1,6 +1,6 @@
 import pygame as pg
 
-from pygame_engine.utils import color_mult, map_range
+from Jazz.utils import color_mult, map_range
 
 pg.font.init()
 # Constants declaration
@@ -305,7 +305,9 @@ class TextBox(BaseUI):
         self.update_image()
 
     def draw(self, surface, offset=None):
-        surface.blit(self.image, self.rect)
+        if offset is None:
+            offset = pg.Vector2()
+        surface.blit(self.image, self.rect.topleft + offset)
 
     def set_text(self, text):
         if self.text_content != text:

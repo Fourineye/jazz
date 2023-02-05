@@ -1,6 +1,6 @@
 import pygame
 
-from pygame_engine.utils import direction_to, dist_to, line_intersection, line_circle, Vec2
+from Jazz.utils import direction_to, dist_to, line_intersection, line_circle, Vec2
 
 
 class Collider:
@@ -293,7 +293,7 @@ class CircleCollider(Collider):
         return min_v, max_v
 
     def draw(self, surface, offset=None):
-        pygame.draw.circle(surface, self.color, self.pos, self.radius)
+        pygame.draw.circle(surface, self.color, self.pos + offset, self.radius)
 
     def debug_draw(self, surface, offset=None):
         if offset is None:
@@ -301,7 +301,7 @@ class CircleCollider(Collider):
         pygame.draw.circle(surface, self.color, self._pos + offset, self.radius, 1)
         pygame.draw.circle(surface, "red", self.pos + offset, 5)
         pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2)
-        pygame.draw.rect(surface, "yellow", self.rect, 1)
+        pygame.draw.rect(surface, "yellow", (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]), 1)
 
 
 class PolyCollider(Collider):
@@ -324,10 +324,20 @@ class PolyCollider(Collider):
                 
 class RayCollider(Collider):
     def __init__(self, pos, length=1):
-        self.vertices = [(0, 0), (length, 0)]
-        self.length = length
+        self.vertices = [Vec2(0, 0), Vec2(length, 0)]
+        self._length = length
         Collider.__init__(self, pos)
-
+    
+    @property
+    def length(self):
+        return self._length
+    
+    @length.setter
+    def length(self, length):
+        self._length = length
+        self.vertices[1] = direction_to(self.vertices[0], self.facing) * length
+        self.edges[0] = (self.vertices[0], self.vertices[1])
+    
     def collide_ray(self, collider):
         col_type = type(collider)
         if not isinstance(collider, Collider):
@@ -338,7 +348,10 @@ class RayCollider(Collider):
             raise TypeError(f'{col_type} is an invalid collider')
         
         if isinstance(collider, CircleCollider):
-            return line_circle(self.pos, self.pos + self.vertices[1], collider.pos, collider.radius)
+            return line_circle(self.pos,
+                               self.pos + self.vertices[1],
+                               collider.pos,
+                               collider.radius)
         else:
             collisions = []
             for edge in collider.edges:
@@ -357,3 +370,5 @@ class RayCollider(Collider):
                        closest_dist = dist_to(self.pos, point)
                 return closest_collision
         return None
+        
+   

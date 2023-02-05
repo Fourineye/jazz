@@ -3,7 +3,7 @@
 import pygame
 from pygame import Vector2
 
-from pygame_engine.utils import key_from_value
+from Jazz.utils import key_from_value
 
 
 class InputHandler:
