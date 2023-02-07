@@ -589,7 +589,8 @@ class EntityGroup:
                     collisions.append((entity, collision))
         return collisions
 
-class Ray(GameObject):
+
+class Ray(Entity):
     def __init__(self, pos, name, **kwargs):
         super().__init__(pos, name, **kwargs)
         self._length = kwargs.get("length", 1)
@@ -604,7 +605,7 @@ class Ray(GameObject):
             self._collision_groups = [collision_groups]
         else:
             self._collision_groups = collision_groups
-        self._color = kwargs.get('color', (255, 0, 255))
+        self._color = kwargs.get("color", (255, 0, 255))
 
     def draw(self, surface, offset=None):
         pass
@@ -702,20 +703,15 @@ class Ray(GameObject):
             closest_collision = (None, Vec2(self.global_end))
             collisions.sort(key=lambda collision: dist_to(self.pos, collision[1]))
             for entity, point in collisions:
-                if (
-                        self.length**2
-                        >= dist_to(self.pos, point)
-                        >= 0
-                ):
+                if self.length**2 >= dist_to(self.pos, point) >= 0:
                     if dist_to(self.pos, point) < dist_to(
-                       self.pos, closest_collision[1]
+                        self.pos, closest_collision[1]
                     ):
-                       closest_collision = (entity, point)
+                        closest_collision = (entity, point)
 
             if closest_collision[1] != Vec2(self.global_end):
                 return closest_collision
         return None
-        
 
     # Properties
 
@@ -729,24 +725,24 @@ class Ray(GameObject):
         """Sets the _pos attribute and moves the collider to the new pos."""
         self._pos = Vec2(pos)
         self.collider.pos = Vec2(pos)
-    
+
     @property
     def length(self):
         return self._length
-        
+
     @length.setter
     def length(self, length):
         self._length = length
         self.collider.length = length
-    
+
     @property
     def global_end(self):
         return Vec2(self.pos + self.facing * self.length)
-    
+
     @property
     def local_end(self):
         return Vec2(self.facing * self.length)
-    
+
     @property
     def draw_pos(self):
         """Returns the top left of self.image when centered on self.pos"""
