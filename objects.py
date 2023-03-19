@@ -2,11 +2,11 @@
 Module to provide a base for active game entities.
 """
 
-import uuid
 from random import randint
 
 import pygame
 
+from Jazz.baseObject import GameObject
 from Jazz.colliders import (
     CircleCollider,
     Collider,
@@ -18,174 +18,6 @@ from Jazz.input_handler import InputHandler
 from Jazz.utils import Vec2, direction_to, dist_to, load_image
 
 
-class GameObject:
-    """Simplest object in pygame_engine"""
-
-    def __init__(self, pos: Vec2, name="Object", **kwargs):
-        # Engine Attributes
-        self.name = name
-        self.id = str(uuid.uuid1())
-        self.scene = None
-        self.root = None
-
-        # Engine flags
-        self.pause_process = kwargs.get("pause_process", False)
-        self.game_process = kwargs.get("game_process", True)
-        self.game_input = kwargs.get("game_input", True)
-        self.do_kill = False
-
-        # Rendering flags
-        self.visible = kwargs.get("visible", True)
-        self.background_layer = kwargs.get("background_layer", False)
-        self.screen_layer = kwargs.get("screen_layer", False)
-
-        # Basic positional Attributes
-        self._pos = Vec2(pos)
-        self._facing = Vec2(1, 0)
-        self._z = kwargs.get("z", 0)
-        self._color = kwargs.get("color", (255, 255, 255))
-
-    def __repr__(self):
-        return f"{self.name} at {self.x}, {self.y}"
-
-    def on_init(self, **kwargs):
-        """
-        Method called on creation, for user to add custom attributes.
-        """
-
-    def input(self, INPUT: InputHandler):
-        """
-        Method called once per frame to handle user input. Called before process.
-
-        Args:
-            INPUT (InputHandler): InputHandler passed from the main game instance.
-        """
-
-    def process(self, delta: float):
-        """
-        Method called once per frame to handle game logic. Called before draw.
-
-        Args:
-            delta (float): Time in seconds since the last frame.
-        """
-
-    def draw(self, surface: pygame.Surface, offset=None):
-        """
-        Method called in the scene render function to draw the Entity on a surface.
-
-        Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vec2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
-        """
-        if offset is None:
-            offset = Vec2()
-        pygame.draw.circle(surface, self._color, self.pos + offset, 10)
-
-    def collide(self, collider):
-        """Checks if the object is in an AABB.
-
-        Args:
-            collider (GameObject): The rect to check.
-
-        Returns:
-            bool: Whether the object is in the rect.
-        """
-        rect = collider.collider
-        return (
-            self.x > rect.left
-            and self.x < rect.right
-            and self.y > rect.top
-            and self.y < rect.bottom
-        )
-
-    def rotate(self, degrees):
-        self.facing.rotate_ip(degrees)
-
-    def rotate_around(self, degrees, center):
-        center = Vec2(center)
-        arm = self._pos - center
-        arm.rotate_ip(degrees)
-        self.pos = center + arm
-        self.rotate(degrees)
-
-    def set_rotation(self, degrees):
-        angle = self._facing.angle_to(Vec2(1, 0).rotate(degrees))
-        self.rotate(angle)
-
-    def kill(self):
-        """Removes the Entity from all groups and queues it for deletion."""
-        self.game_process = False
-        self.pause_process = False
-        self.game_input = False
-        self.do_kill = True
-
-    # Properties
-
-    @property
-    def pos(self):
-        """Returns _pos attribute."""
-        return Vec2(self._pos)
-
-    @pos.setter
-    def pos(self, pos):
-        """Sets the _pos attribute"""
-        self._pos = Vec2(pos)
-
-    @property
-    def y(self):
-        """Returns y component of the _pos attribute."""
-        return self._pos.y
-
-    @y.setter
-    def y(self, y):
-        """Sets y component of the _pos attribute."""
-        self.pos = Vec2(self._pos.x, y)
-
-    @property
-    def x(self):
-        """Returns x component of the _pos attribute."""
-        return self._pos.x
-
-    @x.setter
-    def x(self, x):
-        """Sets x component of the _pos attribute."""
-        self.pos = Vec2(x, self._pos.y)
-
-    @property
-    def rect(self):
-        return pygame.Rect(self.x, self.y, 1, 1)
-
-    @property
-    def top(self):
-        return self.rect.top
-
-    @property
-    def right(self):
-        return self.rect.right
-
-    @property
-    def bottom(self):
-        return self.rect.bottom
-
-    @property
-    def left(self):
-        return self.rect.left
-
-    @property
-    def center(self):
-        return self.rect.center
-
-    @property
-    def facing(self):
-        return self._facing
-
-    @facing.setter
-    def facing(self, new_facing):
-        angle = self._facing.angle_to(new_facing)
-        self.rotate(angle)
-
-
 class Entity(GameObject):
     """Basic active object in the game space"""
 
@@ -193,11 +25,6 @@ class Entity(GameObject):
         GameObject.__init__(self, pos, name, **kwargs)
         collider_type = kwargs.get("collider", "Rectangle")
         self.static = kwargs.get("static", True)
-
-        self.groups = kwargs.get("groups", [])
-        for group in self.groups:
-            if self not in group._entities:
-                group.add(self)
 
         self._color = kwargs.get("color", (255, 0, 255))
 
@@ -226,7 +53,7 @@ class Entity(GameObject):
             else:
                 self.source = load_image(self.asset)
 
-    def draw(self, surface: pygame.Surface, offset=None):
+    def _draw(self, surface: pygame.Surface, offset=None):
         """
         Method called in the scene render function to draw the Entity on a surface.
 
@@ -251,40 +78,6 @@ class Entity(GameObject):
         if offset is None:
             offset = Vec2()
         self.collider.debug_draw(surface, offset)
-
-    def add_group(self, group):
-        """
-        Add Group to Entity and insure that Entity is in Group.
-
-        Args:
-            group (EntityGroup): The EntityGroup to add.
-        """
-        self.groups.append(group)
-        if self not in group:
-            group.add(self)
-
-    def remove_group(self, group):
-        """
-        Remove group from Entity and insure that Entity is not in Group.
-
-        Args:
-            group (EntityGroup): The EntityGroup to remove.
-        """
-        if group not in self.groups:
-            print("group not found")
-        else:
-            self.groups.remove(group)
-            if self in group:
-                group.remove(self)
-
-    def kill(self):
-        """Removes the Entity from all groups and queues it for deletion."""
-        for group in self.groups[::-1]:
-            self.remove_group(group)
-        self.game_process = False
-        self.pause_process = False
-        self.game_input = False
-        self.do_kill = True
 
     def collide_sat(self, collider):
         """
@@ -353,17 +146,6 @@ class Entity(GameObject):
         )
 
     # Properties
-
-    @property
-    def pos(self):
-        """Returns _pos attribute."""
-        return Vec2(self._pos)
-
-    @pos.setter
-    def pos(self, pos: Vec2):
-        """Sets the _pos attribute and moves the collider to the new pos."""
-        self._pos = Vec2(pos)
-        self.collider.pos = Vec2(pos)
 
     @property
     def draw_pos(self):
@@ -512,7 +294,7 @@ class EntityGroup:
     def __delitem__(self, i):
         self.remove(self._entities[i])
 
-    def add(self, entity: Entity):
+    def add(self, entity: GameObject):
         """
         Add an Entity to the group and ensure that the group is referenced
         in the entity's groups attribute.
@@ -520,7 +302,7 @@ class EntityGroup:
         Args:
             entity (Entity): The entity to be added to the group.
         """
-        if not isinstance(entity, Entity):
+        if not isinstance(entity, GameObject):
             raise ValueError("Only Entity objects may be added to an EntityGroup")
         if entity not in self._entities:
             self._entities.append(entity)
@@ -529,7 +311,7 @@ class EntityGroup:
         else:
             print("Entity already in group")
 
-    def remove(self, entity: Entity):
+    def remove(self, entity: GameObject):
         """
         Remove an Entity from the group and ensure that the group is no longer
         referenced in the entity's groups attribute.
@@ -607,7 +389,7 @@ class Ray(Entity):
             self._collision_groups = collision_groups
         self._color = kwargs.get("color", (255, 0, 255))
 
-    def draw(self, surface, offset=None):
+    def _draw(self, surface, offset=None):
         pass
 
     def debug_draw(self, surface, offset=None):

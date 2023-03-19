@@ -196,7 +196,7 @@ class Scene:
 
     name = "unnamed"
 
-    def __init__(self, root: Application):
+    def __init__(self, app: Application):
         self.camera = Camera()
         self._groups = {}
         self._objects = {}
@@ -204,7 +204,7 @@ class Scene:
         self.display = pygame.display.get_surface()
         self.running = True
         self._paused = False
-        self.root = root
+        self.app = app
 
     def __getitem__(self, key):
         obj = self._objects.get(key, None)
@@ -277,17 +277,16 @@ class Scene:
         """
         if obj.id not in self.keys():
             obj.scene = self
-            obj.root = self.root
+            obj.app = self.app
             self._objects[obj.id] = obj
             self.camera.add(obj)
         else:
             print("obj already in scene")
-            
+
         if name is not None and name not in self.__dict__.keys():
             name = name.split(" ")[0]
             obj.name = name
             self.__dict__.setdefault(name, obj)
-            
 
     def remove_object(self, obj):
         """
@@ -305,8 +304,8 @@ class Scene:
         if obj:
             self.camera.remove(obj)
             self.__dict__.pop(obj.name, None)
-            obj.kill()
-            
+            obj.scene = None
+            obj.do_kill = True
 
     def add_group(self, name: str, group):
         """
@@ -441,7 +440,7 @@ class Scene:
 
         # delete objects queued for deletion
         for obj in kill_items:
-            self.remove_object(obj)
+            obj.kill()
 
     def game_input(self, INPUT: InputHandler):
         """
