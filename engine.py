@@ -1,9 +1,6 @@
 """
 A module to make writing pygame programs easier.
 
-Name Ideas:
-Jazz
-
 """
 
 from random import randint
@@ -12,6 +9,7 @@ import pygame
 from pygame import Vector2
 
 from Jazz.input_handler import InputHandler
+
 
 
 class Application:
@@ -196,15 +194,16 @@ class Scene:
 
     name = "unnamed"
 
-    def __init__(self, root: Application):
+    def __init__(self, app: Application):
         self.camera = Camera()
         self._groups = {}
         self._objects = {}
         self._ui = {}
+        self._physics_world = {0:[],1:[],2:[],3:[]}
         self.display = pygame.display.get_surface()
         self.running = True
         self._paused = False
-        self.root = root
+        self.app = app
 
     def __getitem__(self, key):
         obj = self._objects.get(key, None)
@@ -267,6 +266,18 @@ class Scene:
         """
         self.camera.render()
 
+    def get_AABB_collisions(self, physics_object):
+        collisions = []
+        for layer, flag in enumerate(physics_object.collision_layers):
+            if flag == '1':
+                for obj in self._physics_world[layer]:
+                    if obj is not physics_object:
+                        if obj.collider.collider_type != "Ray":
+                            collision = physics_object.collider.collide_rect(obj.collider)
+                        if collision and obj not in collisions:
+                            collisions.append(obj)
+                    
+        return collisions
     def add_object(self, obj, name=None):
         """
         Add an object to the scene, give it a name, and add it to the camera.
@@ -276,37 +287,21 @@ class Scene:
             obj (object): The Object to be added to the scene.
         """
         if obj.id not in self.keys():
-            obj.scene = self
-            obj.root = self.root
+            obj.on_load(self, self.app)
             self._objects[obj.id] = obj
             self.camera.add(obj)
         else:
             print("obj already in scene")
-            
+
         if name is not None and name not in self.__dict__.keys():
             name = name.split(" ")[0]
             obj.name = name
             self.__dict__.setdefault(name, obj)
-            
 
-    def remove_object(self, obj):
-        """
-        Remove an object from the scene either with the name or a reference to the object.
-
-        Args:
-            name (str, optional): The name of the object to remove. Defaults to None.
-            obj_ (object, optional): The object to remove. Defaults to None.
-        """
-        if isinstance(obj, str):
-            obj = self._objects.pop(obj, None)
-        else:
-            obj = self._objects.pop(getattr(obj, "id", None), None)
-
-        if obj:
-            self.camera.remove(obj)
-            self.__dict__.pop(obj.name, None)
-            obj.kill()
-            
+    def add_physics_object(self, obj, layers):
+        for layer, flag in enumerate(layers):
+            if flag == '1':
+                self._physics_world[layer].append(obj)
 
     def add_group(self, name: str, group):
         """
@@ -328,20 +323,6 @@ class Scene:
         else:
             print("Name already exists")
 
-    def remove_group(self, name: str):
-        """
-        Remove a group from the scene as well as any objects only in that group.
-
-        Args:
-            name (str): Name of the group to remove.
-        """
-        group = self._groups.pop(name, None)
-        if group is None:
-            print(f"Group not found : {name}")
-        else:
-            for obj in group:
-                self.remove_object(obj)
-
     def add_ui(self, name: str, obj):
         """
         Add an UI object to the scene, give it a name, and add it to the camera.
@@ -356,6 +337,43 @@ class Scene:
             self.camera.add(obj)
         else:
             print("name already exists")
+
+    def remove_object(self, obj):
+        """
+        Remove an object from the scene either with the name or a reference to the object.
+
+        Args:
+            name (str, optional): The name of the object to remove. Defaults to None.
+            obj_ (object, optional): The object to remove. Defaults to None.
+        """
+        if isinstance(obj, str):
+            obj = self._objects.pop(obj, None)
+        else:
+            obj = self._objects.pop(getattr(obj, "id", None), None)
+
+        if obj:
+            self.camera.remove(obj)
+            self.__dict__.pop(obj.name, None)
+            obj.scene = None
+
+    def remove_physics_object(self, obj):
+        for layer, objs in self._physics_world.items():
+            if obj in objs:
+                objs.remove(obj)
+
+    def remove_group(self, name: str):
+        """
+        Remove a group from the scene as well as any objects only in that group.
+
+        Args:
+            name (str): Name of the group to remove.
+        """
+        group = self._groups.pop(name, None)
+        if group is None:
+            print(f"Group not found : {name}")
+        else:
+            for obj in group:
+                self.remove_object(obj)
 
     def remove_ui(self, obj):
         """
@@ -401,19 +419,14 @@ class Scene:
         Args:
             delta (float): Time since the last frame in seconds.
         """
-        # Empty list to hold objects for deletion
         kill_items = []
 
-        # Create copies of the objects and ui dicts for iteration
         objects = list(self._objects.values())
         ui_objects = list(self._ui.values())
 
-        # call process hook for all objects in the scene
         for obj in objects:
-            # Check if object is queued for deletion
             if getattr(obj, "do_kill", False):
                 kill_items.append(obj)
-            # check for process hook
             if hasattr(obj, "process"):
                 if obj.game_process:
                     if self._paused:
@@ -422,7 +435,6 @@ class Scene:
                     else:
                         obj.process(delta)
 
-        # Call process hook for ui_objects
         for obj in ui_objects:
             if getattr(obj, "do_kill", False):
                 kill_items.append(obj)
@@ -441,7 +453,7 @@ class Scene:
 
         # delete objects queued for deletion
         for obj in kill_items:
-            self.remove_object(obj)
+            obj.kill()
 
     def game_input(self, INPUT: InputHandler):
         """

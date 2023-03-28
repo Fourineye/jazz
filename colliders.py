@@ -1,11 +1,13 @@
 import pygame
 
-from Jazz.utils import direction_to, dist_to, line_intersection, line_circle, Vec2
+from Jazz.baseObject import GameObject
+from Jazz.utils import Vec2, direction_to, dist_to, line_circle, line_intersection
 
 
-class Collider:
-    def __init__(self, pos):
-        self._pos = Vec2(pos)
+class Collider(GameObject):
+    def __init__(self, **kwargs):
+        super().__init__("collider", **kwargs)
+        self.collider_type = None
         if not hasattr(self, "vertices"):
             self.vertices = [Vec2(0, 0)]
         self.edges = []
@@ -47,20 +49,15 @@ class Collider:
                         new = False
                         break
                 if new:
-                    self.normals.append(
-                        Vec2(edge[1] - edge[0]).normalize().rotate(90)
-                    )
+                    self.normals.append(Vec2(edge[1] - edge[0]).normalize().rotate(90))
         else:
             self._left = -self.radius
             self._right = self.radius
             self._top = -self.radius
             self._bottom = self.radius
+        
 
-    def draw(self, surface, offset=None):
-        draw_verts = [self.pos + vert + offset for vert in self.vertices]
-        pygame.draw.polygon(surface, self.color, draw_verts)
-
-    def debug_draw(self, surface, offset=None):
+    def _debug_draw(self, surface, offset=None):
         if offset is None:
             offset = Vec2()
         for edge in self.edges:
@@ -74,12 +71,12 @@ class Collider:
             surface,
             "red",
             self.center + offset,
-            self.center + self.facing * 20 + offset,
+            self.center + self.facing * 5 + offset,
         )
         for vert in self.vertices:
-            pygame.draw.circle(surface, "gray", self.pos + vert + offset, 2)
-        pygame.draw.circle(surface, "red", self.pos + offset, 5)
-        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2)
+            pygame.draw.circle(surface, "gray", self.pos + vert + offset, 2,1)
+        pygame.draw.circle(surface, "red", self.pos + offset, 2,1)
+        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2,1)
         pygame.draw.rect(
             surface,
             "yellow",
@@ -89,9 +86,6 @@ class Collider:
             ),
             1,
         )
-
-    def move(self, direction):
-        self._pos += Vec2(direction)
 
     def rotate(self, degrees):
         self._facing.rotate_ip(degrees)
@@ -118,9 +112,7 @@ class Collider:
                         new = False
                         break
                 if new:
-                    self.normals.append(
-                        Vec2(edge[1] - edge[0]).normalize().rotate(90)
-                    )
+                    self.normals.append(Vec2(edge[1] - edge[0]).normalize().rotate(90))
 
     def rotate_around(self, degrees, center):
         center = Vec2(center)
@@ -207,35 +199,26 @@ class Collider:
             return depth, normal
         else:
             return depth, -normal
-           
-    
-    @property
-    def pos(self):
-        return self._pos
-
-    @pos.setter
-    def pos(self, new_pos):
-        self._pos = Vec2(new_pos)
 
     @property
     def top(self):
-        return self._pos.y + self._top
+        return self.pos.y + self._top
 
     @property
     def right(self):
-        return self._pos.x + self._right
+        return self.pos.x + self._right
 
     @property
     def bottom(self):
-        return self._pos.y + self._bottom
+        return self.pos.y + self._bottom
 
     @property
     def left(self):
-        return self._pos.x + self._left
+        return self.pos.x + self._left
 
     @property
     def center(self):
-        return self._pos + self._center
+        return self.pos + self._center
 
     @property
     def rect(self):
@@ -269,20 +252,22 @@ class Collider:
 
 
 class RectCollider(Collider):
-    def __init__(self, pos, w, h):
+    def __init__(self, w, h, **kwargs):
         self.vertices = [
             (w / 2, h / 2),
             (w / 2, -h / 2),
             (-w / 2, -h / 2),
             (-w / 2, h / 2),
         ]
-        Collider.__init__(self, pos)
+        Collider.__init__(self, **kwargs)
+        self.collider_type = "Rect"
 
 
 class CircleCollider(Collider):
-    def __init__(self, pos, radius):
+    def __init__(self, radius, **kwargs):
         self.radius = radius
-        Collider.__init__(self, pos)
+        Collider.__init__(self, **kwargs)
+        self.collider_type = "Circle"
 
     def project(self, axis):
         proj = (self.pos).dot(axis)
@@ -292,24 +277,27 @@ class CircleCollider(Collider):
             min_v, max_v = max_v, min_v
         return min_v, max_v
 
-    def draw(self, surface, offset=None):
-        pygame.draw.circle(surface, self.color, self.pos + offset, self.radius)
-
-    def debug_draw(self, surface, offset=None):
+    def _debug_draw(self, surface, offset=None):
         if offset is None:
             offset = Vec2()
-        pygame.draw.circle(surface, self.color, self._pos + offset, self.radius, 1)
-        pygame.draw.circle(surface, "red", self.pos + offset, 5)
-        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2)
-        pygame.draw.rect(surface, "yellow", (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]), 1)
+        pygame.draw.circle(surface, self.color, self.pos + offset, self.radius, 1)
+        pygame.draw.circle(surface, "red", self.pos + offset, 3, 2)
+        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2, 1)
+        pygame.draw.rect(
+            surface,
+            "yellow",
+            (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]),
+            1,
+        )
 
 
 class PolyCollider(Collider):
-    def __init__(self, pos, vertices=None):
+    def __init__(self, vertices=None, **kwargs):
         if vertices is None or len(vertices) < 3:
             raise Exception("A shape must be defined for Polygon collider")
         self.vertices = vertices
         Collider.__init__(self, pos)
+        self.collider_type = "Polygon"
 
     def recenter(self):
         if self.center != self.pos:
@@ -321,23 +309,25 @@ class PolyCollider(Collider):
             for i in range(self._size):
                 j = (i + 1) % self._size
                 self.edges.append([self.vertices[i], self.vertices[j]])
-                
+
+
 class RayCollider(Collider):
-    def __init__(self, pos, length=1):
+    def __init__(self, length=1, **kwargs):
         self.vertices = [Vec2(0, 0), Vec2(length, 0)]
         self._length = length
-        Collider.__init__(self, pos)
-    
+        Collider.__init__(self, **kwargs)
+        self.collider_type = "Ray"
+
     @property
     def length(self):
         return self._length
-    
+
     @length.setter
     def length(self, length):
         self._length = length
         self.vertices[1] = direction_to(self.vertices[0], self.facing) * length
         self.edges[0] = (self.vertices[0], self.vertices[1])
-    
+
     def collide_ray(self, collider):
         col_type = type(collider)
         if not isinstance(collider, Collider):
@@ -345,20 +335,21 @@ class RayCollider(Collider):
         if isinstance(collider, pygame.Rect):
             collider = RectCollider(collider.center, collider.width, collider.height)
         if collider is None:
-            raise TypeError(f'{col_type} is an invalid collider')
-        
+            raise TypeError(f"{col_type} is an invalid collider")
+
         if isinstance(collider, CircleCollider):
-            return line_circle(self.pos,
-                               self.pos + self.vertices[1],
-                               collider.pos,
-                               collider.radius)
+            return line_circle(
+                self.pos, self.pos + self.vertices[1], collider.pos, collider.radius
+            )
         else:
             collisions = []
             for edge in collider.edges:
-                point = line_intersection(self.pos,
-                                          self.pos + self.vertices[1],
-                                          collider.pos + edge[0],
-                                          collider.pos + edge[1])
+                point = line_intersection(
+                    self.pos,
+                    self.pos + self.vertices[1],
+                    collider.pos + edge[0],
+                    collider.pos + edge[1],
+                )
                 if point is not None:
                     collisions.append(point)
             if collisions:
@@ -366,9 +357,7 @@ class RayCollider(Collider):
                 closest_collision = Vec2()
                 for point in collisions:
                     if dist_to(self.pos, point) < closest_dist:
-                       closest_collision = point
-                       closest_dist = dist_to(self.pos, point)
+                        closest_collision = point
+                        closest_dist = dist_to(self.pos, point)
                 return closest_collision
         return None
-        
-   
