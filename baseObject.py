@@ -115,14 +115,14 @@ class GameObject:
         self._process(delta)
 
     def draw(self, surface: pygame.Surface, offset=None):
+        self._draw(surface, offset)
         for child in self._children.values():
             child.draw(surface, offset)
-        self._draw(surface, offset)
 
     def debug_draw(self, surface: pygame.Surface, offset=None):
+        self._debug_draw(surface, offset)    
         for child in self._children.values():
             child.debug_draw(surface, offset)
-        self._debug_draw(surface, offset)    
 
     # Child management
     def add_child(self, obj, name=None):
@@ -260,22 +260,13 @@ class GameObject:
     @property
     def y(self):
         """Returns y component of the _pos attribute."""
-        return self._pos.y
-
-    @y.setter
-    def y(self, y):
-        """Sets y component of the _pos attribute."""
-        self.pos = Vec2(self._pos.x, y)
+        return self.pos.y
 
     @property
     def x(self):
         """Returns x component of the _pos attribute."""
-        return self._pos.x
+        return self.pos.x
 
-    @x.setter
-    def x(self, x):
-        """Sets x component of the _pos attribute."""
-        self.pos = Vec2(x, self._pos.y)
 
     @property
     def facing(self):

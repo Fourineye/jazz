@@ -9,6 +9,7 @@ import pygame
 from pygame import Vector2
 
 from Jazz.input_handler import InputHandler
+from Jazz.physics import PhysicsGrid
 
 
 
@@ -199,7 +200,7 @@ class Scene:
         self._groups = {}
         self._objects = {}
         self._ui = {}
-        self._physics_world = {0:[],1:[],2:[],3:[]}
+        self._physics_world = {0:PhysicsGrid(),1:PhysicsGrid(),2:PhysicsGrid(),3:PhysicsGrid()}
         self.display = pygame.display.get_surface()
         self.running = True
         self._paused = False
@@ -270,14 +271,9 @@ class Scene:
         collisions = []
         for layer, flag in enumerate(physics_object.collision_layers):
             if flag == '1':
-                for obj in self._physics_world[layer]:
-                    if obj is not physics_object:
-                        if obj.collider.collider_type != "Ray":
-                            collision = physics_object.collider.collide_rect(obj.collider)
-                        if collision and obj not in collisions:
-                            collisions.append(obj)
-                    
+                collisions += self._physics_world[layer].get_AABB_collisions(physics_object)
         return collisions
+    
     def add_object(self, obj, name=None):
         """
         Add an object to the scene, give it a name, and add it to the camera.
@@ -301,7 +297,7 @@ class Scene:
     def add_physics_object(self, obj, layers):
         for layer, flag in enumerate(layers):
             if flag == '1':
-                self._physics_world[layer].append(obj)
+                self._physics_world[layer].add_object(obj)
 
     def add_group(self, name: str, group):
         """
@@ -357,9 +353,8 @@ class Scene:
             obj.scene = None
 
     def remove_physics_object(self, obj):
-        for layer, objs in self._physics_world.items():
-            if obj in objs:
-                objs.remove(obj)
+        for layer, grid in self._physics_world.items():
+            grid.remove_object(obj)
 
     def remove_group(self, name: str):
         """
@@ -419,6 +414,10 @@ class Scene:
         Args:
             delta (float): Time since the last frame in seconds.
         """
+
+        for grid in self._physics_world.values():
+            grid.build_grid()
+        
         kill_items = []
 
         objects = list(self._objects.values())
