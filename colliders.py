@@ -1,7 +1,8 @@
 import pygame
 
 from Jazz.baseObject import GameObject
-from Jazz.utils import Vec2, direction_to, dist_to, line_circle, line_intersection
+from Jazz.utils import (Vec2, direction_to, dist_to, line_circle,
+                        line_intersection)
 
 
 class Collider(GameObject):
@@ -55,7 +56,6 @@ class Collider(GameObject):
             self._right = self.radius
             self._top = -self.radius
             self._bottom = self.radius
-        
 
     def _debug_draw(self, surface, offset=None):
         if offset is None:
@@ -74,9 +74,9 @@ class Collider(GameObject):
             self.center + self.facing * 5 + offset,
         )
         for vert in self.vertices:
-            pygame.draw.circle(surface, "gray", self.pos + vert + offset, 2,1)
-        pygame.draw.circle(surface, "red", self.pos + offset, 2,1)
-        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2,1)
+            pygame.draw.circle(surface, "gray", self.pos + vert + offset, 2, 1)
+        pygame.draw.circle(surface, "red", self.pos + offset, 2, 1)
+        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2, 1)
         pygame.draw.rect(
             surface,
             "yellow",
@@ -169,7 +169,8 @@ class Collider(GameObject):
             min_dist = 1000000.0
             for vert in collider.vertices:
                 dist = collider.pos + vert - self.center
-                if dist.length() < min_dist:
+                length = dist.length()
+                if length < min_dist and length != 0:
                     min_dist = dist.length()
                     normal = dist.normalize()
             axes.append(normal)
@@ -178,7 +179,8 @@ class Collider(GameObject):
             min_dist = 1000000.0
             for vert in self.vertices:
                 dist = self.pos + vert - collider.center
-                if dist.length() < min_dist:
+                length = dist.length()
+                if length < min_dist and length != 0:
                     min_dist = dist.length()
                     normal = dist.normalize()
             axes.append(normal)

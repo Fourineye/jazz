@@ -7,16 +7,10 @@ from random import randint
 import pygame
 
 from Jazz.baseObject import GameObject
-from Jazz.colliders import (
-    CircleCollider,
-    Collider,
-    PolyCollider,
-    RayCollider,
-    RectCollider,
-)
+from Jazz.colliders import (CircleCollider, Collider, PolyCollider,
+                            RayCollider, RectCollider)
 from Jazz.input_handler import InputHandler
 from Jazz.utils import Vec2, direction_to, dist_to, load_image
-
 
 
 class Body(GameObject):
@@ -25,13 +19,13 @@ class Body(GameObject):
     def __init__(self, name="Entity", **kwargs):
         GameObject.__init__(self, name, **kwargs)
         self.static = kwargs.get("static", False)
-        self._layers = kwargs.get("layers", '0001')
-        self.collision_layers = kwargs.get("collision_layers", '0001')
+        self._layers = kwargs.get("layers", "0001")
+        self.collision_layers = kwargs.get("collision_layers", "0001")
 
     def on_load(self, scene, app):
         super().on_load(scene, app)
-        if not hasattr(self, 'collider'):
-            raise(Exception("Body does not have collider"))
+        if not hasattr(self, "collider"):
+            raise (Exception("Body does not have collider"))
         self.scene.add_physics_object(self, self._layers)
 
     def move_and_collide(self, direction: Vec2):
@@ -62,20 +56,21 @@ class Body(GameObject):
                         self.move(-normal * (depth + 1))
         return precise_collisions
 
+
 class Area(GameObject):
     def __init__(self, name="Area", **kwargs):
         GameObject.__init__(self, name, **kwargs)
-        
-        self._layers = kwargs.get("layers", '0000')
-        self.collision_layers = kwargs.get("collision_layers", '0001')
+
+        self._layers = kwargs.get("layers", "0000")
+        self.collision_layers = kwargs.get("collision_layers", "0001")
         self.target_group = kwargs.get("target_group", None)
         self.entered = []
         self._active = kwargs.get("active", True)
 
     def on_load(self, scene, app):
         super().on_load(scene, app)
-        if not hasattr(self, 'collider'):
-            raise(Exception("Area does not have collider"))
+        if not hasattr(self, "collider"):
+            raise (Exception("Area does not have collider"))
         self.scene.add_physics_object(self, self._layers)
 
     def _process(self, delta):
@@ -88,9 +83,10 @@ class Area(GameObject):
         if collisions:
             collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
             for obj in collisions:
-                test = True    
                 if self.target_group is not None:
                     test = obj in self.target_group
+
+                test = obj.root != self.root
                 if test:
                     depth, _ = self.collider.collide_sat(obj.collider)
                     if depth != 0:
@@ -98,7 +94,7 @@ class Area(GameObject):
         return entered
 
 
-class EntityGroup:
+class Group:
     """A container for Entities that allows for checking of collisions and other methods"""
 
     def __init__(self, initial_items=None, name="group"):

@@ -9,8 +9,10 @@ import pygame
 from pygame import Vector2
 
 from Jazz.input_handler import InputHandler
+from Jazz.objects import Group
 from Jazz.physics import PhysicsGrid
-
+from Jazz.resource_manager import ResourceManager
+from Jazz.utils import clamp
 
 
 class Application:
@@ -195,42 +197,25 @@ class Scene:
 
     name = "unnamed"
 
+    IMAGE = 0
+    SOUND = 1
+    SPRITE_SHEET = 2
+
     def __init__(self, app: Application):
         self.camera = Camera()
+        self.resource_manager = ResourceManager()
         self._groups = {}
         self._objects = {}
-        self._ui = {}
-        self._physics_world = {0:PhysicsGrid(),1:PhysicsGrid(),2:PhysicsGrid(),3:PhysicsGrid()}
+        self._physics_world = {
+            0: PhysicsGrid(),
+            1: PhysicsGrid(),
+            2: PhysicsGrid(),
+            3: PhysicsGrid(),
+        }
         self.display = pygame.display.get_surface()
         self.running = True
         self._paused = False
         self.app = app
-
-    def __getitem__(self, key):
-        obj = self._objects.get(key, None)
-        if obj is None:
-            obj = self._groups.get(key, None)
-        if obj is None:
-            obj = self._ui.get(key, None)
-        return obj
-
-    def __iter__(self):
-        return iter(self._objects)
-
-    def __len__(self):
-        return len(self._objects)
-
-    def keys(self):
-        """Returns keys object of _objects attribute."""
-        return self._objects.keys()
-
-    def values(self):
-        """Returns values object of _objects attribute."""
-        return self._objects.values()
-
-    def items(self):
-        """Returns items obect of _objects attribute."""
-        return self._objects.items()
 
     def on_load(self, data) -> dict:
         """
@@ -267,13 +252,49 @@ class Scene:
         """
         self.camera.render()
 
+    # Utility Methods
+
+    def stop(self):
+        """Set the flag for the scene to end after the current frame."""
+        self.running = False
+
+    def restart(self):
+        self.app.set_next_scene(self.name)
+        self.running = False
+
+    def pause(self):
+        """
+        Set the flag for the scene to pause, only objects with the
+        pause_process flag will process.
+        """
+        self._paused = True
+
+    def unpause(self):
+        """Set the flag for the scene to run normally."""
+        self._paused = False
+
     def get_AABB_collisions(self, physics_object):
         collisions = []
         for layer, flag in enumerate(physics_object.collision_layers):
-            if flag == '1':
-                collisions += self._physics_world[layer].get_AABB_collisions(physics_object)
+            if flag == "1":
+                collisions += self._physics_world[layer].get_AABB_collisions(
+                    physics_object
+                )
         return collisions
-    
+
+    def load_resource(self, path, resource_type=IMAGE):
+        match resource_type:
+            case self.IMAGE:
+                return self.resource_manager.get_image(path)
+            case self.SOUND:
+                return self.resource_manager.get_sound(path)
+            case self.SPRITE_SHEET:
+                return self.resource_manager.get_sprite_sheet(path)
+
+    def make_sprite_sheet(self, path, dimensions, offset=(0, 0)):
+        return self.resource_manager.make_sprite_sheet(path, dimensions, offset)
+
+    # Object Management
     def add_object(self, obj, name=None):
         """
         Add an object to the scene, give it a name, and add it to the camera.
@@ -296,10 +317,10 @@ class Scene:
 
     def add_physics_object(self, obj, layers):
         for layer, flag in enumerate(layers):
-            if flag == '1':
+            if flag == "1":
                 self._physics_world[layer].add_object(obj)
 
-    def add_group(self, name: str, group):
+    def add_group(self, name: str):
         """
         Add a group to the scene, as well as any items in the group.
 
@@ -308,31 +329,9 @@ class Scene:
             group (EntityGroup): The group being added.
         """
         if name not in self._groups:
-            self._groups[name] = group
-            if len(group) > 0:
-                counter = 1
-                for obj in group:
-                    obj_name = getattr(obj, "name", "")
-                    obj_name = f"{name}_{counter}_{obj_name}"
-                    self.add_object(obj_name, obj)
-                    counter += 1
+            self._groups[name] = Group(name=name)
         else:
             print("Name already exists")
-
-    def add_ui(self, name: str, obj):
-        """
-        Add an UI object to the scene, give it a name, and add it to the camera.
-
-        Args:
-            name (str): The name to retrieve the object at a later point.
-            obj (object): The Object to be added to the scene.
-        """
-        if name not in self._ui:
-            obj.scene = self
-            self._ui[name] = obj
-            self.camera.add(obj)
-        else:
-            print("name already exists")
 
     def remove_object(self, obj):
         """
@@ -368,43 +367,9 @@ class Scene:
             print(f"Group not found : {name}")
         else:
             for obj in group:
-                self.remove_object(obj)
+                obj.remove_group(group)
 
-    def remove_ui(self, obj):
-        """
-        Remove an UI object from the scene either with the name or a reference to the object.
-
-        Args:
-            name (str, optional): The name of the object to remove. Defaults to None.
-            obj_ (object, optional): The object to remove. Defaults to None.
-        """
-        if isinstance(obj, str):
-            obj = self._ui.pop(obj, None)
-        else:
-            obj = self._ui.pop(getattr(obj, "name", None), None)
-
-        if obj:
-            self.camera.remove(obj)
-            obj.kill()
-
-        if obj:
-            self.camera.remove(obj)
-
-    def stop(self):
-        """Set the flag for the scene to end after the current frame."""
-        self.running = False
-
-    def pause(self):
-        """
-        Set the flag for the scene to pause, only objects with the
-        pause_process flag will process.
-        """
-        self._paused = True
-
-    def unpause(self):
-        """Set the flag for the scene to run normally."""
-        self._paused = False
-
+    # Engine Methods
     def game_process(self, delta: float):
         """
         Method called by the Engine every frame, calls the process method
@@ -417,26 +382,15 @@ class Scene:
 
         for grid in self._physics_world.values():
             grid.build_grid()
-        
+
         kill_items = []
 
         objects = list(self._objects.values())
-        ui_objects = list(self._ui.values())
 
         for obj in objects:
             if getattr(obj, "do_kill", False):
                 kill_items.append(obj)
-            if hasattr(obj, "process"):
-                if obj.game_process:
-                    if self._paused:
-                        if obj.pause_process:
-                            obj.process(delta)
-                    else:
-                        obj.process(delta)
-
-        for obj in ui_objects:
-            if getattr(obj, "do_kill", False):
-                kill_items.append(obj)
+                continue
             if hasattr(obj, "process"):
                 if obj.game_process:
                     if self._paused:
@@ -465,16 +419,6 @@ class Scene:
 
         # Create copies of the objects and ui dicts for iteration
         objects = list(self._objects.values())
-        ui_objects = list(self._ui.values())
-
-        for obj in ui_objects:
-            if hasattr(obj, "input"):
-                if obj.game_input:
-                    if self._paused:
-                        if obj.pause_process:
-                            obj.input(INPUT)
-                    else:
-                        obj.input(INPUT)
 
         for obj in objects:
             if hasattr(obj, "input"):
@@ -487,9 +431,40 @@ class Scene:
 
         self.input(INPUT)
 
+    # Properties and builtins
+    def __getitem__(self, key):
+        obj = self._groups.get(key, None)
+        return obj
+
+    def __iter__(self):
+        return iter(self._objects)
+
+    def __len__(self):
+        return len(self._objects)
+
+    def keys(self):
+        """Returns keys object of _objects attribute."""
+        return self._objects.keys()
+
+    def values(self):
+        """Returns values object of _objects attribute."""
+        return self._objects.values()
+
+    def items(self):
+        """Returns items obect of _objects attribute."""
+        return self._objects.items()
+
     @property
     def camera_offset(self):
         return self.camera.offset
+
+    @property
+    def width(self):
+        return self.display.get_width()
+
+    @property
+    def height(self):
+        return self.display.get_height()
 
 
 class Camera:
@@ -505,6 +480,7 @@ class Camera:
         self._foreground_layer = []
         self._screen_layer = []
         self.target = None
+        self.bounds = None
         self.key = "_z"
         self.follow_type = self.STRICT
         self.offset = Vector2()
@@ -576,6 +552,10 @@ class Camera:
             offset_x += (self.display_center[0] - target_x - offset_x) / 5
             offset_y += (self.display_center[1] - target_y - offset_y) / 5
 
+        if self.bounds is not None:
+            offset_x = clamp(offset_x, -self.bounds.right, -self.bounds.left)
+            offset_y = clamp(offset_y, -self.bounds.bottom, -self.bounds.top)
+
         self.offset.update(offset_x, offset_y)
 
     def set_offset(self, position=(0, 0)):
@@ -601,6 +581,14 @@ class Camera:
             self.target = target
         else:
             print("Target must either be a Vector2 or an Entity")
+
+    def set_bounds(self, bounds):
+        if len(bounds) != 4:
+            print("Bounds must be pygame rect or a iterable with length 4")
+        if isinstance(bounds, pygame.Rect):
+            self.bounds = bounds
+        else:
+            self.bounds = pygame.Rect(*bounds)
 
     def set_bg_color(self, color):
         self._bg_color = color

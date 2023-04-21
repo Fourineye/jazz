@@ -4,11 +4,12 @@ import uuid
 import pygame
 
 from Jazz.input_handler import InputHandler
-from Jazz.utils import Vec2, rotated_pos, angle_from_vec, unit_from_angle
+from Jazz.utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
 
 
 class GameObject:
     """Simplest object in pygame_engine"""
+
     def __init__(self, name="Object", **kwargs):
         # Engine Attributes
         self.name = name
@@ -33,7 +34,7 @@ class GameObject:
         self.screen_layer = kwargs.get("screen_layer", False)
 
         # Basic positional Attributes
-        self._pos = Vec2(kwargs.get("pos", (0,0)))
+        self._pos = Vec2(kwargs.get("pos", (0, 0)))
         self._rotation = kwargs.get("rotation", 0)
         self._facing = Vec2(1, 0)
         self._z = kwargs.get("z", 0)
@@ -59,8 +60,12 @@ class GameObject:
     def on_load(self, scene, app):
         self.scene = scene
         self.app = app
+        self._on_load()
         for child in self._children.values():
             child.on_load(scene, app)
+
+    def _on_load(self):
+        ...
 
     def _input(self, INPUT: InputHandler):
         """
@@ -100,8 +105,9 @@ class GameObject:
         if offset is None:
             offset = Vec2()
         pygame.draw.circle(surface, self._color, self.pos + offset, 3, 2)
-        pygame.draw.aaline(surface, self._color, self.pos + offset, self.pos + offset + self.facing * 5)
-
+        pygame.draw.aaline(
+            surface, self._color, self.pos + offset, self.pos + offset + self.facing * 5
+        )
 
     # Engine called methods that allow object nesting
     def input(self, INPUT: InputHandler):
@@ -115,12 +121,13 @@ class GameObject:
         self._process(delta)
 
     def draw(self, surface: pygame.Surface, offset=None):
-        self._draw(surface, offset)
+        if self.visible:
+            self._draw(surface, offset)
         for child in self._children.values():
             child.draw(surface, offset)
 
     def debug_draw(self, surface: pygame.Surface, offset=None):
-        self._debug_draw(surface, offset)    
+        self._debug_draw(surface, offset)
         for child in self._children.values():
             child.debug_draw(surface, offset)
 
@@ -209,7 +216,13 @@ class GameObject:
             self.remove_group(group)
         for child in self._children.copy().values():
             self.remove_child(child)
-        
+
+    @property
+    def root(self):
+        if self._parent is None:
+            return self
+        else:
+            return self._parent.root
 
     @property
     def local_pos(self):
@@ -231,7 +244,9 @@ class GameObject:
     def pos(self, pos):
         """Sets the _pos attribute"""
         if self._parent is not None:
-            self._pos = rotated_pos(Vec2(pos - self._parent.pos), -self._parent.rotation)
+            self._pos = rotated_pos(
+                Vec2(pos - self._parent.pos), -self._parent.rotation
+            )
         else:
             self._pos = Vec2(pos)
 
@@ -256,7 +271,7 @@ class GameObject:
             self._rotation = degrees - self._parent.rotation
         else:
             self._rotation = degrees
-    
+
     @property
     def y(self):
         """Returns y component of the _pos attribute."""
@@ -266,7 +281,6 @@ class GameObject:
     def x(self):
         """Returns x component of the _pos attribute."""
         return self.pos.x
-
 
     @property
     def facing(self):

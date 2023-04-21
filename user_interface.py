@@ -1,5 +1,6 @@
 import pygame as pg
 
+from Jazz.baseObject import GameObject
 from Jazz.utils import color_mult, map_range
 
 pg.font.init()
@@ -22,29 +23,11 @@ def set_default_font(font):
 
 
 # Base UI Class
-class BaseUI:
-    def __init__(self, x, y, x_dim, y_dim, **kwargs):
-        self.game_process = kwargs.get("game_process", True)
-        self.pause_process = kwargs.get("pause_process", False)
-        self.game_input = kwargs.get("game_input", True)
+class BaseUI(GameObject):
+    def __init__(self, **kwargs):
+        super().__init__(self, name="UI",**kwargs)
         self.screen_layer = kwargs.get("screen_layer", True)
-        self.visible = kwargs.get("visible", True)
         self.font = kwargs.get("font", DEFAULT_FONT)
-        self.image = pg.Surface((x_dim, y_dim))
-        self.image.fill((255, 0, 255))
-        self.image.set_colorkey((255, 0, 255))
-        self.rect = self.image.get_rect()
-        self.rect.x = x
-        self.rect.y = y
-
-    def input(self, INPUT):
-        pass
-
-    def process(self, _delta):
-        pass
-
-    def draw(self, surface, offset=None):
-        pass
 
 
 # Container Class
@@ -286,18 +269,15 @@ class SimpleButton(BaseUI):
 
 
 # Text Box
-class TextBox(BaseUI):
-    def __init__(self, x, y, x_dim, y_dim, text, flags=0, **kwargs):
-        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
-
-        self.radius = kwargs.get("radius", 3)
-        self.padding = kwargs.get("padding", 5)
+class Label(BaseUI):
+    def __init__(self, text, flags=3, **kwargs):
+        super().__init__(name="label", **kwargs)
         self.color = kwargs.get("color", (128, 128, 128))
         self.text_color = kwargs.get("text_color", (255, 255, 255))
 
         self.text_content = text
-        self.text = self.font.render(text, True, self.text_color)
-        self.text_size = self.text.get_size()
+        self.source = self.font.render(text, True, self.text_color)
+        self.size = self.source.get_size()
 
         # Flags
         self.h_cent = flags & 1 == 1
@@ -312,7 +292,7 @@ class TextBox(BaseUI):
     def set_text(self, text):
         if self.text_content != text:
             self.text_content = text
-            self.text = self.font.render(text, True, self.text_color)
+            self.source = self.font.render(text, True, self.text_color)
             self.text_size = self.text.get_size()
             self.update_image()
 
@@ -336,6 +316,7 @@ class TextBox(BaseUI):
     def append_text(self, text):
         self.text_content += text
         self.set_text(self.text_content)
+
 
 
 # Input Box

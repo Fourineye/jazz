@@ -11,6 +11,9 @@ class PhysicsGrid:
         return f'\nGrid: {self._objects}'
 
     def resize_grid(self):
+        if not self._objects:
+            self._grid_size = 100_000_000
+            return
         max_size = 1
         for physics_object in self._objects:
             size = physics_object.collider.size
