@@ -67,7 +67,7 @@ def dist_to(vec1, vec2):
 
 def direction_to(vec1, vec2):
     direction = vec2 - vec1
-    if direction.magnitude() != 1:
+    if direction.magnitude_squared() != 1 and direction.magnitude_squared() != 0:
         direction.normalize_ip()
     return direction
 
@@ -130,3 +130,16 @@ def line_circle(a, b, c, r):
     if hh <= r * r:
         pen = math.sqrt(r*r - hh)
         return a + ab * t + pen * direction_to(c + h, a)
+
+def rotated_pos(point, angle):
+        angle = math.radians(angle)
+        return Vec2(
+            point.x * math.cos(angle) - point.y * math.sin(angle),
+            point.x * math.sin(angle) + point.y * math.cos(angle),
+        )
+
+def unit_from_angle(angle):
+    return rotated_pos(Vec2(1,0), angle)
+
+def angle_from_vec(vector):
+    return Vec2(1,0).angle_to(vector)

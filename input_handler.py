@@ -64,11 +64,14 @@ class Mouse:
             self._just_released[event.button - 1] = True
         self._pressed = pygame.mouse.get_pressed()
 
-    def click(self, key):
+    def click(self, key, consume=False):
         if isinstance(key, int):
             if key < len(Mouse.BUTTONS):
                 key = Mouse.BUTTONS[key]
-        return self._just_pressed.get(key, False)
+        click = self._just_pressed.get(key, False)
+        if consume:
+            self._just_pressed[key] = False
+        return click
 
     def release(self, key):
         if isinstance(key, int):
