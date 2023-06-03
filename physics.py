@@ -1,39 +1,35 @@
-
-
-
 class PhysicsGrid:
     def __init__(self):
         self._objects = []
-        self._grid_size = 1
+        self._grid_size = 50
+        # self._bounds = (-1000, -1000, 1000, 1000)
         self.grid = {}
 
     def __repr__(self):
-        return f'\nGrid: {self._objects}'
+        return f"\nGrid: {self._objects}"
 
-    def resize_grid(self):
-        if not self._objects:
-            self._grid_size = 100_000_000
-            return
-        max_size = 1
-        for physics_object in self._objects:
-            size = physics_object.collider.size
-            max_size = max(max_size, size.x, size.y)
-        self._grid_size = max_size
-    
+    def set_bounds(self, x_min, y_min, x_max, y_max):
+        self._bounds = (x_min, y_min, x_max, y_max)
+
     def add_to_grid(self, physics_object):
-        grid_x = int(physics_object.collider.x // self._grid_size)
-        grid_y = int(physics_object.collider.y // self._grid_size)
+        g_top = int(physics_object.collider.top // self._grid_size)
+        g_bottom = int(physics_object.collider.bottom // self._grid_size)
+        g_left = int(physics_object.collider.left // self._grid_size)
+        g_right = int(physics_object.collider.right // self._grid_size)
 
-        x = self.grid.get(grid_x, None)
-        if x is None:
-            self.grid.setdefault(grid_x, {grid_y: [physics_object]})
-        else:
-            y = x.get(grid_y, None)
-            if y is None:
-                x.setdefault(grid_y, [physics_object])
-            else:
-                y.append(physics_object)
-    
+        for x in range(g_right - g_left + 1):
+            for y in range(g_bottom - g_top + 1):
+                grid_x = g_left + x
+                grid_y = g_top + y
+
+                hash_key = f"{grid_x}.{grid_y}"
+
+                cell = self.grid.get(hash_key, None)
+                if cell is None:
+                    self.grid.setdefault(hash_key, [physics_object])
+                else:
+                    self.grid[hash_key].append(physics_object)
+
     def add_object(self, physics_object):
         if physics_object not in self._objects:
             self._objects.append(physics_object)
@@ -44,18 +40,20 @@ class PhysicsGrid:
 
     def build_grid(self):
         self.grid = {}
-        self.resize_grid()
         for physics_object in self._objects:
             self.add_to_grid(physics_object)
 
     def get_grid_cell(self, x, y):
-        return self.grid.get(int(x), {}).get(int(y), [])
+        return self.grid.get(f"{int(x)}.{int(y)}", [])
 
     def get_grid_cells(self, x, y, w, h):
-        cells = []
+        cells = set()
+        if not self._objects:
+            return cells
         for x_offset in range(int(w)):
             for y_offset in range(int(h)):
-                cells += self.get_grid_cell(int(x) + x_offset, int(y) + y_offset)
+                for obj in self.get_grid_cell(int(x) + x_offset, int(y) + y_offset):
+                    cells.add(obj)
         return cells
 
     def get_AABB_collisions(self, collider):
@@ -69,5 +67,5 @@ class PhysicsGrid:
             if physics_object is not collider:
                 if physics_object.collider.collide_rect(collider.collider):
                     collisions.append(physics_object)
-        #print(collisions)
+        # print(collisions)
         return collisions

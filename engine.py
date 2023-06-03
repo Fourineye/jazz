@@ -206,6 +206,7 @@ class Scene:
         self.resource_manager = ResourceManager()
         self._groups = {}
         self._objects = {}
+        self._object_count = 0
         self._physics_world = {
             0: PhysicsGrid(),
             1: PhysicsGrid(),
@@ -384,7 +385,7 @@ class Scene:
             grid.build_grid()
 
         kill_items = []
-
+        self._object_count = 0
         objects = list(self._objects.values())
 
         for obj in objects:
@@ -398,6 +399,7 @@ class Scene:
                             obj.process(delta)
                     else:
                         obj.process(delta)
+            self._object_count += 1 + getattr(obj, "child_count")
 
         # call scene process hook
         self.process(delta)
@@ -515,23 +517,23 @@ class Camera:
         """Called every frame to draw all objects to the display."""
         self.display.fill(self._bg_color)
         for obj in self._background_layer:
-            if hasattr(obj, "draw") and getattr(obj, "visible", True):
+            if self.draw_check(obj):
                 obj.draw(self.display, self.offset + self.shake)
         for obj in self._foreground_layer:
-            if hasattr(obj, "draw") and getattr(obj, "visible", True):
+            if self.draw_check(obj):
                 obj.draw(self.display, self.offset + self.shake)
         for obj in self._screen_layer:
-            if hasattr(obj, "draw") and getattr(obj, "visible", True):
+            if self.draw_check(obj):
                 obj.draw(self.display, self.shake)
         if self.debug:
             for obj in self._background_layer:
-                if hasattr(obj, "debug_draw"):
+                if self.draw_check(obj, True):
                     obj.debug_draw(self.display, self.offset + self.shake)
             for obj in self._foreground_layer:
-                if hasattr(obj, "debug_draw"):
+                if self.draw_check(obj, True):
                     obj.debug_draw(self.display, self.offset + self.shake)
             for obj in self._screen_layer:
-                if hasattr(obj, "debug_draw"):
+                if self.draw_check(obj, True):
                     obj.debug_draw(self.display, self.shake)
 
     def update_offset(self):
@@ -661,3 +663,11 @@ class Camera:
             self._background_layer.sort(key=lambda obj: getattr(obj, key, 0))
             self._foreground_layer.sort(key=lambda obj: getattr(obj, key, 0))
             self._screen_layer.sort(key=lambda obj: getattr(obj, key, 0))
+
+    def draw_check(self, obj, debug=False):
+        draw = hasattr(obj, "debug_draw") if debug else hasattr(obj, "draw")
+        return draw and getattr(obj, "visible", True)
+
+    @property
+    def pos(self):
+        return self.display_center - self.offset

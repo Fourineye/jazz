@@ -29,14 +29,13 @@ class GameObject:
         self.do_kill = False
 
         # Rendering flags
-        self.visible = kwargs.get("visible", True)
+        self._visible = kwargs.get("visible", True)
         self.background_layer = kwargs.get("background_layer", False)
         self.screen_layer = kwargs.get("screen_layer", False)
 
         # Basic positional Attributes
         self._pos = Vec2(kwargs.get("pos", (0, 0)))
         self._rotation = kwargs.get("rotation", 0)
-        self._facing = Vec2(1, 0)
         self._z = kwargs.get("z", 0)
         self._color = kwargs.get("color", (255, 255, 255))
         self._collider = None
@@ -53,7 +52,7 @@ class GameObject:
             children += f" {child}"
         return (
             "-" * self._depth
-            + f"{self.name} at {round(self.x,2)}, {round(self.y,2)}"
+            + f"{self.name} at {round(self.x,2)}, {round(self.y,2)}\n"
             + children
         )
 
@@ -121,13 +120,14 @@ class GameObject:
         self._process(delta)
 
     def draw(self, surface: pygame.Surface, offset=None):
-        if self.visible:
+        if self.scene.camera.draw_check(self):
             self._draw(surface, offset)
         for child in self._children.values():
             child.draw(surface, offset)
 
     def debug_draw(self, surface: pygame.Surface, offset=None):
-        self._debug_draw(surface, offset)
+        if self.scene.camera.draw_check(self):
+            self._debug_draw(surface, offset)
         for child in self._children.values():
             child.debug_draw(surface, offset)
 
@@ -236,7 +236,10 @@ class GameObject:
     def pos(self):
         """Returns _pos attribute."""
         if self._parent is not None:
-            return self._parent.pos + rotated_pos(self._pos, self._parent.rotation)
+            if -0.001 < self._parent.rotation < 0.001:
+                return self._parent.pos + self._pos
+            else:
+                return self._parent.pos + self._pos.rotate(self._parent.rotation)
         else:
             return Vec2(self._pos)
 
@@ -244,9 +247,7 @@ class GameObject:
     def pos(self, pos):
         """Sets the _pos attribute"""
         if self._parent is not None:
-            self._pos = rotated_pos(
-                Vec2(pos - self._parent.pos), -self._parent.rotation
-            )
+            self._pos = Vec2(pos - self._parent.pos).rotate(-self._parent.rotation)
         else:
             self._pos = Vec2(pos)
 
@@ -293,3 +294,23 @@ class GameObject:
     def facing(self, new_facing):
         angle = angle_from_vec(new_facing)
         self.rotation = angle
+
+    @property
+    def visible(self):
+        if self._parent is not None:
+            return self._visible and self._parent.visible
+        else:
+            return self._visible
+
+    @visible.setter
+    def visible(self, visibility):
+        self._visible = visibility
+
+    @property
+    def child_count(self):
+        count = 0
+        if self._children:
+            for child in self._children.values():
+                count += 1
+                count += child.child_count
+        return count

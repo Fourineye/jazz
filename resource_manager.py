@@ -42,4 +42,4 @@ class ResourceManager:
             x = offset[0]
             y += dimensions[1]
         self._sprite_sheets[path] = sprite_sheet
-        return self._sprite_sheets.get(path, None)
+        return sprite_sheet

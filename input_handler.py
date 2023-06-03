@@ -61,7 +61,10 @@ class Mouse:
                 button = Mouse.BUTTONS[button]
             self._just_pressed[button] = True
         for event in pygame.event.get(pygame.MOUSEBUTTONUP):
-            self._just_released[event.button - 1] = True
+            button = event.button - 1
+            if button < len(Mouse.BUTTONS):
+                button = Mouse.BUTTONS[button]
+            self._just_released[button] = True
         self._pressed = pygame.mouse.get_pressed()
 
     def click(self, key, consume=False):
