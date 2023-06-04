@@ -3,7 +3,7 @@ from random import randint
 import pygame
 from pygame import Vector2
 
-from Jazz.objects import GameObject
+from Jazz import GameObject
 
 
 class Particle:

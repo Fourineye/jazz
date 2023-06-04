@@ -3,7 +3,6 @@ import uuid
 
 import pygame
 
-from Jazz.input_handler import InputHandler
 from Jazz.utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
 
 
@@ -56,30 +55,30 @@ class GameObject:
             + children
         )
 
-    def on_load(self, scene, app):
+    def _on_load(self, scene, app):
         self.scene = scene
         self.app = app
-        self._on_load()
+        self.on_load()
         for child in self._children.values():
-            child.on_load(scene, app)
+            child._on_load(scene, app)
 
-    def _on_load(self):
+    def on_load(self):
         ...
 
-    def _input(self, INPUT: InputHandler):
-        """
-        Method called once per frame to handle user input. Called before process.
-
-        Args:
-            INPUT (InputHandler): InputHandler passed from the main game instance.
-        """
-
-    def _process(self, delta: float):
+    def update(self, delta: float, in_):
         """
         Method called once per frame to handle game logic. Called before draw.
 
         Args:
             delta (float): Time in seconds since the last frame.
+        """
+
+    def late_update(self, delta, in_):
+        """Called after every object has run its' update method
+
+        Args:
+            delta (float): time since last frame
+            in_ (InputHandler): passed from application
         """
 
     def _draw(self, surface: pygame.Surface, offset=None):
@@ -109,15 +108,15 @@ class GameObject:
         )
 
     # Engine called methods that allow object nesting
-    def input(self, INPUT: InputHandler):
+    def _update(self, delta, in_):
         for child in self._children.values():
-            child.input(INPUT)
-        self._input(INPUT)
-
-    def process(self, delta):
+            child._update(delta, in_)
+        self.update(delta, in_)
+    
+    def _late_update(self, delta, in_):
         for child in self._children.values():
-            child.process(delta)
-        self._process(delta)
+            child._late_update(delta, in_)
+        self.late_update(delta, in_)
 
     def draw(self, surface: pygame.Surface, offset=None):
         if self.scene.camera.draw_check(self):

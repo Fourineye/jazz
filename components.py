@@ -14,7 +14,7 @@ class Sprite(GameObject):
         self.flip_y = kwargs.get("flip_y", False)
         self.scale = Vec2(kwargs.get("scale", (1, 1)))
 
-    def _on_load(self):
+    def on_load(self):
         if self.source is None:
             if self.asset is None:
                 self.source = pygame.Surface((10, 10))
@@ -81,7 +81,7 @@ class AnimatedSprite(Sprite):
         self._frame = 0
         self.animation_fps = kwargs.get("animation_fps", 30)
 
-    def _on_load(self):
+    def on_load(self):
         if self._sheet is None:
             self._sheet = [pygame.Surface((10, 10))]
         else:
@@ -127,7 +127,7 @@ class AnimatedSprite(Sprite):
         else:
             self.animation_frames = [i for i in range(len(self._sheet))]
 
-    def _process(self, delta):
+    def update(self, delta, _in_):
         if self._playing:
             self._frame = self._frame + delta * self.animation_fps
             if self._frame >= len(self.animation_frames):
@@ -249,25 +249,22 @@ class Button(GameObject):
             "sprite",
         )
 
-    def _on_load(self):
+    def on_load(self):
         self._rect.center = self.pos
 
-    def _input(self, INPUT):
+    def update(self, _delta, in_):
         if self.visible:
-            if self._rect.collidepoint(INPUT.mouse.pos):
-                if INPUT.mouse.click(0):
+            if self._rect.collidepoint(in_.mouse.pos):
+                if in_.mouse.click(0):
                     self.state = self.PRESSED
-                elif self.state != self.PRESSED or not INPUT.mouse.held(0):
+                elif self.state != self.PRESSED or not in_.mouse.held(0):
                     self.state = self.HOVER
             else:
                 if self.state == self.PRESSED:
-                    if not INPUT.mouse.held(0):
+                    if not in_.mouse.held(0):
                         self.state = self.UNPRESSED
                 else:
                     self.state = self.UNPRESSED
-
-    def _process(self, _delta):
-        if self.visible:
             if self.last_state != self.state:
                 match self.state:
                     case self.UNPRESSED:

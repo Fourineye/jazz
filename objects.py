@@ -22,8 +22,7 @@ class Body(GameObject):
         self._layers = kwargs.get("layers", "0001")
         self.collision_layers = kwargs.get("collision_layers", "0001")
 
-    def on_load(self, scene, app):
-        super().on_load(scene, app)
+    def on_load(self):
         if not hasattr(self, "collider"):
             raise (Exception("Body does not have collider"))
         self.scene.add_physics_object(self, self._layers)
@@ -67,13 +66,12 @@ class Area(GameObject):
         self.entered = []
         self._active = kwargs.get("active", True)
 
-    def on_load(self, scene, app):
-        super().on_load(scene, app)
+    def on_load(self):
         if not hasattr(self, "collider"):
             raise (Exception("Area does not have collider"))
         self.scene.add_physics_object(self, self._layers)
 
-    def _process(self, delta):
+    def update(self, _delta, _in_):
         if self._active:
             self.entered = self.get_entered()
 
