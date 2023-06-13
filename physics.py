@@ -57,7 +57,7 @@ class PhysicsGrid:
         return cells
 
     def get_AABB_collisions(self, collider):
-        collisions = []
+        collisions = set()
         x = int(collider.collider.left // self._grid_size)
         y = int(collider.collider.top // self._grid_size)
         w = int(collider.collider.right // self._grid_size - x)
@@ -66,6 +66,6 @@ class PhysicsGrid:
         for physics_object in physics_objects:
             if physics_object is not collider:
                 if physics_object.collider.collide_rect(collider.collider):
-                    collisions.append(physics_object)
+                    collisions.add(physics_object)
         # print(collisions)
-        return collisions
+        return list(collisions)

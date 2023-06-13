@@ -28,18 +28,20 @@ class ResourceManager:
         return resource
 
     def make_sprite_sheet(self, path, dimensions, offset=(0, 0)):
-        sheet = load_image(path)
-        self._images[path] = sheet
-        sprite_sheet = []
-        size = sheet.get_size()
-        x = offset[0]
-        y = offset[1]
-        while y < size[1] - 1:
-            while x < size[0] - 1:
-                sprite = sheet.subsurface((x, y), dimensions)
-                sprite_sheet.append(sprite)
-                x += dimensions[0]
+        sprite_sheet = self._sprite_sheets.get(path, None)
+        if sprite_sheet is None:
+            sheet = load_image(path)
+            self._images[path] = sheet
+            sprite_sheet = []
+            size = sheet.get_size()
             x = offset[0]
-            y += dimensions[1]
-        self._sprite_sheets[path] = sprite_sheet
+            y = offset[1]
+            while y < size[1] - 1:
+                while x < size[0] - 1:
+                    sprite = sheet.subsurface((x, y), dimensions)
+                    sprite_sheet.append(sprite)
+                    x += dimensions[0]
+                x = offset[0]
+                y += dimensions[1]
+            self._sprite_sheets[path] = sprite_sheet
         return sprite_sheet

@@ -103,7 +103,7 @@ class AnimatedSprite(Sprite):
 
         self.source = self._sheet[self.animation_frames[0]]
 
-    def update_animation(self, spritesheet=None, animation_frames=None):
+    def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
         if spritesheet is not None:
             if isinstance(spritesheet, str):
                 self._sheet = self.scene.make_sprite_sheet(
@@ -127,6 +127,9 @@ class AnimatedSprite(Sprite):
         else:
             self.animation_frames = [i for i in range(len(self._sheet))]
 
+        if fps is not None:
+            self.set_fps(fps)
+
     def update(self, delta, _in_):
         if self._playing:
             self._frame = self._frame + delta * self.animation_fps
@@ -146,6 +149,10 @@ class AnimatedSprite(Sprite):
     def stop(self):
         self._playing = False
 
+    def set_fps(self, fps):
+        if fps < 0:
+            raise Exception(f"invalid fps {fps}, fps must be greater than 0")
+        self.animation_fps = fps
 
 class Label(Sprite):
     def __init__(self, name="label", **kwargs):

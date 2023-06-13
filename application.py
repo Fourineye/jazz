@@ -62,6 +62,7 @@ class Application:
         self._active_scene = None
         self._next_scene = None
         self._delta = 0
+        self.max_frame_time = kwargs.get("max_frame_time", 0.5)
         self.running = True
         self.fps_max = kwargs.get("fps_max", 60)
         self.on_init(**kwargs)
@@ -119,12 +120,12 @@ class Application:
                 self._active_scene._game_update(self._delta, self._input)
 
                 # render game window
-                self.display.fill((0, 0, 0))
                 self._active_scene.render()
                 pygame.display.flip()
 
                 # Control fps and record delta time
                 self._delta = self._clock.tick(self.fps_max) / 1000
+                self._delta = min(self._delta, self.max_frame_time)
 
             # Allow for transfer of data between scenes
             scene_transfer_data = self._active_scene.on_unload()
