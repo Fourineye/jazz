@@ -252,11 +252,15 @@ class CircleCollider(Collider):
         self._radius = radius
         super().__init__(**kwargs)
         self.collider_type = "Circle"
+        self._left = -self._radius
+        self._right = self._radius
+        self._top = -self._radius
+        self._bottom = self._radius
 
     def project(self, axis):
         proj = (self.pos).dot(axis)
-        min_v = proj - self.radius
-        max_v = proj + self.radius
+        min_v = proj - self._radius
+        max_v = proj + self._radius
         if min_v > max_v:
             min_v, max_v = max_v, min_v
         return min_v, max_v
@@ -264,7 +268,7 @@ class CircleCollider(Collider):
     def _debug_draw(self, surface, offset=None):
         if offset is None:
             offset = Vec2()
-        pygame.draw.circle(surface, self.color, self.pos + offset, self.radius, 1)
+        pygame.draw.circle(surface, self.color, self.pos + offset, self._radius, 1)
         pygame.draw.circle(surface, "red", self.pos + offset, 3, 2)
         pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2, 1)
         pygame.draw.rect(
@@ -272,6 +276,14 @@ class CircleCollider(Collider):
             "yellow",
             (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]),
             1,
+        )
+
+    def get_rect(self):
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
         )
 
 
