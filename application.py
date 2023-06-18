@@ -1,6 +1,8 @@
 import pygame
 
+from Jazz.global_dict import SETTINGS, Game_Globals
 from Jazz.input_handler import InputHandler
+from Jazz.utils import load_ini
 
 
 class Application:
@@ -30,7 +32,7 @@ class Application:
         Sets running to False so the Application exits at the end of the current frame.
     """
 
-    def __init__(self, width: int, height: int, name: str = None, **kwargs):
+    def __init__(self, width: int, height: int, name: str = None, flags=0, fps_max=60):
         """
         Initializes the Application object and pygame, creates the
         application window
@@ -51,26 +53,22 @@ class Application:
             **kwargs (dict): Remaining kwargs will be passed on to the on_init method.
         """
         pygame.init()
+        load_ini()
         if name:
             pygame.display.set_caption(name)
-        self.display = pygame.display.set_mode(
-            (width, height), flags=kwargs.get("flags", 0)
-        )
+        self.display = pygame.display.set_mode((width, height), flags=flags)
         self._clock = pygame.time.Clock()
         self._input = InputHandler()
         self._scenes = {}
         self._active_scene = None
         self._next_scene = None
         self._delta = 0
-        self.max_frame_time = kwargs.get("max_frame_time", 0.5)
+        self.max_frame_time = 5 / fps_max
         self.running = True
-        self.fps_max = kwargs.get("fps_max", 60)
-        self.on_init(**kwargs)
-
-    def on_init(self, **kwargs):
-        """
-        Called on instance creation, allows user to define their own attributes.
-        """
+        self.fps_max = fps_max
+        Game_Globals["App"] = self
+        Game_Globals["Input"] = self._input
+        Game_Globals["Display"] = self.display
 
     def add_scene(self, scene):
         """
@@ -108,6 +106,7 @@ class Application:
         while self.running:
             # Load next scene
             self._active_scene = self._load_scene(self._next_scene)
+            Game_Globals["Scene"] = self._active_scene
             self._active_scene.on_load(scene_transfer_data)
 
             # Main scene loop
@@ -116,8 +115,8 @@ class Application:
                 self._quit_check()
 
                 # call hook functions
-                self._input.update(self._active_scene)
-                self._active_scene._game_update(self._delta, self._input)
+                self._input.update()
+                self._active_scene._game_update(self._delta)
 
                 # render game window
                 self._active_scene.render()

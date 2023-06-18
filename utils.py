@@ -1,11 +1,30 @@
+import json
+import math
 from csv import reader
 from os import walk
 from random import randint
 
-import math
 import pygame
 
+from Jazz.global_dict import SETTINGS
+
+# Bringing pygame constants into Jazz Namespace
 Vec2 = pygame.Vector2
+
+
+def load_ini(path="./.jini"):
+    try:
+        with open(path, "r") as ini:
+            data = json.load(ini)
+        SETTINGS = data
+    except:
+        pass
+
+
+def save_ini(path="./.jini"):
+    with open(path, "w") as ini:
+        json.dump(SETTINGS, ini)
+
 
 def import_csv_layout(path):
     data = []
@@ -16,20 +35,12 @@ def import_csv_layout(path):
         return data
 
 
-def import_folder(path):
-    surface_list = []
-
-    for _, __, img_files in walk(path):
-        for image in img_files:
-            full_path = path + "/" + image
-            image_surf = pygame.image.load(full_path).convert_alpha()
-            surface_list.append(image_surf)
-
-    return surface_list
-
-
 def load_image(path):
-    return pygame.image.load(path).convert_alpha()
+    tmp_surf = pygame.image.load(path)
+    if tmp_surf.get_alpha() is not None:
+        return tmp_surf.convert_alpha()
+    else:
+        return tmp_surf.convert()
 
 
 def clamp(n, smallest, largest):
@@ -52,7 +63,7 @@ def build_rect(x1, y1, x2, y2):
     top = min(y1, y2)
     width = max(x1, x2) - left
     height = max(y1, y2) - top
-    return (left, top, width, height)
+    return pygame.Rect(left, top, width, height)
 
 
 def color_mult(color, mult):
@@ -90,36 +101,40 @@ def random_color():
     b = randint(0, 255)
     return (r, g, b)
 
+
 def line_intersection(p_0, p_1, p_2, p_3):
-    '''
-    '''
+    """ """
     p_0 = pygame.Vector2(p_0)
     p_1 = pygame.Vector2(p_1)
     p_2 = pygame.Vector2(p_2)
     p_3 = pygame.Vector2(p_3)
-    
+
     s_1 = pygame.Vector2(p_1 - p_0)
     s_2 = pygame.Vector2(p_3 - p_2)
-    
+
     if abs(s_1.normalize().dot(s_2.normalize())) == 1:
         return None
-        
-    s = (-s_1.y * (p_0.x - p_2.x) + s_1.x * (p_0.y - p_2.y)) / (-s_2.x * s_1.y + s_1.x * s_2.y)
-    t = ( s_2.x * (p_0.y - p_2.y) - s_2.y * (p_0.x - p_2.x)) / (-s_2.x * s_1.y + s_1.x * s_2.y)
-    
+
+    s = (-s_1.y * (p_0.x - p_2.x) + s_1.x * (p_0.y - p_2.y)) / (
+        -s_2.x * s_1.y + s_1.x * s_2.y
+    )
+    t = (s_2.x * (p_0.y - p_2.y) - s_2.y * (p_0.x - p_2.x)) / (
+        -s_2.x * s_1.y + s_1.x * s_2.y
+    )
+
     if 0 <= s <= 1 and 0 <= t <= 1:
         i = p_0 + (t * s_1)
         return pygame.Vector2(i)
     else:
         return None
-    
+
+
 def line_circle(a, b, c, r):
-    '''
-    '''
+    """ """
     a = pygame.Vector2(a)
     b = pygame.Vector2(b)
     c = pygame.Vector2(c)
-    
+
     ac = c - a
     ab = b - a
     abab = ab.dot(ab)
@@ -128,18 +143,21 @@ def line_circle(a, b, c, r):
     h = ab * t + a - c
     hh = h.dot(h)
     if hh <= r * r:
-        pen = math.sqrt(r*r - hh)
+        pen = math.sqrt(r * r - hh)
         return a + ab * t + pen * direction_to(c + h, a)
 
+
 def rotated_pos(point, angle):
-        angle = math.radians(angle)
-        return Vec2(
-            point.x * math.cos(angle) - point.y * math.sin(angle),
-            point.x * math.sin(angle) + point.y * math.cos(angle),
-        )
+    angle = math.radians(angle)
+    return Vec2(
+        point.x * math.cos(angle) - point.y * math.sin(angle),
+        point.x * math.sin(angle) + point.y * math.cos(angle),
+    )
+
 
 def unit_from_angle(angle):
-    return rotated_pos(Vec2(1,0), angle)
+    return rotated_pos(Vec2(1, 0), angle)
+
 
 def angle_from_vec(vector):
-    return Vec2(1,0).angle_to(vector)
+    return Vec2(1, 0).angle_to(vector)

@@ -2,6 +2,7 @@ from random import randint
 
 import pygame
 
+from Jazz.global_dict import Game_Globals
 from Jazz.utils import Vec2, clamp
 
 
@@ -14,12 +15,9 @@ class Camera:
     def __init__(self):
         self.display = pygame.display.get_surface()
         self._bg_color = (0, 0, 0)
-        self._background_layer = []
-        self._foreground_layer = []
-        self._screen_layer = []
+        self._blanking = True
         self.target = None
         self.bounds = None
-        self.key = "_z"
         self.follow_type = self.STRICT
         self.offset = Vec2()
         self.shake = Vec2()
@@ -31,7 +29,7 @@ class Camera:
         )
         self.debug = False
 
-    def update(self, _delta, _in_):
+    def update(self, _delta):
         """
         Called every frame to update the offset and shake values
 
@@ -50,27 +48,28 @@ class Camera:
             self.magnitude = 0
 
     def render(self):
-        """Called every frame to draw all objects to the display."""
-        self.display.fill(self._bg_color)
-        for obj in self._background_layer:
-            if self.draw_check(obj):
-                obj.draw(self.display, self.offset + self.shake)
-        for obj in self._foreground_layer:
-            if self.draw_check(obj):
-                obj.draw(self.display, self.offset + self.shake)
-        for obj in self._screen_layer:
-            if self.draw_check(obj):
-                obj.draw(self.display, self.shake)
-        if self.debug:
-            for obj in self._background_layer:
-                if self.draw_check(obj, True):
-                    obj.debug_draw(self.display, self.offset + self.shake)
-            for obj in self._foreground_layer:
-                if self.draw_check(obj, True):
-                    obj.debug_draw(self.display, self.offset + self.shake)
-            for obj in self._screen_layer:
-                if self.draw_check(obj, True):
-                    obj.debug_draw(self.display, self.shake)
+        draw_objects = list(Game_Globals["Scene"].values())
+        draw_objects.sort(key=lambda obj: obj._z, reverse=False)
+
+        if self._blanking:
+            self.display.fill(self._bg_color)
+        [
+            (
+                obj.draw(
+                    self.display,
+                    (self.offset + self.shake) if not obj.screen_space else None,
+                ),
+                obj.debug_draw(
+                    self.display,
+                    (self.offset + self.shake) if not obj.screen_space else None,
+                )
+                if self.debug
+                else None,
+            )
+            if obj.visible
+            else None
+            for obj in draw_objects
+        ]
 
     def update_offset(self):
         """Updates the Camera offset to the target."""
@@ -130,48 +129,6 @@ class Camera:
 
     def set_bg_color(self, color):
         self._bg_color = color
-
-    def add(self, obj):
-        """
-        Adds an object to the correct layer based on object engine flags.
-
-        Args:
-            obj (object): The object to add.
-        """
-        if getattr(obj, "screen_layer", False):
-            self._screen_layer.append(obj)
-            # print(obj, "screen_layer")
-        elif getattr(obj, "background_layer", False):
-            self._background_layer.append(obj)
-            # print(obj, "background_layer")
-        else:
-            self._foreground_layer.append(obj)
-            # print(obj, "foreground_layer")
-        self.sort()
-
-    def add_entities(self, objects):
-        """
-        Adds an list of objects to the Camera.
-
-        Args:
-            objects (list[object]): The list of objects to add.
-        """
-        for obj in objects:
-            self.add(obj)
-
-    def remove(self, obj):
-        """
-        Removes an object from the Camera.
-
-        Args:
-            obj (object): The object to remove.
-        """
-        if obj in self._screen_layer:
-            self._screen_layer.remove(obj)
-        if obj in self._foreground_layer:
-            self._foreground_layer.remove(obj)
-        if obj in self._background_layer:
-            self._background_layer.remove(obj)
 
     def add_shake(self, magnitude):
         """

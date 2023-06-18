@@ -3,6 +3,7 @@ import pygame
 from Jazz.baseObject import GameObject
 from Jazz.user_interface import DEFAULT_FONT
 from Jazz.utils import Vec2, load_image, map_range
+from Jazz.global_dict import Game_Globals
 
 
 class Sprite(GameObject):
@@ -130,7 +131,7 @@ class AnimatedSprite(Sprite):
         if fps is not None:
             self.set_fps(fps)
 
-    def update(self, delta, _in_):
+    def update(self, delta):
         if self._playing:
             self._frame = self._frame + delta * self.animation_fps
             if self._frame >= len(self.animation_frames):
@@ -259,16 +260,17 @@ class Button(GameObject):
     def on_load(self):
         self._rect.center = self.pos
 
-    def update(self, _delta, in_):
+    def update(self, _delta):
+        mouse_pos = Game_Globals["Input"].mouse.pos
         if self.visible:
-            if self._rect.collidepoint(in_.mouse.pos):
-                if in_.mouse.click(0):
+            if self._rect.collidepoint(mouse_pos):
+                if Game_Globals["Input"].mouse.click(0):
                     self.state = self.PRESSED
-                elif self.state != self.PRESSED or not in_.mouse.held(0):
+                elif self.state != self.PRESSED or not Game_Globals["Input"].mouse.held(0):
                     self.state = self.HOVER
             else:
                 if self.state == self.PRESSED:
-                    if not in_.mouse.held(0):
+                    if not Game_Globals["Input"].mouse.held(0):
                         self.state = self.UNPRESSED
                 else:
                     self.state = self.UNPRESSED

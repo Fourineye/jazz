@@ -6,6 +6,7 @@ Scene class
 import pygame
 
 from Jazz.camera import Camera
+from Jazz.global_dict import Game_Globals
 from Jazz.objects import Group
 from Jazz.physics import PhysicsGrid
 from Jazz.resource_manager import ResourceManager
@@ -69,13 +70,13 @@ class Scene:
         called when the scene is unloaded from the main loop
         """
 
-    def update(self, delta, in_):
+    def update(self, delta):
         """
         Empty method that can be overwritten by a child class. Is called
         once per frame, intended hold all the game logic.
         """
 
-    def late_update(self, delta, in_):
+    def late_update(self, delta):
         """
         Empty method that can be overwritten by a child class. Is called
         once per frame, intended hold all the game logic.
@@ -95,7 +96,7 @@ class Scene:
         self.running = False
 
     def restart(self):
-        self.app.set_next_scene(self.name)
+        Game_Globals["App"].set_next_scene(self.name)
         self.running = False
 
     def pause(self):
@@ -142,7 +143,6 @@ class Scene:
         if obj.id not in self.keys():
             obj._on_load(self, self.app)
             self._objects[obj.id] = obj
-            self.camera.add(obj)
         else:
             print("obj already in scene")
 
@@ -183,7 +183,6 @@ class Scene:
             obj = self._objects.pop(getattr(obj, "id", None), None)
 
         if obj:
-            self.camera.remove(obj)
             self.__dict__.pop(obj.name, None)
             obj.scene = None
 
@@ -206,7 +205,7 @@ class Scene:
                 obj.remove_group(group)
 
     # Engine Methods
-    def _game_update(self, delta: float, in_):
+    def _game_update(self, delta: float):
         """
         Method called by the Engine every frame, calls the process method
         on all game objects and the scene, and then removes any objects
@@ -231,13 +230,13 @@ class Scene:
                 if obj.game_process:
                     if self._paused:
                         if obj.pause_process:
-                            obj._update(delta, in_)
+                            obj._update(delta)
                     else:
-                        obj._update(delta, in_)
+                        obj._update(delta)
             self._object_count += 1 + getattr(obj, "child_count")
 
         # call scene process hook
-        self.update(delta, in_)
+        self.update(delta)
 
         # late update
         for obj in objects:
@@ -248,14 +247,14 @@ class Scene:
                 if obj.game_process:
                     if self._paused:
                         if obj.pause_process:
-                            obj._late_update(delta, in_)
+                            obj._late_update(delta)
                     else:
-                        obj._late_update(delta, in_)
+                        obj._late_update(delta)
 
-        self.late_update(delta, in_)
+        self.late_update(delta)
 
         # update camera
-        self.camera.update(delta, in_)
+        self.camera.update(delta)
 
         # delete objects queued for deletion
         for obj in kill_items:

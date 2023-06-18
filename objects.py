@@ -76,7 +76,7 @@ class Area(GameObject):
             raise (Exception("Area does not have collider"))
         self.scene.add_physics_object(self, self._layers)
 
-    def update(self, _delta, _in_):
+    def update(self, _delta):
         if self._active:
             self.entered = self.get_entered()
 
@@ -178,7 +178,7 @@ class Ray(GameObject):
         self.collision_point = None
         self.collision_object = None
 
-    def update(self, _delta: float, _in_):
+    def update(self, _delta: float):
         if self._active:
             self.collision_object, self.collision_point = self.cast()
 

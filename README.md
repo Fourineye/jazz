@@ -2,8 +2,6 @@
 This project is to wrap pygame into a more conveinent format that handles some of the more common tasks in game development.
 
 ## #TODO
-- Name engine
-- Create parenting system
 - Redo UI module
 - Create documentation
 

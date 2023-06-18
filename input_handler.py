@@ -1,9 +1,9 @@
 """Module that holds The input wrappers"""
 
 import pygame
-from pygame import Vector2
 
-from Jazz.utils import key_from_value
+from Jazz.global_dict import Game_Globals
+from Jazz.utils import Vec2, key_from_value
 
 
 class InputHandler:
@@ -14,11 +14,11 @@ class InputHandler:
         self.key = Keyboard()
         self.user_events = []
 
-    def update(self, scene=None):
+    def update(self):
         """Called every frame to update user input."""
         self.user_events = []
-        self.mouse.update(scene)
-        self.key.update(scene)
+        self.mouse.update()
+        self.key.update()
 
         for event in pygame.event.get(pygame.USEREVENT):
             self.user_events.append(event)
@@ -43,18 +43,18 @@ class Mouse:
         self._just_pressed = [False] * 6
         self._pressed = [False] * 6
         self._just_released = [False] * 6
-        self._pos = Vector2()
-        self._world_offset = Vector2()
-        self.rel = Vector2()
+        self._pos = Vec2()
+        self._world_offset = Vec2()
+        self.rel = Vec2()
 
-    def update(self, scene=None):
+    def update(self):
         """Called every frame to update mouse inputs."""
         self._just_pressed = {}
         self._just_released = {}
-        self._pos = Vector2(pygame.mouse.get_pos())
-        self.rel = Vector2(pygame.mouse.get_rel())
-        if scene is not None:
-            self._world_offset = scene.camera_offset
+        self._pos = Vec2(pygame.mouse.get_pos())
+        self.rel = Vec2(pygame.mouse.get_rel())
+        if Game_Globals["Scene"] is not None:
+            self._world_offset = Game_Globals["Scene"].camera_offset
         for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
             button = event.button - 1
             if button < len(Mouse.BUTTONS):
@@ -104,11 +104,11 @@ class Mouse:
 
     @property
     def pos(self):
-        return Vector2(self._pos)
+        return Vec2(self._pos)
 
     @pos.setter
     def pos(self, new_pos):
-        self._pos = Vector2(new_pos)
+        self._pos = Vec2(new_pos)
         pygame.mouse.set_pos(new_pos)
 
     @property
@@ -134,7 +134,7 @@ class Keyboard:
         self._pressed = [False] * 200
         self._just_released = {}
 
-    def update(self, scene=None):
+    def update(self):
         """Called every frame to update keyboard inputs."""
         self._just_pressed = {}
         self._just_released = {}

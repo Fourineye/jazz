@@ -2,7 +2,6 @@ class PhysicsGrid:
     def __init__(self):
         self._objects = []
         self._grid_size = 50
-        # self._bounds = (-1000, -1000, 1000, 1000)
         self.grid = {}
 
     def __repr__(self):
@@ -54,7 +53,7 @@ class PhysicsGrid:
             for y_offset in range(int(h)):
                 for obj in self.get_grid_cell(int(x) + x_offset, int(y) + y_offset):
                     cells.add(obj)
-        return cells
+        return list(cells)
 
     def get_AABB_collisions(self, collider):
         collisions = set()
