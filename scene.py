@@ -119,6 +119,9 @@ class Scene:
                 )
         return collisions
 
+    def get_layer_collisions(self, collider, layer=0):
+        return self._physics_world[layer].get_AABB_collisions(collider)
+
     def load_resource(self, path, resource_type=IMAGE):
         match resource_type:
             case self.IMAGE:

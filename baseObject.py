@@ -11,12 +11,13 @@ config_dict = {
     "game_process": True,
     "visible": True,
     "screen_space": False,
-    "pos": (0,0),
+    "pos": (0, 0),
     "rotation": 0,
     "z": 0,
     "color": (255, 255, 255),
     "groups": (),
 }
+
 
 class GameObject:
     """Simplest object in pygame_engine"""
@@ -128,13 +129,13 @@ class GameObject:
         self.late_update(delta)
 
     def draw(self, surface: pygame.Surface, offset=None):
-        if self.scene.camera.draw_check(self):
+        if Game_Globals["Scene"].camera.draw_check(self):
             self._draw(surface, offset)
         for child in self._children.values():
             child.draw(surface, offset)
 
     def debug_draw(self, surface: pygame.Surface, offset=None):
-        if self.scene.camera.draw_check(self):
+        if Game_Globals["Scene"].camera.draw_check(self, True):
             self._debug_draw(surface, offset)
         for child in self._children.values():
             child.debug_draw(surface, offset)

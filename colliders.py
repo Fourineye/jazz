@@ -1,12 +1,14 @@
 import pygame
 
 from Jazz.baseObject import GameObject
-from Jazz.utils import Vec2, direction_to, dist_to, line_circle, line_intersection
+from Jazz.utils import Rect, Vec2, direction_to, dist_to, line_circle, line_intersection
 
 
 class Collider(GameObject):
     def __init__(self, **kwargs):
-        super().__init__("collider", **kwargs)
+        kwargs.setdefault("name", "Collider")
+        super().__init__(**kwargs)
+        self.collider = self
         self.collider_type = None
         if not hasattr(self, "_vertices"):
             self._vertices = [Vec2(0, 0)]
@@ -25,7 +27,7 @@ class Collider(GameObject):
 
         self._size = len(self._vertices)
         if self._size > 1:
-            for i, vert in enumerate(self.vertices):
+            for i, vert in enumerate(self._vertices):
                 vert = Vec2(vert)
                 self._center += vert
                 self._vertices[i] = vert
@@ -38,8 +40,6 @@ class Collider(GameObject):
             else:
                 self._center = Vec2()
                 self._edges.append((0, 1))
-
-    def on_load(self):
         self.get_rect()
 
     def _debug_draw(self, surface, offset=None):
@@ -232,7 +232,7 @@ class Collider(GameObject):
 
     @property
     def size(self):
-        return Vec2(self._right - self._left, self._bottom - self._top)
+        return Vec2(self.right - self.left, self.bottom - self.top)
 
 
 class RectCollider(Collider):
@@ -245,6 +245,11 @@ class RectCollider(Collider):
         ]
         super().__init__(**kwargs)
         self.collider_type = "Rect"
+
+    @staticmethod
+    def from_rect(rect: Rect, **kwargs):
+        kwargs.setdefault("pos", rect.center)
+        return RectCollider(rect.w, rect.h, **kwargs)
 
 
 class CircleCollider(Collider):

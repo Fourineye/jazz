@@ -10,7 +10,7 @@ from Jazz.global_dict import SETTINGS
 
 # Bringing pygame constants into Jazz Namespace
 Vec2 = pygame.Vector2
-
+Rect = pygame.Rect
 
 def load_ini(path="./.jini"):
     try:
@@ -63,7 +63,7 @@ def build_rect(x1, y1, x2, y2):
     top = min(y1, y2)
     width = max(x1, x2) - left
     height = max(y1, y2) - top
-    return pygame.Rect(left, top, width, height)
+    return Rect(left, top, width, height)
 
 
 def color_mult(color, mult):

@@ -4,33 +4,44 @@ Module to provide a base for active game entities.
 
 from random import randint
 
-import pygame
-
 from Jazz.baseObject import GameObject
-from Jazz.colliders import (
-    CircleCollider,
-    Collider,
-    PolyCollider,
-    RayCollider,
-    RectCollider,
-)
+from Jazz.colliders import (CircleCollider, Collider, PolyCollider,
+                            RayCollider, RectCollider)
+from Jazz.global_dict import Game_Globals
 from Jazz.input_handler import InputHandler
 from Jazz.utils import Vec2, direction_to, dist_to, load_image
 
 
-class Body(GameObject):
-    """Basic active object in the game space"""
-
-    def __init__(self, name="Entity", **kwargs):
-        GameObject.__init__(self, name, **kwargs)
-        self.static = kwargs.get("static", False)
+class PhysicsObject(GameObject):
+    def __init__(self, **kwargs):
+        kwargs.setdefault("name", "PhysicsObject")
+        super().__init__(**kwargs)
         self._layers = kwargs.get("layers", "0001")
         self.collision_layers = kwargs.get("collision_layers", "0001")
 
     def on_load(self):
         if not hasattr(self, "collider"):
             raise (Exception("Body does not have collider"))
-        self.scene.add_physics_object(self, self._layers)
+        Game_Globals["Scene"].add_physics_object(self, self._layers)
+
+    def add_collider(self, type, kwargs):
+        if type == "Rect":
+            self.add_child(RectCollider(**kwargs), "collider")
+        elif type == "Circle":
+            self.add_child(CircleCollider(**kwargs), "collider")
+        elif type == "Poly":
+            self.add_child(PolyCollider(**kwargs), "collider")
+        elif type == "Ray":
+            self.add_child(RayCollider(**kwargs), "collider")
+        else:
+            raise Exception("Invalid collider type")
+
+
+class Body(PhysicsObject):
+    def __init__(self, **kwargs):
+        kwargs.setdefault("name", "Body")
+        super().__init__(**kwargs)
+        self.static = kwargs.get("static", False)
 
     def move_and_collide(self, direction: Vec2):
         """
@@ -42,7 +53,7 @@ class Body(GameObject):
                 if left blank it will default to the Entity's collision_groups. Defaults to None.
         """
         self.pos = self.pos + direction
-        collisions = self.scene.get_AABB_collisions(self)
+        collisions = Game_Globals["Scene"].get_AABB_collisions(self)
         precise_collisions = []
 
         if collisions:
@@ -61,20 +72,15 @@ class Body(GameObject):
         return precise_collisions
 
 
-class Area(GameObject):
-    def __init__(self, name="Area", **kwargs):
-        GameObject.__init__(self, name, **kwargs)
+class Area(PhysicsObject):
+    def __init__(self, **kwargs):
+        kwargs.setdefault("name", "Area")
+        kwargs.setdefault("layers", "0000")
+        super().__init__(**kwargs)
 
-        self._layers = kwargs.get("layers", "0000")
-        self.collision_layers = kwargs.get("collision_layers", "0001")
         self.target_group = kwargs.get("target_group", None)
         self.entered = []
         self._active = kwargs.get("active", True)
-
-    def on_load(self):
-        if not hasattr(self, "collider"):
-            raise (Exception("Area does not have collider"))
-        self.scene.add_physics_object(self, self._layers)
 
     def update(self, _delta):
         if self._active:
@@ -82,7 +88,7 @@ class Area(GameObject):
 
     def get_entered(self):
         entered = []
-        collisions = self.scene.get_AABB_collisions(self)
+        collisions = Game_Globals["Scene"].get_AABB_collisions(self)
         if collisions:
             collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
             for obj in collisions:
@@ -173,7 +179,6 @@ class Ray(GameObject):
         super().__init__(**kwargs)
         length = kwargs.get("length", 1)
         self.add_child(RayCollider(length=length), "collider")
-        self.collision_layers = kwargs.get("collision_layers", "0001")
         self._active = kwargs.get("active", True)
         self.collision_point = None
         self.collision_object = None

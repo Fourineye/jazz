@@ -68,6 +68,8 @@ class Application:
         self.fps_max = fps_max
         Game_Globals["App"] = self
         Game_Globals["Input"] = self._input
+        Game_Globals["Key"] = self._input.key
+        Game_Globals["Mouse"] = self._input.mouse
         Game_Globals["Display"] = self.display
 
     def add_scene(self, scene):

@@ -13,6 +13,11 @@ class InputHandler:
         self.mouse = Mouse()
         self.key = Keyboard()
         self.user_events = []
+        self.event_handler = None
+
+    def set_event_handler(self, method):
+        if callable(method):
+            self.event_handler = method
 
     def update(self):
         """Called every frame to update user input."""
@@ -24,7 +29,8 @@ class InputHandler:
             self.user_events.append(event)
 
         for event in pygame.event.get():
-            pass
+            if self.event_handler is not None:
+                self.event_handler(event)
 
 
 class Mouse:
@@ -72,7 +78,7 @@ class Mouse:
             if key < len(Mouse.BUTTONS):
                 key = Mouse.BUTTONS[key]
         click = self._just_pressed.get(key, False)
-        if consume:
+        if click and consume:
             self._just_pressed[key] = False
         return click
 
@@ -133,6 +139,7 @@ class Keyboard:
         self._just_pressed = {}
         self._pressed = [False] * 200
         self._just_released = {}
+        self._mods = 0
 
     def update(self):
         """Called every frame to update keyboard inputs."""
@@ -148,12 +155,18 @@ class Keyboard:
             if key:
                 self._just_released[key] = True
         self._pressed = pygame.key.get_pressed()
+        self._mods = pygame.key.get_mods()
 
     def press(self, key):
         if isinstance(key, int):
             if key in Keyboard.KEYS:
                 key = Keyboard.KEYS[key]
         return self._just_pressed.get(key, False)
+
+    def mod(self, key):
+        if self._mods & self.MODS.get(key, 0):
+            return True
+        return False
 
     def release(self, key):
         if isinstance(key, int):
@@ -170,6 +183,13 @@ class Keyboard:
                 return False
         else:
             raise ValueError("Expected a valid string")
+
+    MODS = {
+        "shift": pygame.KMOD_SHIFT,
+        "control": pygame.KMOD_CTRL,
+        "alt": pygame.KMOD_ALT,
+        "meta": pygame.KMOD_META,
+    }
 
     KEYS = {
         pygame.K_BACKSPACE: "backspace",

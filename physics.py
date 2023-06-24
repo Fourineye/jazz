@@ -51,8 +51,10 @@ class PhysicsGrid:
             return cells
         for x_offset in range(int(w)):
             for y_offset in range(int(h)):
+                # print(x + x_offset, y + y_offset)
                 for obj in self.get_grid_cell(int(x) + x_offset, int(y) + y_offset):
                     cells.add(obj)
+        # print(cells)
         return list(cells)
 
     def get_AABB_collisions(self, collider):
@@ -65,6 +67,20 @@ class PhysicsGrid:
         for physics_object in physics_objects:
             if physics_object is not collider:
                 if physics_object.collider.collide_rect(collider.collider):
+                    collisions.add(physics_object)
+        # print(collisions)
+        return list(collisions)
+
+    def get_simple_AABB_collisions(self, collider):
+        collisions = set()
+        x = int(collider.left // self._grid_size)
+        y = int(collider.top // self._grid_size)
+        w = int(collider.right // self._grid_size - x)
+        h = int(collider.bottom // self._grid_size - y)
+        physics_objects = self.get_grid_cells(x - 1, y - 1, w + 3, h + 3)
+        for physics_object in physics_objects:
+            if physics_object.collider is not collider:
+                if physics_object.collider.collide_rect(collider):
                     collisions.add(physics_object)
         # print(collisions)
         return list(collisions)
