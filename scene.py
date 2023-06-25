@@ -57,7 +57,7 @@ class Scene:
         self._paused = False
         self.app = app
 
-    def on_load(self, data) -> dict:
+    def on_load(self, data):
         """
         Empty method that can be overwritten by a child class to add
         additional attributes and will be called on loading into the
