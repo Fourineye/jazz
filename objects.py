@@ -5,8 +5,13 @@ Module to provide a base for active game entities.
 from random import randint
 
 from Jazz.baseObject import GameObject
-from Jazz.colliders import (CircleCollider, Collider, PolyCollider,
-                            RayCollider, RectCollider)
+from Jazz.colliders import (
+    CircleCollider,
+    Collider,
+    PolyCollider,
+    RayCollider,
+    RectCollider,
+)
 from Jazz.global_dict import Game_Globals
 from Jazz.input_handler import InputHandler
 from Jazz.utils import Vec2, direction_to, dist_to, load_image
@@ -173,7 +178,7 @@ class Group:
             self.add(entity)
 
 
-class Ray(GameObject):
+class Ray(PhysicsObject):
     def __init__(self, **kwargs):
         kwargs.setdefault("name", "Ray")
         super().__init__(**kwargs)

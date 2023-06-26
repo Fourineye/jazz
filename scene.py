@@ -45,7 +45,6 @@ class Scene:
         self.resource_manager = ResourceManager()
         self._groups = {}
         self._objects = {}
-        self._object_count = 0
         self._physics_world = {
             0: PhysicsGrid(),
             1: PhysicsGrid(),
@@ -222,7 +221,6 @@ class Scene:
             grid.build_grid()
 
         kill_items = set()
-        self._object_count = 0
         objects = list(self._objects.values())
 
         for obj in objects:
@@ -236,7 +234,6 @@ class Scene:
                             obj._update(delta)
                     else:
                         obj._update(delta)
-            self._object_count += 1 + getattr(obj, "child_count")
 
         # call scene process hook
         self.update(delta)

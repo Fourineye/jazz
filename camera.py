@@ -3,7 +3,7 @@ from random import randint
 import pygame
 
 from Jazz.global_dict import Game_Globals
-from Jazz.utils import Vec2, clamp
+from Jazz.utils import Rect, Vec2, clamp
 
 
 class Camera:
@@ -164,3 +164,9 @@ class Camera:
     @property
     def pos(self):
         return self.display_center - self.offset
+
+    @property
+    def screen_rect(self):
+        return Rect(
+            *(-self.offset), self.display.get_width(), self.display.get_height()
+        )

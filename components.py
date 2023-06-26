@@ -1,9 +1,9 @@
 import pygame
 
 from Jazz.baseObject import GameObject
+from Jazz.global_dict import Game_Globals
 from Jazz.user_interface import DEFAULT_FONT
 from Jazz.utils import Vec2, load_image, map_range
-from Jazz.global_dict import Game_Globals
 
 
 class Sprite(GameObject):
@@ -11,9 +11,10 @@ class Sprite(GameObject):
         super().__init__(name, **kwargs)
         self.asset = kwargs.get("asset", None)
         self._source = None
-        self.flip_x = kwargs.get("flip_x", False)
-        self.flip_y = kwargs.get("flip_y", False)
-        self.scale = Vec2(kwargs.get("scale", (1, 1)))
+        self._flip_x = kwargs.get("flip_x", False)
+        self._flip_y = kwargs.get("flip_y", False)
+        self._scale = Vec2(kwargs.get("scale", (1, 1)))
+        self._img_updated = False
 
     def on_load(self):
         if self.source is None:
@@ -38,15 +39,22 @@ class Sprite(GameObject):
         if offset is None:
             offset = Vec2()
         self.update_image()
-        surface.blit(self.image, self.draw_pos + Vec2(offset))
+        if (
+            self.image.get_rect()
+            .move(*self.draw_pos)
+            .colliderect(Game_Globals["Scene"].camera.screen_rect)
+        ):
+            surface.blit(self.image, self.draw_pos + Vec2(offset))
 
     def update_image(self):
-        self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
-        self.image = pygame.transform.scale_by(self.image, self.scale)
-        self.image = pygame.transform.rotate(self.image, -self.rotation)
-        self._draw_offset = -Vec2(
-            self.image.get_width() / 2, self.image.get_height() / 2
-        )
+        if not self._img_updated:
+            self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
+            self.image = pygame.transform.scale_by(self.image, self.scale)
+            self.image = pygame.transform.rotate(self.image, -self.rotation)
+            self._draw_offset = -Vec2(
+                self.image.get_width() / 2, self.image.get_height() / 2
+            )
+            self._img_updated = True
 
     @property
     def draw_pos(self):
@@ -68,6 +76,57 @@ class Sprite(GameObject):
             new_source = self.scene.load_resource(new_source)
         self._source = new_source
         self.update_image()
+
+    @property
+    def flip_x(self):
+        return self._flip_x
+
+    @flip_x.setter
+    def flip_x(self, flip_x):
+        self._flip_x = flip_x
+        self._img_updated = False
+
+    @property
+    def flip_y(self):
+        return self._flip_y
+
+    @flip_y.setter
+    def flip_y(self, flip_y):
+        self._flip_x = flip_y
+        self._img_updated = False
+
+    @property
+    def scale(self):
+        return Vec2(self._scale)
+
+    @scale.setter
+    def scale(self, scale):
+        self._scale = Vec2(scale)
+        self._img_updated = False
+
+    @property
+    def local_rotation(self):
+        return self._rotation
+
+    @local_rotation.setter
+    def local_rotation(self, angle):
+        self._rotation = angle % 360
+        self._img_updated = False
+
+    @property
+    def rotation(self):
+        if self._parent is not None:
+            return self._parent.rotation + self._rotation
+        else:
+            return self._rotation
+
+    @rotation.setter
+    def rotation(self, degrees):
+        if self._parent is not None:
+            self._rotation = degrees - self._parent.rotation
+        else:
+            self._rotation = degrees
+        self._img_updated = False
 
 
 class AnimatedSprite(Sprite):
@@ -154,6 +213,7 @@ class AnimatedSprite(Sprite):
         if fps < 0:
             raise Exception(f"invalid fps {fps}, fps must be greater than 0")
         self.animation_fps = fps
+
 
 class Label(Sprite):
     def __init__(self, name="label", **kwargs):
@@ -266,7 +326,9 @@ class Button(GameObject):
             if self._rect.collidepoint(mouse_pos):
                 if Game_Globals["Input"].mouse.click(0):
                     self.state = self.PRESSED
-                elif self.state != self.PRESSED or not Game_Globals["Input"].mouse.held(0):
+                elif self.state != self.PRESSED or not Game_Globals["Input"].mouse.held(
+                    0
+                ):
                     self.state = self.HOVER
             else:
                 if self.state == self.PRESSED:
