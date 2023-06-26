@@ -40,10 +40,9 @@ class Sprite(GameObject):
             offset = Vec2()
         self.update_image()
         if (
-            self.image.get_rect()
-            .move(*self.draw_pos)
+            self.image.get_rect(center=self.pos)
             .colliderect(Game_Globals["Scene"].camera.screen_rect)
-        ):
+        ) or self.screen_space:
             surface.blit(self.image, self.draw_pos + Vec2(offset))
 
     def update_image(self):
@@ -75,6 +74,7 @@ class Sprite(GameObject):
         if not isinstance(new_source, pygame.Surface):
             new_source = self.scene.load_resource(new_source)
         self._source = new_source
+        self._img_updated = False
         self.update_image()
 
     @property

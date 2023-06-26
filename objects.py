@@ -29,7 +29,7 @@ class PhysicsObject(GameObject):
             raise (Exception("Body does not have collider"))
         Game_Globals["Scene"].add_physics_object(self, self._layers)
 
-    def add_collider(self, type, kwargs):
+    def add_collider(self, type, **kwargs):
         if type == "Rect":
             self.add_child(RectCollider(**kwargs), "collider")
         elif type == "Circle":
@@ -97,10 +97,11 @@ class Area(PhysicsObject):
         if collisions:
             collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
             for obj in collisions:
+                test = True
                 if self.target_group is not None:
                     test = obj in self.target_group
 
-                test = obj.root != self.root
+                test = test and obj.root != self.root
                 if test:
                     depth, _ = self.collider.collide_sat(obj.collider)
                     if depth != 0:
