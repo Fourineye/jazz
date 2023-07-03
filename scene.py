@@ -5,11 +5,12 @@ Scene class
 
 import pygame
 
-from Jazz.camera import Camera
-from Jazz.global_dict import Game_Globals
-from Jazz.objects import Group
-from Jazz.physics import PhysicsGrid
-from Jazz.resource_manager import ResourceManager
+from .camera import Camera
+from .global_dict import Game_Globals
+from .objects import Group
+from .physics import PhysicsGrid
+from .resource_manager import ResourceManager
+from .sound_manager import SoundManager
 
 
 class Scene:
@@ -37,12 +38,12 @@ class Scene:
     name = "unnamed"
 
     IMAGE = 0
-    SOUND = 1
-    SPRITE_SHEET = 2
+    SPRITE_SHEET = 1
 
     def __init__(self, app):
         self.camera = Camera()
         self.resource_manager = ResourceManager()
+        self.sound_manager = SoundManager()
         self._groups = {}
         self._objects = {}
         self._physics_world = {
@@ -55,6 +56,7 @@ class Scene:
         self.running = True
         self._paused = False
         self.app = app
+        Game_Globals["Sound"] = self.sound_manager
 
     def on_load(self, data):
         """
@@ -63,11 +65,12 @@ class Scene:
         main game loop
         """
 
-    def on_unload(self):
+    def on_unload(self) -> dict:
         """
         Empty method that can be overwritten by a child class to be
         called when the scene is unloaded from the main loop
         """
+        return {}
 
     def update(self, delta):
         """
@@ -122,13 +125,10 @@ class Scene:
         return self._physics_world[layer].get_AABB_collisions(collider)
 
     def load_resource(self, path, resource_type=IMAGE):
-        match resource_type:
-            case self.IMAGE:
-                return self.resource_manager.get_image(path)
-            case self.SOUND:
-                return self.resource_manager.get_sound(path)
-            case self.SPRITE_SHEET:
-                return self.resource_manager.get_sprite_sheet(path)
+        if resource_type == self.IMAGE:
+            return self.resource_manager.get_image(path)
+        if resource_type == self.SPRITE_SHEET:
+            return self.resource_manager.get_sprite_sheet(path)
 
     def make_sprite_sheet(self, path, dimensions, offset=(0, 0)):
         return self.resource_manager.make_sprite_sheet(path, dimensions, offset)
@@ -254,7 +254,8 @@ class Scene:
         self.late_update(delta)
 
         # update camera
-        self.camera.update(delta)
+        if not self._paused:
+            self.camera.update(delta)
 
         # delete objects queued for deletion
         for obj in kill_items:

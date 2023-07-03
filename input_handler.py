@@ -2,8 +2,8 @@
 
 import pygame
 
-from Jazz.global_dict import Game_Globals
-from Jazz.utils import Vec2, key_from_value
+from .global_dict import Game_Globals
+from .utils import Vec2, key_from_value
 
 
 class InputHandler:

@@ -1,25 +1,18 @@
 import pygame as pg
 
-from Jazz.utils import load_image
+from .utils import load_image
 
 
 class ResourceManager:
     def __init__(self):
         self._images = {}
         self._sprite_sheets = {}
-        self._sounds = {}
 
     def get_image(self, path):
         resource = self._images.get(path, None)
         if resource is None:
             self._images.setdefault(path, load_image(path))
         return self._images.get(path)
-
-    def get_sound(self, path):
-        resource = self._sounds.get(path, None)
-        if resource is None:
-            self._sounds.setdefault(path, pg.mixer.Sound(path))
-        return self._sounds.get(path)
 
     def get_sprite_sheet(self, path):
         resource = self._sprite_sheets.get(path, None)

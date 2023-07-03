@@ -6,7 +6,7 @@ from random import randint
 
 import pygame
 
-from Jazz.global_dict import SETTINGS
+from .global_dict import SETTINGS
 
 # Bringing pygame constants into Jazz Namespace
 Vec2 = pygame.Vector2
@@ -16,9 +16,10 @@ def load_ini(path="./.jini"):
     try:
         with open(path, "r") as ini:
             data = json.load(ini)
-        SETTINGS = data
+        for key, value in data.items():
+            SETTINGS[key] = value
     except:
-        pass
+        save_ini()
 
 
 def save_ini(path="./.jini"):

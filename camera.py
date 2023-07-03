@@ -2,8 +2,8 @@ from random import randint
 
 import pygame
 
-from Jazz.global_dict import Game_Globals
-from Jazz.utils import Rect, Vec2, clamp
+from .global_dict import Game_Globals
+from .utils import Rect, Vec2, clamp
 
 
 class Camera:
@@ -27,6 +27,7 @@ class Camera:
             self.display.get_width() / 2,
             self.display.get_height() / 2,
         )
+        self.zoom = 1
         self.debug = False
 
     def update(self, _delta):
@@ -70,6 +71,11 @@ class Camera:
             else None
             for obj in draw_objects
         ]
+        if self.zoom > 1:
+            zoomed_display = self.display.copy()
+            zoomed_display = pygame.transform.scale_by(zoomed_display, self.zoom)
+            blit_pos = (self.display_center[0] - zoomed_display.get_width() / 2, self.display_center[1] - zoomed_display.get_height() / 2)
+            self.display.blit(zoomed_display, blit_pos)
 
     def update_offset(self):
         """Updates the Camera offset to the target."""
@@ -90,8 +96,8 @@ class Camera:
             offset_y += (self.display_center[1] - target_y - offset_y) / 5
 
         if self.bounds is not None:
-            offset_x = clamp(offset_x, -self.bounds.right, -self.bounds.left)
-            offset_y = clamp(offset_y, -self.bounds.bottom, -self.bounds.top)
+            offset_x = clamp(offset_x, -self.bounds.right + self.display.get_width(), -self.bounds.left)
+            offset_y = clamp(offset_y, -self.bounds.bottom + self.display.get_height(), -self.bounds.top)
 
         self.offset.update(offset_x, offset_y)
 

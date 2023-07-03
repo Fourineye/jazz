@@ -1,9 +1,9 @@
 import pygame
 
-from Jazz.baseObject import GameObject
-from Jazz.global_dict import Game_Globals
-from Jazz.user_interface import DEFAULT_FONT
-from Jazz.utils import Vec2, load_image, map_range
+from .baseObject import GameObject
+from .global_dict import Game_Globals
+from .user_interface import DEFAULT_FONT
+from .utils import Vec2, load_image, map_range
 
 
 class Sprite(GameObject):
@@ -19,13 +19,13 @@ class Sprite(GameObject):
     def on_load(self):
         if self.source is None:
             if self.asset is None:
-                self.source = pygame.Surface((10, 10))
-                self.source.fill(self._color)
+                self._source = pygame.Surface((10, 10))
+                self._source.fill(self._color)
             else:
                 if isinstance(self.asset, pygame.Surface):
-                    self.source = self.asset
+                    self._source = self.asset
                 else:
-                    self.source = self.scene.load_resource(self.asset)
+                    self._source = self.scene.load_resource(self.asset)
 
     def _draw(self, surface: pygame.Surface, offset=None):
         """
@@ -301,8 +301,11 @@ class Button(GameObject):
         self.screen_layer = True
 
         self._callback = kwargs.get("callback", None)
-        self._on_release = kwargs.get("on_release", False)
+        self._on_release = kwargs.get("on_release", True)
 
+        self._size = kwargs.get("size", (10, 10))
+        self._rect = pygame.Rect((0, 0), self._size)
+        
         self._unpressed_asset = kwargs.get("unpressed", None)
         self._pressed_asset = kwargs.get("pressed", None)
         self._hover_asset = kwargs.get("hover", None)
@@ -310,8 +313,17 @@ class Button(GameObject):
         self.last_state = self.UNPRESSED
         self.state = self.UNPRESSED
 
-        self._size = kwargs.get("size", (10, 10))
-        self._rect = pygame.Rect((0, 0), self._size)
+        if self._unpressed_asset is None:
+            self._unpressed_asset = pygame.Surface(self._size)
+            self._unpressed_asset.fill((255, 255, 255))
+        if self._pressed_asset is None:
+            self._pressed_asset = pygame.Surface(self._size)
+            self._pressed_asset.fill((128, 128, 128))
+        if self._hover_asset is None:
+            self._hover_asset = pygame.Surface(self._size)
+            self._hover_asset.fill((192, 192, 192))
+
+
         self.add_child(
             Sprite(asset=self._unpressed_asset),
             "sprite",

@@ -1,8 +1,8 @@
 import pygame
 
-from Jazz.global_dict import SETTINGS, Game_Globals
-from Jazz.input_handler import InputHandler
-from Jazz.utils import load_ini
+from .global_dict import SETTINGS, Game_Globals
+from .input_handler import InputHandler
+from .utils import load_ini
 
 
 class Application:
@@ -18,9 +18,6 @@ class Application:
 
     Methods
     =======
-    on_init(**kwargs):
-        Empty method that can be overwritten by a child class to add
-        additional attributes and will be called on initialization.
     add_scene(scene: Scene):
         Adds a reference to a Scene class for later loading.
     set_next_scene(name: str):
@@ -102,7 +99,7 @@ class Application:
         if self._next_scene is None:
             raise Exception("No scenes have been added to the game")
 
-        scene_transfer_data = None
+        scene_transfer_data = {}
 
         # Main app loop
         while self.running:
@@ -160,3 +157,8 @@ class Application:
         """
         if pygame.event.get(pygame.QUIT):
             self.stop()
+
+    def set_caption(self, text: str):
+        if not isinstance(text, str):
+            text = str(text)
+        pygame.display.set_caption(text)

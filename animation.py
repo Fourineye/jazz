@@ -6,8 +6,8 @@ import pygame
 from pygame import USEREVENT
 from pygame.event import Event
 
-from Jazz.scene import Scene
-from Jazz.utils import clamp, map_range
+from .scene import Scene
+from .utils import clamp, map_range
 
 
 class Tween:

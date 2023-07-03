@@ -1,6 +1,9 @@
 from pygame.locals import *
 
-from Jazz.application import Application
-from Jazz.baseObject import GameObject
-from Jazz.global_dict import SETTINGS, Game_Globals
-from Jazz.scene import Scene
+from .application import Application
+from .baseObject import GameObject
+from .components import AnimatedSprite, Button, Label, ProgressBar, Sprite
+from .global_dict import SETTINGS, Game_Globals
+from .objects import Area, Body, Group, Ray
+from .scene import Scene
+from .utils import Rect, Vec2

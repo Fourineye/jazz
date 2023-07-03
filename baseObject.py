@@ -3,8 +3,8 @@ import uuid
 
 import pygame
 
-from Jazz.global_dict import Game_Globals
-from Jazz.utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
+from .global_dict import Game_Globals
+from .utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
 
 config_dict = {
     "pause_process": False,
@@ -41,7 +41,7 @@ class GameObject:
 
         # Rendering flags
         self._visible = kwargs.get("visible", True)
-        self.screen_space = kwargs.get("screen_layer", False)
+        self._screen_space = kwargs.get("screen_layer", False)
 
         # Basic positional Attributes
         self._pos = Vec2(kwargs.get("pos", (0, 0)))
@@ -129,14 +129,12 @@ class GameObject:
         self.late_update(delta)
 
     def draw(self, surface: pygame.Surface, offset=None):
-        if Game_Globals["Scene"].camera.draw_check(self):
-            self._draw(surface, offset)
+        self._draw(surface, offset)
         for child in self._children.values():
             child.draw(surface, offset)
 
     def debug_draw(self, surface: pygame.Surface, offset=None):
-        if Game_Globals["Scene"].camera.draw_check(self, True):
-            self._debug_draw(surface, offset)
+        self._debug_draw(surface, offset)
         for child in self._children.values():
             child.debug_draw(surface, offset)
 
@@ -314,6 +312,17 @@ class GameObject:
     @visible.setter
     def visible(self, visibility):
         self._visible = visibility
+
+    @property
+    def screen_space(self):
+        if self._parent is not None:
+            return self._screen_space or self._parent.screen_space
+        else:
+            return self._screen_space
+        
+    @screen_space.setter
+    def screen_space(self, screen_space):
+        self._screen_space = screen_space
 
     @property
     def child_count(self):

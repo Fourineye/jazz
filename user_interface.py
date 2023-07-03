@@ -1,7 +1,7 @@
 import pygame as pg
 
-from Jazz.baseObject import GameObject
-from Jazz.utils import color_mult, map_range
+from .baseObject import GameObject
+from .utils import color_mult, map_range
 
 pg.font.init()
 # Constants declaration
