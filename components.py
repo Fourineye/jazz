@@ -14,6 +14,7 @@ class Sprite(GameObject):
         self._flip_x = kwargs.get("flip_x", False)
         self._flip_y = kwargs.get("flip_y", False)
         self._scale = Vec2(kwargs.get("scale", (1, 1)))
+        self._alpha = kwargs.get("alpha", 255)
         self._img_updated = False
 
     def on_load(self):
@@ -50,6 +51,7 @@ class Sprite(GameObject):
             self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
             self.image = pygame.transform.scale_by(self.image, self.scale)
             self.image = pygame.transform.rotate(self.image, -self.rotation)
+            self.image.set_alpha(self.alpha)
             self._draw_offset = -Vec2(
                 self.image.get_width() / 2, self.image.get_height() / 2
             )
@@ -104,6 +106,17 @@ class Sprite(GameObject):
         self._scale = Vec2(scale)
         self._img_updated = False
 
+    @property
+    def alpha(self):
+        return self._alpha
+        
+    @alpha.setter
+    def alpha(self, new_alpha):
+        if 0 <= new_alpha <= 255:
+            self._alpha = new_alpha
+            self._img_updated = False
+        else:
+            raise Exception()
     @property
     def local_rotation(self):
         return self._rotation
@@ -349,11 +362,11 @@ class Button(GameObject):
                 else:
                     self.state = self.UNPRESSED
             if self.last_state != self.state:
-                match self.state:
-                    case self.UNPRESSED:
+                
+                    if self.state == self.UNPRESSED:
                         if self._unpressed_asset is not None:
                             self.sprite.source = self._unpressed_asset
-                    case self.HOVER:
+                    elif self.state == self.HOVER:
                         if self._hover_asset is not None:
                             self.sprite.source = self._hover_asset
                         if (
@@ -362,7 +375,7 @@ class Button(GameObject):
                             and self.last_state == self.PRESSED
                         ):
                             self._callback()
-                    case self.PRESSED:
+                    elif self.state == self.PRESSED:
                         if self._pressed_asset is not None:
                             self.sprite.source = self._pressed_asset
                         if callable(self._callback) and not self._on_release:
