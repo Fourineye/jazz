@@ -129,14 +129,16 @@ class GameObject:
         self.late_update(delta)
 
     def draw(self, surface: pygame.Surface, offset=None):
-        self._draw(surface, offset)
-        for child in self._children.values():
-            child.draw(surface, offset)
+        if self.visible:
+            self._draw(surface, offset)
+            for child in self._children.values():
+                child.draw(surface, offset)
 
     def debug_draw(self, surface: pygame.Surface, offset=None):
-        self._debug_draw(surface, offset)
-        for child in self._children.values():
-            child.debug_draw(surface, offset)
+        if self.visible:
+            self._debug_draw(surface, offset)
+            for child in self._children.values():
+                child.debug_draw(surface, offset)
 
     # Child management
     def add_child(self, obj, name=None):
@@ -319,7 +321,7 @@ class GameObject:
             return self._screen_space or self._parent.screen_space
         else:
             return self._screen_space
-        
+
     @screen_space.setter
     def screen_space(self, screen_space):
         self._screen_space = screen_space

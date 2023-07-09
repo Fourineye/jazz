@@ -41,8 +41,9 @@ class Sprite(GameObject):
             offset = Vec2()
         self.update_image()
         if (
-            self.image.get_rect(center=self.pos)
-            .colliderect(Game_Globals["Scene"].camera.screen_rect)
+            self.image.get_rect(center=self.pos).colliderect(
+                Game_Globals["Scene"].camera.screen_rect
+            )
         ) or self.screen_space:
             surface.blit(self.image, self.draw_pos + Vec2(offset))
 
@@ -94,7 +95,7 @@ class Sprite(GameObject):
 
     @flip_y.setter
     def flip_y(self, flip_y):
-        self._flip_x = flip_y
+        self._flip_y = flip_y
         self._img_updated = False
 
     @property
@@ -109,7 +110,7 @@ class Sprite(GameObject):
     @property
     def alpha(self):
         return self._alpha
-        
+
     @alpha.setter
     def alpha(self, new_alpha):
         if 0 <= new_alpha <= 255:
@@ -117,6 +118,7 @@ class Sprite(GameObject):
             self._img_updated = False
         else:
             raise Exception()
+
     @property
     def local_rotation(self):
         return self._rotation
@@ -293,6 +295,7 @@ class ProgressBar(Sprite):
                 self.line_width,
                 border_radius=self.radius,
             )
+        self._img_updated = False
 
     def update_value(self, value):
         self.value = value
@@ -318,7 +321,7 @@ class Button(GameObject):
 
         self._size = kwargs.get("size", (10, 10))
         self._rect = pygame.Rect((0, 0), self._size)
-        
+
         self._unpressed_asset = kwargs.get("unpressed", None)
         self._pressed_asset = kwargs.get("pressed", None)
         self._hover_asset = kwargs.get("hover", None)
@@ -335,7 +338,6 @@ class Button(GameObject):
         if self._hover_asset is None:
             self._hover_asset = pygame.Surface(self._size)
             self._hover_asset.fill((192, 192, 192))
-
 
         self.add_child(
             Sprite(asset=self._unpressed_asset),
@@ -362,24 +364,23 @@ class Button(GameObject):
                 else:
                     self.state = self.UNPRESSED
             if self.last_state != self.state:
-                
-                    if self.state == self.UNPRESSED:
-                        if self._unpressed_asset is not None:
-                            self.sprite.source = self._unpressed_asset
-                    elif self.state == self.HOVER:
-                        if self._hover_asset is not None:
-                            self.sprite.source = self._hover_asset
-                        if (
-                            callable(self._callback)
-                            and self._on_release
-                            and self.last_state == self.PRESSED
-                        ):
-                            self._callback()
-                    elif self.state == self.PRESSED:
-                        if self._pressed_asset is not None:
-                            self.sprite.source = self._pressed_asset
-                        if callable(self._callback) and not self._on_release:
-                            self._callback()
+                if self.state == self.UNPRESSED:
+                    if self._unpressed_asset is not None:
+                        self.sprite.source = self._unpressed_asset
+                elif self.state == self.HOVER:
+                    if self._hover_asset is not None:
+                        self.sprite.source = self._hover_asset
+                    if (
+                        callable(self._callback)
+                        and self._on_release
+                        and self.last_state == self.PRESSED
+                    ):
+                        self._callback()
+                elif self.state == self.PRESSED:
+                    if self._pressed_asset is not None:
+                        self.sprite.source = self._pressed_asset
+                    if callable(self._callback) and not self._on_release:
+                        self._callback()
             self.last_state = self.state
 
     def _debug_draw(self, surface: pygame.Surface, offset=None):
