@@ -15,18 +15,20 @@ class Sprite(GameObject):
         self._flip_y = kwargs.get("flip_y", False)
         self._scale = Vec2(kwargs.get("scale", (1, 1)))
         self._alpha = kwargs.get("alpha", 255)
+        self._anchor = [1, 1]
         self._img_updated = False
 
     def on_load(self):
         if self.source is None:
             if self.asset is None:
-                self._source = pygame.Surface((10, 10))
-                self._source.fill(self._color)
+                temp_source = pygame.Surface((10, 10))
+                temp_source.fill(self._color)
+                self.source = temp_source
             else:
                 if isinstance(self.asset, pygame.Surface):
-                    self._source = self.asset
+                    self.source = self.asset
                 else:
-                    self._source = self.scene.load_resource(self.asset)
+                    self.source = self.scene.load_resource(self.asset)
 
     def _draw(self, surface: pygame.Surface, offset=None):
         """
@@ -53,10 +55,28 @@ class Sprite(GameObject):
             self.image = pygame.transform.scale_by(self.image, self.scale)
             self.image = pygame.transform.rotate(self.image, -self.rotation)
             self.image.set_alpha(self.alpha)
-            self._draw_offset = -Vec2(
-                self.image.get_width() / 2, self.image.get_height() / 2
-            )
+            self._set_offset()
             self._img_updated = True
+
+    def _set_offset(self):
+        self._draw_offset = -Vec2(
+                self.image.get_width() * self._anchor[0] / 2, self.image.get_height() * self._anchor[1] / 2
+            )
+        
+    def set_anchor(self, horizontal=None, vertical=None):
+        if vertical in ["top", 0]:
+            self._anchor[1] = 0
+        elif vertical in ["center", 1]:
+            self._anchor[1] = 1
+        elif vertical in ["bottom", 2]:
+            self._anchor[1] = 2
+        if horizontal in ["left", 0]:
+            self._anchor[0] = 0
+        elif horizontal in ["center", 1]:
+            self._anchor[0] = 1
+        elif horizontal in ["right", 2]:
+            self._anchor[0] = 2
+        self._set_offset()
 
     @property
     def draw_pos(self):
@@ -240,6 +260,8 @@ class Label(Sprite):
         self.source = self.font.render(self.text_content, True, self.text_color)
 
     def set_text(self, text):
+        if not isinstance(text, str):
+            text = str(text)
         if self.text_content != text:
             self.text_content = text
             self.source = self.font.render(text, True, self.text_color)

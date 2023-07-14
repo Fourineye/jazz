@@ -1,68 +1,32 @@
-from random import randint
+from random import choice, randint, uniform
 
 import pygame
 from pygame import Vector2
 
 from Jazz import GameObject
 
-
-class Particle:
-    """Basic Particle class, intended to be extended."""
-
-    def __init__(
-        self,
-        pos: Vector2,
-        vel: Vector2,
-        life: float,
-        color=(255, 255, 255),
-    ):
-        self._pos = pos
-        self._vel = vel
-        self._acc = Vector2(0, 100)
-        self._life = life
-        self.color = color
-
-    def draw(self, surface, offset=None):
-        """
-        Method called in the scene render function to draw the Entity on a surface.
-
-        Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vector2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
-        """
-        if offset is None:
-            offset = Vector2()
-        pygame.draw.circle(
-            surface, self.color, self._pos + Vector2(offset), int(self._life * 5)
-        )
-
-    def process(self, delta: float):
-        """
-        Method called once per frame to handle game logic. Called before render.
-
-        Args:
-            delta (float): Time in seconds since the last frame.
-        """
-        self._pos += self._vel * delta
-        self._vel += self._acc * delta
-        self._life -= delta
-        if self._life <= 0:
-            return True
-        return False
+from .utils import Vec2
 
 
 class ParticleEmitter(GameObject):
     """An object that handles particles"""
 
     def __init__(
-        self, pos: Vector2, name="ParticleEmitter", active=False, rate=1, **kwargs
+        self,  active=False, rate=1, **kwargs
     ):
-        GameObject.__init__(self, pos, name, **kwargs)
-        self._pos = Vector2(pos)
+        kwargs.setdefault("name", "Particle Emitter")
+        super().__init__(**kwargs)
         self._particles = []
+        self._particle_graphics = kwargs.get("particle_graphics", None)
+        self._particle_life = kwargs.get("particle_life", 2)
+        self._emission_angles = kwargs.get("emission_angles", [(0,360)])
+        self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
         self.active = active
         self.rate = rate
+        if self._particle_graphics is None:
+            default = pygame.Surface((10, 10))
+            default.fill((255, 255, 255))
+            self._particle_graphics = [default]
 
     def emit_particles(self, num: int):
         """
@@ -72,14 +36,16 @@ class ParticleEmitter(GameObject):
             num (int): The number of particles to create.
         """
         for _ in range(num):
-            self._particles.append(
-                Particle(
-                    Vector2(self._pos),
-                    Vector2(randint(25, 100), 0).rotate(randint(0, 365)),
-                    2,
-                    self._color,
-                )
-            )
+            self.add_particle()
+
+    def add_particle(self):
+        particle = {
+            "pos":self.pos,
+            "vel":Vec2(uniform(*choice(self._emission_speed)), 0).rotate(uniform(*choice(self._emission_angles))),
+            "img":randint(0, len(self._particle_graphics) - 1),
+            "life":self._particle_life
+            }
+        self._particles.append(particle)
 
     def draw(self, surface, offset=None):
         """
@@ -90,10 +56,15 @@ class ParticleEmitter(GameObject):
             offset (Vector2, optional): Offset to add to pos for the draw
                 destination. Defaults to None.
         """
+        if offset is None:
+            offset = Vec2()
+        blits = []
         for particle in self._particles:
-            particle.draw(surface, offset)
+            surf = self._particle_graphics[particle["img"]]
+            blits.append((surf, particle["pos"] + offset - Vec2(surf.get_size()) / 2))
+        surface.fblits(blits)
 
-    def process(self, delta: float):
+    def update(self, delta: float):
         """
         Called once per frame, updates all Particle objects currently in the object.
 
@@ -103,15 +74,7 @@ class ParticleEmitter(GameObject):
         if self.active:
             self.emit_particles(self.rate)
         for particle in self._particles[::-1]:
-            if particle.process(delta):
+            particle["pos"] += particle["vel"] * delta
+            particle["life"] -= delta
+            if particle["life"] < 0:
                 self._particles.remove(particle)
-
-    @property
-    def pos(self):
-        """Returns _pos attribute."""
-        return Vector2(self._pos)
-
-    @pos.setter
-    def pos(self, pos: Vector2):
-        """Sets _pos attribute."""
-        self._pos = Vector2(pos)

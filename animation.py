@@ -6,29 +6,117 @@ import pygame
 from pygame import USEREVENT
 from pygame.event import Event
 
+from .baseObject import GameObject
 from .scene import Scene
 from .utils import clamp, map_range
 
 
-class Tween:
+def LINEAR(t):
+    return t
+
+def EASE_IN_QUADRATIC(t):
+    return t ** 2
+
+def EASE_OUT_QUADRATIC(t):
+    return 1 - (1 - t) ** 2
+
+def EASE_IN_OUT_QUADRATIC(t):
+    return 2 * t ** 2 if t < 0.5 else 1 - (-2 * t + 2) ** 2 / 2
+
+def EASE_IN_CUBIC(t):
+    return t ** 3
+
+def EASE_OUT_CUBIC(t):
+    return 1 - (1 - t) ** 2
+
+def EASE_IN_OUT_CUBIC(t):
+    return 4 * t ** 3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+
+def EASE_IN_QUARTIC(t):
+    return t ** 4
+
+def EASE_OUT_QUARTIC(t):
+    return 1 - (1 - t) ** 4
+
+def EASE_IN_OUT_QUARTIC(t):
+    return 8 * t ** 4 if t < 0.5 else 1 - (-2 * t + 2) ** 4 / 2
+
+def EASE_IN_QUINTIC(t):
+    return t ** 5
+
+def EASE_OUT_QUINTIC(t):
+    return 1 - (1 - t) ** 5
+
+def EASE_IN_OUT_QUINTIC(t):
+    return 16 * t ** 5 if t < 0.5 else 1 - (-2 * t + 2) ** 5 / 2
+
+def EASE_IN_EXPO(t):
+    return 0 if t == 0 else 2 ** (10 * t - 10)
+
+def EASE_OUT_EXPO(t):
+    return 1 if t == 1 else 1 - 2 ** (-10 * t)
+
+def EASE_IN_OUT_EXPO(t):
+    return 0 if t == 0 else 1 if t == 1 else 2 ** (20 * t - 10) / 2 if t < 0.5 else (2 - 2 ** (-20 * t + 10)) / 2
+
+def EASE_IN_BACK(t):
+    c1 = 1.70158
+    c3 = c1 + 1
+    return c3 * t ** 3 - c1 * t ** 2
+
+def EASE_OUT_BACK(t):
+    c1 = 1.70158
+    c3 = c1 + 1
+    return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2
+
+def EASE_IN_OUT_BACK(t):
+    c1 = 1.70158
+    c2 = c1 * 1.525
+    in_ = ((2 * t) ** 2 * ((c2 + 1) * 2 * t - c2)) / 2
+    out_ = ((2 * t - 2) ** 2 * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2
+    return in_ if t < 0.5 else out_ #(Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2
+
+EASINGS = [
+    LINEAR,
+    EASE_IN_QUADRATIC,
+    EASE_OUT_QUADRATIC,
+    EASE_IN_OUT_QUADRATIC,
+    EASE_IN_CUBIC,
+    EASE_OUT_CUBIC,
+    EASE_IN_OUT_CUBIC,
+    EASE_IN_QUARTIC,
+    EASE_OUT_QUARTIC,
+    EASE_IN_OUT_QUARTIC,
+    EASE_IN_QUINTIC,
+    EASE_OUT_QUINTIC,
+    EASE_IN_OUT_QUINTIC,
+    EASE_IN_EXPO,
+    EASE_OUT_EXPO,
+    EASE_IN_OUT_EXPO,
+    EASE_IN_BACK,
+    EASE_OUT_BACK,
+    EASE_IN_OUT_BACK
+]
+
+class Tween(GameObject):
     """Tween for animation"""
 
-    def __init__(self, obj, prop, values, time, **kwargs):
-        self.game_process = kwargs.get("game_process", True)
-        self.pause_process = kwargs.get("pause_process", False)
-        self.obj = obj
-        self.prop = prop
-        self.values = values
-        self.last_val = len(self.values) - 1
+    def __init__(self, target_object, target_property, target_value, time, **kwargs):
+        kwargs.setdefault("name", "Tween")
+        super().__init__(**kwargs)
+        self.target_object = target_object
+        self.target_property = target_property
+        self._initial_value = None
+        self._delta_value = None
+        self.target_value = target_value
         self.a_time = time
         self.time = 0
+        self.easing = kwargs.get("easing", LINEAR)
         self.loop = kwargs.get("loop", False)
         self.playing = kwargs.get("playing", False)
-        self.end_event = Event(
-            USEREVENT, {"source": "Tween", "flag": kwargs.get("flag", None)}
-        )
-
-    def process(self, delta: float):
+        self.on_end = kwargs.get("on_end", None)
+        
+    def update(self, delta: float):
         """
         Method that is automatically called on the engine game_process method.
 
@@ -44,23 +132,15 @@ class Tween:
                 self.time -= self.a_time
             else:
                 self.time = self.a_time
-        if len(self.values) > 2:
-            a_time = self.a_time / self.last_val
-            i = int(map_range(self.time, 0, self.a_time, 0, self.last_val))
-            if i == self.last_val:
-                value = self.values[-1]
-            else:
-                t_start, t_end = i * a_time, (i + 1) * a_time
-                v_start, v_end = self.values[i], self.values[i + 1]
-        else:
-            t_start, t_end = 0, self.a_time
-            v_start, v_end = self.values[0], self.values[1]
-        value = map_range(self.time, t_start, t_end, v_start, v_end)
-        setattr(self.obj, self.prop, value)
+        time_factor = map_range(self.time, 0, self.a_time, 0, 1)
+        delta_factor = self.easing(time_factor)
+
+        setattr(self.target_object, self.target_property, self._initial_value + self._delta_value * delta_factor)
 
         if self.time >= self.a_time:
             self.time = 0
-            pygame.event.post(self.end_event)
+            if callable(self.on_end):
+                self.on_end()
             if not self.loop:
                 self.playing = False
         self.time += delta
@@ -74,6 +154,8 @@ class Tween:
                 Defaults to True.
         """
         self.playing = True
+        self._initial_value = getattr(self.target_object, self.target_property)
+        self._delta_value = self.target_value - self._initial_value
         if from_beginning:
             self.time = 0
 
