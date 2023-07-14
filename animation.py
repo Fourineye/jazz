@@ -113,8 +113,10 @@ class Tween(GameObject):
         self.time = 0
         self.easing = kwargs.get("easing", LINEAR)
         self.loop = kwargs.get("loop", False)
-        self.playing = kwargs.get("playing", False)
+        self.playing = False
         self.on_end = kwargs.get("on_end", None)
+        if kwargs.get("playing", False):
+            self.play()
         
     def update(self, delta: float):
         """
@@ -139,10 +141,10 @@ class Tween(GameObject):
 
         if self.time >= self.a_time:
             self.time = 0
-            if callable(self.on_end):
-                self.on_end()
             if not self.loop:
                 self.playing = False
+            if callable(self.on_end):
+                self.on_end()
         self.time += delta
 
     def play(self, from_beginning=True):
