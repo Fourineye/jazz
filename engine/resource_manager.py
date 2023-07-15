@@ -1,6 +1,6 @@
 import pygame as pg
 
-from .utils import load_image
+from ..utils import load_image
 
 
 class ResourceManager:

@@ -1,9 +1,11 @@
-from pygame.locals import *
+import pygame.locals as locals
 
-from .application import Application
+from .animation.easing import *
+from .animation.tween import Tween
+from .engine.application import Application
 from .baseObject import GameObject
 from .components import AnimatedSprite, Button, Label, ProgressBar, Sprite
 from .global_dict import SETTINGS, Game_Globals
-from .objects import Area, Body, Group, Ray
-from .scene import Scene
-from .utils import Rect, Vec2
+from .physics.objects import Area, Body, Group, Ray
+from .engine.scene import Scene
+from .utils import Rect, Surface, Vec2

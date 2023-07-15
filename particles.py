@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from random import choice, randint, uniform
 
 import pygame
@@ -5,8 +6,16 @@ from pygame import Vector2
 
 from Jazz import GameObject
 
+from .global_dict import Game_Globals
 from .utils import Vec2
 
+
+@dataclass
+class Particle:
+    pos: Vec2
+    vel: Vec2
+    img: pygame.Surface
+    life: float
 
 class ParticleEmitter(GameObject):
     """An object that handles particles"""
@@ -18,6 +27,7 @@ class ParticleEmitter(GameObject):
         super().__init__(**kwargs)
         self._particles = []
         self._particle_graphics = kwargs.get("particle_graphics", None)
+        self._particle_spawn = kwargs.get("particle_spawn", None)
         self._particle_life = kwargs.get("particle_life", 2)
         self._emission_angles = kwargs.get("emission_angles", [(0,360)])
         self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
@@ -27,6 +37,11 @@ class ParticleEmitter(GameObject):
             default = pygame.Surface((10, 10))
             default.fill((255, 255, 255))
             self._particle_graphics = [default]
+
+    def on_load(self):
+        for i, graphic in enumerate(self._particle_graphics):
+            if not isinstance(graphic, pygame.Surface):
+                self._particle_graphics[i] = Game_Globals["Scene"].load_resource(graphic)
 
     def emit_particles(self, num: int):
         """
@@ -39,12 +54,19 @@ class ParticleEmitter(GameObject):
             self.add_particle()
 
     def add_particle(self):
-        particle = {
-            "pos":self.pos,
-            "vel":Vec2(uniform(*choice(self._emission_speed)), 0).rotate(uniform(*choice(self._emission_angles))),
-            "img":randint(0, len(self._particle_graphics) - 1),
-            "life":self._particle_life
-            }
+        spawn_offset = Vec2()
+        if self._particle_spawn is not None:
+            if isinstance(self._particle_spawn, pygame.Rect):
+                spawn_offset.update(uniform(self._particle_spawn.left, self._particle_spawn.right), uniform(self._particle_spawn.top, self._particle_spawn.bottom))
+            if isinstance(self._particle_spawn, (int, float)):
+                spawn_offset.update(uniform(0, self._particle_spawn), 0)
+                spawn_offset.rotate_ip(uniform(0, 360))
+        particle = Particle(
+            self.pos + spawn_offset,
+            Vec2(uniform(*choice(self._emission_speed)), 0).rotate(uniform(*choice(self._emission_angles))),
+            randint(0, len(self._particle_graphics) - 1),
+            self._particle_life
+        )
         self._particles.append(particle)
 
     def draw(self, surface, offset=None):
@@ -60,8 +82,8 @@ class ParticleEmitter(GameObject):
             offset = Vec2()
         blits = []
         for particle in self._particles:
-            surf = self._particle_graphics[particle["img"]]
-            blits.append((surf, particle["pos"] + offset - Vec2(surf.get_size()) / 2))
+            surf = self._particle_graphics[particle.img]
+            blits.append((surf, particle.pos + offset - Vec2(surf.get_size()) / 2))
         surface.fblits(blits)
 
     def update(self, delta: float):
@@ -74,7 +96,7 @@ class ParticleEmitter(GameObject):
         if self.active:
             self.emit_particles(self.rate)
         for particle in self._particles[::-1]:
-            particle["pos"] += particle["vel"] * delta
-            particle["life"] -= delta
-            if particle["life"] < 0:
+            particle.pos += particle.vel * delta
+            particle.life -= delta
+            if particle.life < 0:
                 self._particles.remove(particle)

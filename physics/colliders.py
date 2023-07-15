@@ -1,7 +1,7 @@
 import pygame
 
-from .baseObject import GameObject
-from .utils import Rect, Vec2, direction_to, dist_to, line_circle, line_intersection
+from ..baseObject import GameObject
+from ..utils import Rect, Vec2, direction_to, dist_to, line_circle, line_intersection
 
 
 class Collider(GameObject):

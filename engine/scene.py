@@ -5,10 +5,10 @@ Scene class
 
 import pygame
 
-from .camera import Camera
-from .global_dict import Game_Globals
-from .objects import Group
-from .physics import PhysicsGrid
+from ..camera import Camera
+from ..global_dict import Game_Globals
+from ..physics.objects import Group
+from ..physics.physics import PhysicsGrid
 from .resource_manager import ResourceManager
 from .sound_manager import SoundManager
 

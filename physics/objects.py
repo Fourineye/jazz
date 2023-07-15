@@ -4,12 +4,11 @@ Module to provide a base for active game entities.
 
 from random import randint
 
-from .baseObject import GameObject
-from .colliders import (CircleCollider, Collider, PolyCollider, RayCollider,
-                        RectCollider)
-from .global_dict import Game_Globals
-from .input_handler import InputHandler
-from .utils import Vec2, direction_to, dist_to, load_image
+from ..baseObject import GameObject
+from .colliders import CircleCollider, Collider, PolyCollider, RayCollider, RectCollider
+from ..global_dict import Game_Globals
+from ..engine.input_handler import InputHandler
+from ..utils import Vec2, direction_to, dist_to, load_image
 
 
 class PhysicsObject(GameObject):

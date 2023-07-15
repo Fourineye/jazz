@@ -1,8 +1,8 @@
 import pygame
 
-from .global_dict import SETTINGS, Game_Globals
+from ..global_dict import SETTINGS, Game_Globals
 from .input_handler import InputHandler
-from .utils import load_ini
+from ..utils import load_ini
 
 
 class Application:

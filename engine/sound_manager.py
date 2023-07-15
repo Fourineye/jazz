@@ -1,10 +1,10 @@
 import pygame.mixer as mix
 
-from .utils import clamp, save_ini
+from ..utils import clamp, save_ini
 
 music = mix.music
 
-from .global_dict import SETTINGS, Game_Globals
+from ..global_dict import SETTINGS, Game_Globals
 
 
 class SoundManager:

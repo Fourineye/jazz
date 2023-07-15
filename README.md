@@ -4,9 +4,9 @@ This project is to wrap pygame into a more conveinent format that handles some o
 ## #TODO
 - Redo UI module
 - Forever documentation
-- Particle System
+- Particle System (In Progress)
 - Light Map
-- Redo Animation system
+- Redo Animation system (In Progress)
 
 # Basic Example Program
 ```py

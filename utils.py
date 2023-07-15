@@ -11,6 +11,8 @@ from .global_dict import SETTINGS
 # Bringing pygame constants into Jazz Namespace
 Vec2 = pygame.Vector2
 Rect = pygame.Rect
+Surface = pygame.Surface
+
 
 def load_ini(path="./.jini"):
     try:
