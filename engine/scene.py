@@ -7,8 +7,8 @@ import pygame
 
 from ..camera import Camera
 from ..global_dict import Game_Globals
-from ..physics.objects import Group
 from ..physics.physics import PhysicsGrid
+from .group import Group
 from .resource_manager import ResourceManager
 from .sound_manager import SoundManager
 

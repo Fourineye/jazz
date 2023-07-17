@@ -3,8 +3,8 @@ import uuid
 
 import pygame
 
-from .global_dict import Game_Globals
-from .utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
+from ..global_dict import Game_Globals
+from ..utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
 
 config_dict = {
     "pause_process": False,

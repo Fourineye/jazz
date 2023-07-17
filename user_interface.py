@@ -1,6 +1,6 @@
 import pygame as pg
 
-from .baseObject import GameObject
+from .engine.base_object import GameObject
 from .utils import color_mult, map_range
 
 pg.font.init()

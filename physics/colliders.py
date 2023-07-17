@@ -1,6 +1,6 @@
 import pygame
 
-from ..baseObject import GameObject
+from ..engine.base_object import GameObject
 from ..utils import Rect, Vec2, direction_to, dist_to, line_circle, line_intersection
 
 

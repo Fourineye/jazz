@@ -1,6 +1,6 @@
 import pygame
 
-from .baseObject import GameObject
+from .engine.base_object import GameObject
 from .global_dict import Game_Globals
 from .user_interface import DEFAULT_FONT
 from .utils import Vec2, load_image, map_range

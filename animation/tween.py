@@ -1,4 +1,4 @@
-from ..baseObject import GameObject
+from ..engine.base_object import GameObject
 from ..utils import map_range
 from .easing import LINEAR
 
