@@ -5,8 +5,8 @@ This project is to wrap pygame into a more conveinent format that handles some o
 - Redo UI module
 - Forever documentation
 - Particle System (In Progress)
-- Light Map
 - Redo Animation system (In Progress)
+- Light Map
 
 # Basic Example Program
 ```py
@@ -32,6 +32,7 @@ class Player(Jazz.GameObject):
 
         self.move(movement * 100 * delta)
 
+
 class MainScene(Jazz.Scene):
     name = "Main"
     def on_load(self, data):
@@ -39,6 +40,7 @@ class MainScene(Jazz.Scene):
 
     def update(self, delta: float):
         Jazz.Game_Globals["App"].set_caption(self.player.pos)
+
 
 if __name__ == "__main__":
     app = Jazz.Application(800, 600)

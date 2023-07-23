@@ -1,8 +1,8 @@
 import pygame
 
 from ..global_dict import SETTINGS, Game_Globals
-from .input_handler import InputHandler
 from ..utils import load_ini
+from .input_handler import InputHandler
 
 
 class Application:
@@ -29,7 +29,15 @@ class Application:
         Sets running to False so the Application exits at the end of the current frame.
     """
 
-    def __init__(self, width: int, height: int, name: str = None, flags=0, fps_max=60):
+    def __init__(
+        self,
+        width: int,
+        height: int,
+        name: str = None,
+        flags=0,
+        fps_max=60,
+        vsync=False,
+    ):
         """
         Initializes the Application object and pygame, creates the
         application window
@@ -49,11 +57,12 @@ class Application:
                 Defaults to 0.
             **kwargs (dict): Remaining kwargs will be passed on to the on_init method.
         """
-        pygame.init()
         load_ini()
         if name:
             pygame.display.set_caption(name)
-        self.display = pygame.display.set_mode((width, height), flags=flags)
+        self.display = pygame.display.set_mode(
+            (width, height), flags=flags, vsync=vsync
+        )
         self._clock = pygame.time.Clock()
         self._input = InputHandler()
         self._scenes = {}
@@ -162,3 +171,6 @@ class Application:
         if not isinstance(text, str):
             text = str(text)
         pygame.display.set_caption(text)
+
+    def get_fps(self):
+        return self._clock.get_fps()

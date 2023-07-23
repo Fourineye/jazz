@@ -13,12 +13,11 @@ class Sprite(GameObject):
         self._source = None
         self._flip_x = kwargs.get("flip_x", False)
         self._flip_y = kwargs.get("flip_y", False)
-        self._scale = Vec2(kwargs.get("scale", (1, 1)))
+        self._scale = Vec2(kwargs.get("scale", Vec2(1, 1)))
         self._alpha = kwargs.get("alpha", 255)
         self._anchor = [1, 1]
-        self._img_updated = False
 
-    def on_load(self):
+        self._img_updated = False
         if self.source is None:
             if self.asset is None:
                 temp_source = pygame.Surface((10, 10))
@@ -28,7 +27,14 @@ class Sprite(GameObject):
                 if isinstance(self.asset, pygame.Surface):
                     self.source = self.asset
                 else:
-                    self.source = self.scene.load_resource(self.asset)
+                    self.source = Game_Globals["Scene"].load_resource(self.asset)
+
+        anchor = kwargs.get("anchor", None)
+        if anchor is not None:
+            self.set_anchor(*anchor)
+
+    def on_load(self):
+        ...
 
     def _draw(self, surface: pygame.Surface, offset=None):
         """
@@ -60,9 +66,10 @@ class Sprite(GameObject):
 
     def _set_offset(self):
         self._draw_offset = -Vec2(
-                self.image.get_width() * self._anchor[0] / 2, self.image.get_height() * self._anchor[1] / 2
-            )
-        
+            self.image.get_width() * self._anchor[0] / 2,
+            self.image.get_height() * self._anchor[1] / 2,
+        )
+
     def set_anchor(self, horizontal=None, vertical=None):
         if vertical in ["top", 0]:
             self._anchor[1] = 0
@@ -162,6 +169,10 @@ class Sprite(GameObject):
         else:
             self._rotation = degrees
         self._img_updated = False
+
+    @property
+    def rect(self):
+        return pygame.Rect(self.draw_pos, self.image.get_size())
 
 
 class AnimatedSprite(Sprite):

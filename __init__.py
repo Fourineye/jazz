@@ -1,3 +1,6 @@
+import pygame
+
+pygame.init()
 import pygame.locals as locals
 
 from .animation.easing import *
