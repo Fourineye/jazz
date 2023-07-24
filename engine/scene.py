@@ -40,10 +40,9 @@ class Scene:
     IMAGE = 0
     SPRITE_SHEET = 1
 
-    def __init__(self, app):
+    def __init__(self):
         self.camera = Camera()
         self.resource_manager = ResourceManager()
-        self.sound_manager = SoundManager()
         self._groups = {}
         self._objects = {}
         self._physics_world = {
@@ -52,11 +51,10 @@ class Scene:
             2: PhysicsGrid(),
             3: PhysicsGrid(),
         }
-        self.display = pygame.display.get_surface()
+
         self.running = True
         self._paused = False
-        self.app = app
-        Game_Globals["Sound"] = self.sound_manager
+        Game_Globals["Sound"].clear_sounds()
 
     def on_load(self, data):
         """
@@ -143,7 +141,7 @@ class Scene:
             obj (object): The Object to be added to the scene.
         """
         if obj.id not in self.keys():
-            obj._on_load(self, self.app)
+            obj._on_load()
             self._objects[obj.id] = obj
         else:
             print("obj already in scene")
@@ -290,8 +288,8 @@ class Scene:
 
     @property
     def width(self):
-        return self.display.get_width()
+        return Game_Globals["Display"].get_width()
 
     @property
     def height(self):
-        return self.display.get_height()
+        return Game_Globals["Display"].get_height()

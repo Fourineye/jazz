@@ -26,8 +26,6 @@ class GameObject:
         # Engine Attributes
         self.name = name
         self.id = str(uuid.uuid1())
-        self.scene = None
-        self.app = None
 
         # Child properties
         self._children = {}
@@ -66,12 +64,10 @@ class GameObject:
             + children
         )
 
-    def _on_load(self, scene, app):
-        self.scene = scene
-        self.app = app
+    def _on_load(self):
         self.on_load()
         for child in self._children.values():
-            child._on_load(scene, app)
+            child._on_load()
 
     def on_load(self):
         ...

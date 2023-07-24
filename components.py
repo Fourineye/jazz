@@ -102,7 +102,7 @@ class Sprite(GameObject):
     @source.setter
     def source(self, new_source):
         if not isinstance(new_source, pygame.Surface):
-            new_source = self.scene.load_resource(new_source)
+            new_source = Game_Globals["Scene"].load_resource(new_source)
         self._source = new_source
         self._img_updated = False
         self.update_image()
@@ -192,13 +192,13 @@ class AnimatedSprite(Sprite):
             self._sheet = [pygame.Surface((10, 10))]
         else:
             if isinstance(self._sheet, str):
-                self._sheet = self.scene.make_sprite_sheet(
+                self._sheet = Game_Globals["Scene"].make_sprite_sheet(
                     self._sheet, self._sprite_dim, self._sprite_offset
                 )
             else:
                 for sprite in self._sheet:
                     if isinstance(sprite, str):
-                        sprite = self.scene.load_resource(sprite)
+                        sprite = Game_Globals["Scene"].load_resource(sprite)
                     if not isinstance(sprite, pygame.Surface):
                         raise TypeError(
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
@@ -212,14 +212,14 @@ class AnimatedSprite(Sprite):
     def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
         if spritesheet is not None:
             if isinstance(spritesheet, str):
-                self._sheet = self.scene.make_sprite_sheet(
+                self._sheet = Game_Globals["Scene"].make_sprite_sheet(
                     spritesheet, self._sprite_dim, self._sprite_offset
                 )
             else:
                 self._sheet = spritesheet
                 for sprite in self._sheet:
                     if isinstance(sprite, str):
-                        sprite = self.scene.load_resource(sprite)
+                        sprite = Game_Globals["Scene"].load_resource(sprite)
                     if not isinstance(sprite, pygame.Surface):
                         raise TypeError(
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
