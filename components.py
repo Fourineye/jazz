@@ -347,7 +347,7 @@ class Button(GameObject):
 
     def __init__(self, name="button", **kwargs):
         super().__init__(name, **kwargs)
-        self.screen_layer = True
+        self.screen_space = True
 
         self._callback = kwargs.get("callback", None)
         self._on_release = kwargs.get("on_release", True)

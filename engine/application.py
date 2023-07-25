@@ -39,25 +39,18 @@ class Application:
         fps_max=60,
         vsync=False,
     ):
-        """
-        Initializes the Application object and pygame, creates the
+        """Initializes the Application object and pygame, creates the
         application window
 
         Args:
-        =====
-            width (int): Pixel width of the window.
-            height (int): Pixel Height of the window.
-            name (str, optional): Name to be displayed at the top of the window.
-                Defaults to None.
-
-        Kwargs:
-        ======
-            fps_max (int): The max frame rate the application will run.
-                Defaults to 60.
-            flags (int): Flags from pygame to be passed to the display on creation.
-                Defaults to 0.
-            **kwargs (dict): Remaining kwargs will be passed on to the on_init method.
+            width (int): Width of the window in pixels
+            height (int): Height of the window in pixels
+            name (str, optional): String to be shown on the window. Defaults to None.
+            flags (int, optional): Flags to be passed to the pygame.display.set_mode function. Defaults to 0.
+            fps_max (int, optional): Sets the max fps that the window will be limited to. Defaults to 60.
+            vsync (bool, optional): Controls if the window will try to use vsync. Defaults to False.
         """
+
         load_ini()
         if name:
             pygame.display.set_caption(name)
@@ -87,19 +80,26 @@ class Application:
         GAME_GLOBALS["Sound"] = self._sound
 
     def add_scene(self, scene):
-        """
-        Adds a scene class reference to the game to be initilaized at
+        """Adds a scene class reference to the game to be initilaized at
         a later point. Setting the next scene if on is not already set
+
+        Args:
+            scene (jazz.Scene): The class to add to the application
         """
         name = scene.name
         self._scenes.update({name: scene})
         if self._next_scene is None:
             self._next_scene = name
 
-    def set_next_scene(self, name):
-        """
-        Sets the _next_scene property verifying that the scene exists in
+    def set_next_scene(self, name: str):
+        """Sets the _next_scene property verifying that the scene exists in
         the game first
+
+        Args:
+            name (str): The name of a given Scene added to the application
+
+        Raises:
+            Exception: The given string does not match the name of any added Scenes
         """
         scene_class = self._scenes.get(name)
         if scene_class is None:
@@ -107,9 +107,10 @@ class Application:
         self._next_scene = name
 
     def run(self):
-        """
-        Holds the main game loop of the application. The loop continues as
-        long as the running Attribute is True.
+        """Starts the main game loop of the application.
+
+        Raises:
+            Exception: If no scenes have been added to the application
         """
 
         # Check that app has scenes before running
@@ -148,7 +149,7 @@ class Application:
         pygame.quit()
 
     def stop(self):
-        """Sets the running flags to false"""
+        """Sets the neccessary flags to stop the main game loop"""
         self.running = False
         if self._active_scene is not None:
             self._active_scene.running = False
@@ -176,9 +177,19 @@ class Application:
             self.stop()
 
     def set_caption(self, text: str):
+        """Sets the caption on the application window
+
+        Args:
+            text (str): The text to put in the caption.
+        """
         if not isinstance(text, str):
             text = str(text)
         pygame.display.set_caption(text)
 
     def get_fps(self):
+        """Returns fps as a float
+
+        Returns:
+            float: Application fps as a float.
+        """
         return self._clock.get_fps()

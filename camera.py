@@ -157,23 +157,6 @@ class Camera:
         self.magnitude = magnitude
         self.shake = Vec2()
 
-    def sort(self, key=None):
-        """
-        Sorts the layers based on either the Camera key or one provided
-
-        Args:
-            key (str, optional): The name of an attribute to use to sort
-                each layer. Defaults to None.
-        """
-        if key is None:
-            self._background_layer.sort(key=lambda obj: getattr(obj, self.key, 0))
-            self._foreground_layer.sort(key=lambda obj: getattr(obj, self.key, 0))
-            self._screen_layer.sort(key=lambda obj: getattr(obj, self.key, 0))
-        else:
-            self._background_layer.sort(key=lambda obj: getattr(obj, key, 0))
-            self._foreground_layer.sort(key=lambda obj: getattr(obj, key, 0))
-            self._screen_layer.sort(key=lambda obj: getattr(obj, key, 0))
-
     def draw_check(self, obj, debug=False):
         draw = hasattr(obj, "debug_draw") if debug else hasattr(obj, "draw")
         return draw and getattr(obj, "visible", True)
