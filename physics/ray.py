@@ -1,7 +1,7 @@
 """
 Module to provide a base for active game entities.
 """
-from ..global_dict import Game_Globals
+from ..global_dict import GAME_GLOBALS
 from ..utils import Vec2, dist_to
 from ._physics_object import PhysicsObject
 from .colliders import RayCollider
@@ -30,7 +30,7 @@ class Ray(PhysicsObject):
             collision_group (EntityGroup, optional): An optional group to check collisions against,
                 if left blank it will default to the Entity's collision_groups. Defaults to None.
         """
-        collisions = Game_Globals["Scene"].get_AABB_collisions(self)
+        collisions = GAME_GLOBALS["Scene"].get_AABB_collisions(self)
         precise_collisions = []
         for collider in collisions:
             point = self.collider.collide_ray(collider.collider)

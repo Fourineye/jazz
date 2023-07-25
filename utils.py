@@ -8,7 +8,7 @@ import pygame
 
 from .global_dict import SETTINGS
 
-# Bringing pygame constants into Jazz Namespace
+# Bringing pygame constants into jazz Namespace
 Vec2 = pygame.Vector2
 Rect = pygame.Rect
 Surface = pygame.Surface

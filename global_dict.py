@@ -1,4 +1,4 @@
-Game_Globals = {
+GAME_GLOBALS = {
     "App": None,
     "Scene": None,
     "Input": None,
@@ -8,8 +8,4 @@ Game_Globals = {
     "Sound": None,
 }
 
-SETTINGS = {
-    "master_volume": 1.0,
-    "music_volume": 1.0,
-    "sound_volume": 1.0
-}
+SETTINGS = {"master_volume": 1.0, "music_volume": 1.0, "sound_volume": 1.0}

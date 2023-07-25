@@ -4,7 +4,7 @@ from ..utils import clamp, save_ini
 
 music = mix.music
 
-from ..global_dict import SETTINGS, Game_Globals
+from ..global_dict import GAME_GLOBALS, SETTINGS
 
 
 class SoundManager:

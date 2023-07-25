@@ -10,40 +10,40 @@ This project is to wrap pygame into a more conveinent format that handles some o
 
 # Basic Example Program
 ```py
-import Jazz
+import jazz
 
 
-class Player(Jazz.GameObject):
+class Player(jazz.GameObject):
     def __init__(self, **kwargs):
         kwargs.setdefault("name", "Player")
         super().__init__(**kwargs)
-        self.add_child(Jazz.Sprite())
+        self.add_child(jazz.Sprite())
 
     def update(self, delta: float):
-        movement = Jazz.Vec2()
-        if Jazz.Game_Globals["Key"].held("up"):
+        movement = jazz.Vec2()
+        if jazz.GAME_GLOBALS["Key"].held("up"):
             movement.y -= 1
-        if Jazz.Game_Globals["Key"].held("down"):
+        if jazz.GAME_GLOBALS["Key"].held("down"):
             movement.y += 1
-        if Jazz.Game_Globals["Key"].held("left"):
+        if jazz.GAME_GLOBALS["Key"].held("left"):
             movement.x -= 1
-        if Jazz.Game_Globals["Key"].held("right"):
+        if jazz.GAME_GLOBALS["Key"].held("right"):
             movement.x += 1
 
         self.move(movement * 100 * delta)
 
 
-class MainScene(Jazz.Scene):
+class MainScene(jazz.Scene):
     name = "Main"
     def on_load(self, data):
         self.add_object(Player(pos=(100, 100)), "player")
 
     def update(self, delta: float):
-        Jazz.Game_Globals["App"].set_caption(self.player.pos)
+        jazz.GAME_GLOBALS["App"].set_caption(self.player.pos)
 
 
 if __name__ == "__main__":
-    app = Jazz.Application(800, 600)
+    app = jazz.Application(800, 600)
     app.add_scene(MainScene)
     app.run()
 

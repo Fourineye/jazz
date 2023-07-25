@@ -6,7 +6,7 @@ Scene class
 import pygame
 
 from ..camera import Camera
-from ..global_dict import Game_Globals
+from ..global_dict import GAME_GLOBALS
 from ..physics.physics import PhysicsGrid
 from .group import Group
 from .resource_manager import ResourceManager
@@ -54,7 +54,7 @@ class Scene:
 
         self.running = True
         self._paused = False
-        Game_Globals["Sound"].clear_sounds()
+        GAME_GLOBALS["Sound"].clear_sounds()
 
     def on_load(self, data):
         """
@@ -96,7 +96,7 @@ class Scene:
         self.running = False
 
     def restart(self):
-        Game_Globals["App"].set_next_scene(self.name)
+        GAME_GLOBALS["App"].set_next_scene(self.name)
         self.running = False
 
     def pause(self):
@@ -288,8 +288,8 @@ class Scene:
 
     @property
     def width(self):
-        return Game_Globals["Display"].get_width()
+        return GAME_GLOBALS["Display"].get_width()
 
     @property
     def height(self):
-        return Game_Globals["Display"].get_height()
+        return GAME_GLOBALS["Display"].get_height()

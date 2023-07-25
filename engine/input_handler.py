@@ -2,7 +2,7 @@
 
 import pygame
 
-from ..global_dict import Game_Globals
+from ..global_dict import GAME_GLOBALS
 from ..utils import Vec2, key_from_value
 
 
@@ -59,8 +59,8 @@ class Mouse:
         self._just_released = {}
         self._pos = Vec2(pygame.mouse.get_pos())
         self.rel = Vec2(pygame.mouse.get_rel())
-        if Game_Globals["Scene"] is not None:
-            self._world_offset = Game_Globals["Scene"].camera_offset
+        if GAME_GLOBALS["Scene"] is not None:
+            self._world_offset = GAME_GLOBALS["Scene"].camera_offset
         for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
             button = event.button - 1
             if button < len(Mouse.BUTTONS):

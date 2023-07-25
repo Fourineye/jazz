@@ -3,7 +3,7 @@ import uuid
 
 import pygame
 
-from ..global_dict import Game_Globals
+from ..global_dict import GAME_GLOBALS
 from ..utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
 
 config_dict = {

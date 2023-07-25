@@ -1,6 +1,7 @@
-from ..global_dict import Game_Globals
+from ..global_dict import GAME_GLOBALS
 from ..utils import Vec2, dist_to
 from ._physics_object import PhysicsObject
+
 
 class Area(PhysicsObject):
     def __init__(self, **kwargs):
@@ -18,7 +19,7 @@ class Area(PhysicsObject):
 
     def get_entered(self):
         entered = []
-        collisions = Game_Globals["Scene"].get_AABB_collisions(self)
+        collisions = GAME_GLOBALS["Scene"].get_AABB_collisions(self)
         if collisions:
             collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
             for obj in collisions:

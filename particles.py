@@ -4,9 +4,9 @@ from random import choice, randint, uniform
 import pygame
 from pygame import Vector2
 
-from Jazz import GameObject
+from jazz import GameObject
 
-from .global_dict import Game_Globals
+from .global_dict import GAME_GLOBALS
 from .utils import Vec2
 
 
@@ -17,19 +17,18 @@ class Particle:
     img: pygame.Surface
     life: float
 
+
 class ParticleEmitter(GameObject):
     """An object that handles particles"""
 
-    def __init__(
-        self,  active=False, rate=1, **kwargs
-    ):
+    def __init__(self, active=False, rate=1, **kwargs):
         kwargs.setdefault("name", "Particle Emitter")
         super().__init__(**kwargs)
         self._particles = []
         self._particle_graphics = kwargs.get("particle_graphics", None)
         self._particle_spawn = kwargs.get("particle_spawn", None)
         self._particle_life = kwargs.get("particle_life", 2)
-        self._emission_angles = kwargs.get("emission_angles", [(0,360)])
+        self._emission_angles = kwargs.get("emission_angles", [(0, 360)])
         self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
         self.active = active
         self.rate = rate
@@ -41,7 +40,9 @@ class ParticleEmitter(GameObject):
     def on_load(self):
         for i, graphic in enumerate(self._particle_graphics):
             if not isinstance(graphic, pygame.Surface):
-                self._particle_graphics[i] = Game_Globals["Scene"].load_resource(graphic)
+                self._particle_graphics[i] = GAME_GLOBALS["Scene"].load_resource(
+                    graphic
+                )
 
     def emit_particles(self, num: int):
         """
@@ -57,15 +58,20 @@ class ParticleEmitter(GameObject):
         spawn_offset = Vec2()
         if self._particle_spawn is not None:
             if isinstance(self._particle_spawn, pygame.Rect):
-                spawn_offset.update(uniform(self._particle_spawn.left, self._particle_spawn.right), uniform(self._particle_spawn.top, self._particle_spawn.bottom))
+                spawn_offset.update(
+                    uniform(self._particle_spawn.left, self._particle_spawn.right),
+                    uniform(self._particle_spawn.top, self._particle_spawn.bottom),
+                )
             if isinstance(self._particle_spawn, (int, float)):
                 spawn_offset.update(uniform(0, self._particle_spawn), 0)
                 spawn_offset.rotate_ip(uniform(0, 360))
         particle = Particle(
             self.pos + spawn_offset,
-            Vec2(uniform(*choice(self._emission_speed)), 0).rotate(uniform(*choice(self._emission_angles))),
+            Vec2(uniform(*choice(self._emission_speed)), 0).rotate(
+                uniform(*choice(self._emission_angles))
+            ),
             randint(0, len(self._particle_graphics) - 1),
-            self._particle_life
+            self._particle_life,
         )
         self._particles.append(particle)
 

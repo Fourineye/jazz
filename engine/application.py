@@ -1,6 +1,6 @@
 import pygame
 
-from ..global_dict import SETTINGS, Game_Globals
+from ..global_dict import GAME_GLOBALS, SETTINGS
 from ..utils import load_ini
 from .input_handler import InputHandler
 from .sound_manager import SoundManager
@@ -79,12 +79,12 @@ class Application:
         self.running = True
         self.fps_max = fps_max
 
-        Game_Globals["App"] = self
-        Game_Globals["Input"] = self._input
-        Game_Globals["Key"] = self._input.key
-        Game_Globals["Mouse"] = self._input.mouse
-        Game_Globals["Display"] = self.display
-        Game_Globals["Sound"] = self._sound
+        GAME_GLOBALS["App"] = self
+        GAME_GLOBALS["Input"] = self._input
+        GAME_GLOBALS["Key"] = self._input.key
+        GAME_GLOBALS["Mouse"] = self._input.mouse
+        GAME_GLOBALS["Display"] = self.display
+        GAME_GLOBALS["Sound"] = self._sound
 
     def add_scene(self, scene):
         """
@@ -122,7 +122,7 @@ class Application:
         while self.running:
             # Load next scene
             self._active_scene = self._load_scene(self._next_scene)
-            Game_Globals["Scene"] = self._active_scene
+            GAME_GLOBALS["Scene"] = self._active_scene
             self._active_scene.on_load(scene_transfer_data)
 
             # Main scene loop

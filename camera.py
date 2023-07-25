@@ -2,7 +2,7 @@ from random import randint
 
 import pygame
 
-from .global_dict import Game_Globals
+from .global_dict import GAME_GLOBALS
 from .utils import Rect, Vec2, clamp
 
 
@@ -49,7 +49,7 @@ class Camera:
             self.magnitude = 0
 
     def render(self):
-        draw_objects = list(Game_Globals["Scene"].values())
+        draw_objects = list(GAME_GLOBALS["Scene"].values())
         draw_objects.sort(key=lambda obj: obj._z, reverse=False)
 
         if self._blanking:
@@ -74,7 +74,10 @@ class Camera:
         if self.zoom > 1:
             zoomed_display = self.display.copy()
             zoomed_display = pygame.transform.scale_by(zoomed_display, self.zoom)
-            blit_pos = (self.display_center[0] - zoomed_display.get_width() / 2, self.display_center[1] - zoomed_display.get_height() / 2)
+            blit_pos = (
+                self.display_center[0] - zoomed_display.get_width() / 2,
+                self.display_center[1] - zoomed_display.get_height() / 2,
+            )
             self.display.blit(zoomed_display, blit_pos)
 
     def update_offset(self):
@@ -96,8 +99,16 @@ class Camera:
             offset_y += (self.display_center[1] - target_y - offset_y) / 5
 
         if self.bounds is not None:
-            offset_x = clamp(offset_x, -self.bounds.right + self.display.get_width(), -self.bounds.left)
-            offset_y = clamp(offset_y, -self.bounds.bottom + self.display.get_height(), -self.bounds.top)
+            offset_x = clamp(
+                offset_x,
+                -self.bounds.right + self.display.get_width(),
+                -self.bounds.left,
+            )
+            offset_y = clamp(
+                offset_y,
+                -self.bounds.bottom + self.display.get_height(),
+                -self.bounds.top,
+            )
 
         self.offset.update(offset_x, offset_y)
 
