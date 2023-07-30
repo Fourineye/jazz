@@ -1,0 +1,573 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>jazz.utils API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>jazz.utils</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import json
+import math
+from csv import reader
+from os import walk
+from random import randint
+
+import pygame
+
+from .global_dict import SETTINGS
+
+# Bringing pygame constants into jazz Namespace
+Vec2 = pygame.Vector2
+Rect = pygame.Rect
+Surface = pygame.Surface
+
+
+def load_ini(path=&#34;./.jini&#34;):
+    try:
+        with open(path, &#34;r&#34;) as ini:
+            data = json.load(ini)
+        for key, value in data.items():
+            SETTINGS[key] = value
+    except:
+        save_ini()
+
+
+def save_ini(path=&#34;./.jini&#34;):
+    with open(path, &#34;w&#34;) as ini:
+        json.dump(SETTINGS, ini)
+
+
+def import_csv_layout(path):
+    data = []
+    with open(path) as data_file:
+        layout = reader(data_file, delimiter=&#34;,&#34;)
+        for row in layout:
+            data.append(list(row))
+        return data
+
+
+def load_image(path):
+    tmp_surf = pygame.image.load(path)
+    if tmp_surf.get_alpha() is not None:
+        return tmp_surf.convert_alpha()
+    else:
+        return tmp_surf.convert()
+
+
+def clamp(n, smallest, largest):
+    return max(smallest, min(n, largest))
+
+
+def map_range(x, a, b, c, d):
+    y = (x - a) / (b - a) * (d - c) + c
+    return y
+
+
+def sign(x):
+    if x == 0:
+        return 0
+    return x / abs(x)
+
+
+def build_rect(x1, y1, x2, y2):
+    left = min(x1, x2)
+    top = min(y1, y2)
+    width = max(x1, x2) - left
+    height = max(y1, y2) - top
+    return Rect(left, top, width, height)
+
+
+def color_mult(color, mult):
+    new_color = map(lambda x: clamp(x * mult, 0, 255), color)
+    return tuple(new_color)
+
+
+def dist_to(vec1, vec2):
+    dist = vec2 - vec1
+    return dist.magnitude()
+
+
+def direction_to(vec1, vec2):
+    direction = vec2 - vec1
+    if direction.magnitude_squared() != 1 and direction.magnitude_squared() != 0:
+        direction.normalize_ip()
+    return direction
+
+
+def key_from_value(search_dict, search_value):
+    for key, value in search_dict.items():
+        if value == search_value:
+            return key
+    return False
+
+
+def scale_double(surface):
+    width, height = surface.get_size()
+    return pygame.transform.scale(surface, (width * 2, height * 2))
+
+
+def random_color():
+    r = randint(0, 255)
+    g = randint(0, 255)
+    b = randint(0, 255)
+    return (r, g, b)
+
+
+def line_intersection(p_0, p_1, p_2, p_3):
+    &#34;&#34;&#34; &#34;&#34;&#34;
+    p_0 = pygame.Vector2(p_0)
+    p_1 = pygame.Vector2(p_1)
+    p_2 = pygame.Vector2(p_2)
+    p_3 = pygame.Vector2(p_3)
+
+    s_1 = pygame.Vector2(p_1 - p_0)
+    s_2 = pygame.Vector2(p_3 - p_2)
+
+    if abs(s_1.normalize().dot(s_2.normalize())) == 1:
+        return None
+
+    s = (-s_1.y * (p_0.x - p_2.x) + s_1.x * (p_0.y - p_2.y)) / (
+        -s_2.x * s_1.y + s_1.x * s_2.y
+    )
+    t = (s_2.x * (p_0.y - p_2.y) - s_2.y * (p_0.x - p_2.x)) / (
+        -s_2.x * s_1.y + s_1.x * s_2.y
+    )
+
+    if 0 &lt;= s &lt;= 1 and 0 &lt;= t &lt;= 1:
+        i = p_0 + (t * s_1)
+        return pygame.Vector2(i)
+    else:
+        return None
+
+
+def line_circle(a, b, c, r):
+    &#34;&#34;&#34; &#34;&#34;&#34;
+    a = pygame.Vector2(a)
+    b = pygame.Vector2(b)
+    c = pygame.Vector2(c)
+
+    ac = c - a
+    ab = b - a
+    abab = ab.dot(ab)
+    acab = ac.dot(ab)
+    t = acab / abab
+    h = ab * t + a - c
+    hh = h.dot(h)
+    if hh &lt;= r * r:
+        pen = math.sqrt(r * r - hh)
+        return a + ab * t + pen * direction_to(c + h, a)
+
+
+def rotated_pos(point, angle):
+    angle = math.radians(angle)
+    return Vec2(
+        point.x * math.cos(angle) - point.y * math.sin(angle),
+        point.x * math.sin(angle) + point.y * math.cos(angle),
+    )
+
+
+def unit_from_angle(angle):
+    return rotated_pos(Vec2(1, 0), angle)
+
+
+def angle_from_vec(vector):
+    return Vec2(1, 0).angle_to(vector)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="jazz.utils.angle_from_vec"><code class="name flex">
+<span>def <span class="ident">angle_from_vec</span></span>(<span>vector)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def angle_from_vec(vector):
+    return Vec2(1, 0).angle_to(vector)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.build_rect"><code class="name flex">
+<span>def <span class="ident">build_rect</span></span>(<span>x1, y1, x2, y2)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def build_rect(x1, y1, x2, y2):
+    left = min(x1, x2)
+    top = min(y1, y2)
+    width = max(x1, x2) - left
+    height = max(y1, y2) - top
+    return Rect(left, top, width, height)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.clamp"><code class="name flex">
+<span>def <span class="ident">clamp</span></span>(<span>n, smallest, largest)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def clamp(n, smallest, largest):
+    return max(smallest, min(n, largest))</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.color_mult"><code class="name flex">
+<span>def <span class="ident">color_mult</span></span>(<span>color, mult)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def color_mult(color, mult):
+    new_color = map(lambda x: clamp(x * mult, 0, 255), color)
+    return tuple(new_color)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.direction_to"><code class="name flex">
+<span>def <span class="ident">direction_to</span></span>(<span>vec1, vec2)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def direction_to(vec1, vec2):
+    direction = vec2 - vec1
+    if direction.magnitude_squared() != 1 and direction.magnitude_squared() != 0:
+        direction.normalize_ip()
+    return direction</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.dist_to"><code class="name flex">
+<span>def <span class="ident">dist_to</span></span>(<span>vec1, vec2)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def dist_to(vec1, vec2):
+    dist = vec2 - vec1
+    return dist.magnitude()</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.import_csv_layout"><code class="name flex">
+<span>def <span class="ident">import_csv_layout</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def import_csv_layout(path):
+    data = []
+    with open(path) as data_file:
+        layout = reader(data_file, delimiter=&#34;,&#34;)
+        for row in layout:
+            data.append(list(row))
+        return data</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.key_from_value"><code class="name flex">
+<span>def <span class="ident">key_from_value</span></span>(<span>search_dict, search_value)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def key_from_value(search_dict, search_value):
+    for key, value in search_dict.items():
+        if value == search_value:
+            return key
+    return False</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.line_circle"><code class="name flex">
+<span>def <span class="ident">line_circle</span></span>(<span>a, b, c, r)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def line_circle(a, b, c, r):
+    &#34;&#34;&#34; &#34;&#34;&#34;
+    a = pygame.Vector2(a)
+    b = pygame.Vector2(b)
+    c = pygame.Vector2(c)
+
+    ac = c - a
+    ab = b - a
+    abab = ab.dot(ab)
+    acab = ac.dot(ab)
+    t = acab / abab
+    h = ab * t + a - c
+    hh = h.dot(h)
+    if hh &lt;= r * r:
+        pen = math.sqrt(r * r - hh)
+        return a + ab * t + pen * direction_to(c + h, a)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.line_intersection"><code class="name flex">
+<span>def <span class="ident">line_intersection</span></span>(<span>p_0, p_1, p_2, p_3)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def line_intersection(p_0, p_1, p_2, p_3):
+    &#34;&#34;&#34; &#34;&#34;&#34;
+    p_0 = pygame.Vector2(p_0)
+    p_1 = pygame.Vector2(p_1)
+    p_2 = pygame.Vector2(p_2)
+    p_3 = pygame.Vector2(p_3)
+
+    s_1 = pygame.Vector2(p_1 - p_0)
+    s_2 = pygame.Vector2(p_3 - p_2)
+
+    if abs(s_1.normalize().dot(s_2.normalize())) == 1:
+        return None
+
+    s = (-s_1.y * (p_0.x - p_2.x) + s_1.x * (p_0.y - p_2.y)) / (
+        -s_2.x * s_1.y + s_1.x * s_2.y
+    )
+    t = (s_2.x * (p_0.y - p_2.y) - s_2.y * (p_0.x - p_2.x)) / (
+        -s_2.x * s_1.y + s_1.x * s_2.y
+    )
+
+    if 0 &lt;= s &lt;= 1 and 0 &lt;= t &lt;= 1:
+        i = p_0 + (t * s_1)
+        return pygame.Vector2(i)
+    else:
+        return None</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.load_image"><code class="name flex">
+<span>def <span class="ident">load_image</span></span>(<span>path)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_image(path):
+    tmp_surf = pygame.image.load(path)
+    if tmp_surf.get_alpha() is not None:
+        return tmp_surf.convert_alpha()
+    else:
+        return tmp_surf.convert()</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.load_ini"><code class="name flex">
+<span>def <span class="ident">load_ini</span></span>(<span>path='./.jini')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def load_ini(path=&#34;./.jini&#34;):
+    try:
+        with open(path, &#34;r&#34;) as ini:
+            data = json.load(ini)
+        for key, value in data.items():
+            SETTINGS[key] = value
+    except:
+        save_ini()</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.map_range"><code class="name flex">
+<span>def <span class="ident">map_range</span></span>(<span>x, a, b, c, d)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def map_range(x, a, b, c, d):
+    y = (x - a) / (b - a) * (d - c) + c
+    return y</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.random_color"><code class="name flex">
+<span>def <span class="ident">random_color</span></span>(<span>)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def random_color():
+    r = randint(0, 255)
+    g = randint(0, 255)
+    b = randint(0, 255)
+    return (r, g, b)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.rotated_pos"><code class="name flex">
+<span>def <span class="ident">rotated_pos</span></span>(<span>point, angle)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def rotated_pos(point, angle):
+    angle = math.radians(angle)
+    return Vec2(
+        point.x * math.cos(angle) - point.y * math.sin(angle),
+        point.x * math.sin(angle) + point.y * math.cos(angle),
+    )</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.save_ini"><code class="name flex">
+<span>def <span class="ident">save_ini</span></span>(<span>path='./.jini')</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def save_ini(path=&#34;./.jini&#34;):
+    with open(path, &#34;w&#34;) as ini:
+        json.dump(SETTINGS, ini)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.scale_double"><code class="name flex">
+<span>def <span class="ident">scale_double</span></span>(<span>surface)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def scale_double(surface):
+    width, height = surface.get_size()
+    return pygame.transform.scale(surface, (width * 2, height * 2))</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.sign"><code class="name flex">
+<span>def <span class="ident">sign</span></span>(<span>x)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sign(x):
+    if x == 0:
+        return 0
+    return x / abs(x)</code></pre>
+</details>
+</dd>
+<dt id="jazz.utils.unit_from_angle"><code class="name flex">
+<span>def <span class="ident">unit_from_angle</span></span>(<span>angle)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def unit_from_angle(angle):
+    return rotated_pos(Vec2(1, 0), angle)</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="jazz" href="index.html">jazz</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="two-column">
+<li><code><a title="jazz.utils.angle_from_vec" href="#jazz.utils.angle_from_vec">angle_from_vec</a></code></li>
+<li><code><a title="jazz.utils.build_rect" href="#jazz.utils.build_rect">build_rect</a></code></li>
+<li><code><a title="jazz.utils.clamp" href="#jazz.utils.clamp">clamp</a></code></li>
+<li><code><a title="jazz.utils.color_mult" href="#jazz.utils.color_mult">color_mult</a></code></li>
+<li><code><a title="jazz.utils.direction_to" href="#jazz.utils.direction_to">direction_to</a></code></li>
+<li><code><a title="jazz.utils.dist_to" href="#jazz.utils.dist_to">dist_to</a></code></li>
+<li><code><a title="jazz.utils.import_csv_layout" href="#jazz.utils.import_csv_layout">import_csv_layout</a></code></li>
+<li><code><a title="jazz.utils.key_from_value" href="#jazz.utils.key_from_value">key_from_value</a></code></li>
+<li><code><a title="jazz.utils.line_circle" href="#jazz.utils.line_circle">line_circle</a></code></li>
+<li><code><a title="jazz.utils.line_intersection" href="#jazz.utils.line_intersection">line_intersection</a></code></li>
+<li><code><a title="jazz.utils.load_image" href="#jazz.utils.load_image">load_image</a></code></li>
+<li><code><a title="jazz.utils.load_ini" href="#jazz.utils.load_ini">load_ini</a></code></li>
+<li><code><a title="jazz.utils.map_range" href="#jazz.utils.map_range">map_range</a></code></li>
+<li><code><a title="jazz.utils.random_color" href="#jazz.utils.random_color">random_color</a></code></li>
+<li><code><a title="jazz.utils.rotated_pos" href="#jazz.utils.rotated_pos">rotated_pos</a></code></li>
+<li><code><a title="jazz.utils.save_ini" href="#jazz.utils.save_ini">save_ini</a></code></li>
+<li><code><a title="jazz.utils.scale_double" href="#jazz.utils.scale_double">scale_double</a></code></li>
+<li><code><a title="jazz.utils.sign" href="#jazz.utils.sign">sign</a></code></li>
+<li><code><a title="jazz.utils.unit_from_angle" href="#jazz.utils.unit_from_angle">unit_from_angle</a></code></li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

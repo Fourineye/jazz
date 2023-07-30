@@ -112,7 +112,7 @@ class AnimationManager:
         """
         self.animations.update({name: animation})
 
-    def add_tween(self, name: str, tween: Tween):
+    def add_tween(self, name: str, tween):
         """
         Adds a Tween to the AnimationManager
 

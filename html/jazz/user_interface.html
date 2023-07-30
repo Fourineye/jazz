@@ -1,0 +1,2984 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>jazz.user_interface API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>jazz.user_interface</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import pygame as pg
+
+from .engine.base_object import GameObject
+from .utils import color_mult, map_range
+
+pg.font.init()
+# Constants declaration
+SYS_FONT = pg.font.SysFont(pg.font.get_fonts()[0], 24)
+DEFAULT_FONT = SYS_FONT
+BUTTON_PRESSED = pg.USEREVENT
+H_CENTERED = 1
+V_CENTERED = 2
+ON_RELEASE = 4
+CLEAR_ON_INPUT = 8
+CLEAR_ON_FIRST_INPUT = 16
+
+
+def set_default_font(font):
+    global DEFAULT_FONT
+    if not isinstance(font, pg.font.Font):
+        raise TypeError(&#34;Must pass a Font object&#34;)
+    DEFAULT_FONT = font
+
+
+# Base UI Class
+class BaseUI(GameObject):
+    def __init__(self, **kwargs):
+        super().__init__(self, name=&#34;UI&#34;,**kwargs)
+        self.screen_layer = kwargs.get(&#34;screen_layer&#34;, True)
+        self.font = kwargs.get(&#34;font&#34;, DEFAULT_FONT)
+
+
+# Container Class
+class UIContainer:
+    def __init__(self, initial_items=None, visible=True, **kwargs):
+        self.game_process = kwargs.get(&#34;game_process&#34;, True)
+        self.pause_process = kwargs.get(&#34;pause_process&#34;, False)
+        self.game_input = kwargs.get(&#34;game_input&#34;, True)
+        self.screen_layer = kwargs.get(&#34;screen_layer&#34;, True)
+        self.visible = kwargs.get(&#34;visible&#34;, True)
+        if initial_items:
+            self.elements = initial_items
+        else:
+            self.elements = []
+        self.visible = visible
+
+    def process(self, delta):
+        if not self.visible:
+            return
+        for element in self.elements:
+            element.process(delta)
+
+    def input(self, INPUT):
+        if not self.visible:
+            return
+        for element in self.elements[::-1]:
+            if element.input(INPUT):
+                return
+
+    def draw(self, surface, offset=None):
+        if not self.visible:
+            return
+        for element in self.elements:
+            element.draw(surface, offset)
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+
+    def set_visible(self, visible=True):
+        self.visible = visible
+
+    def add(self, element):
+        self.elements.append(element)
+        element.game_process = False
+        element.pause_process = False
+        element.game_input = False
+
+    def remove(self, element):
+        self.elements.remove(element)
+        element.game_process = True
+        element.game_input = True
+
+
+# Vertical Container
+class Vbox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, buttons, event_tag, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.buttons = []
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.radius = kwargs.get(&#34;radius&#34;, 3)
+        button_height = (y_dim - self.padding * (buttons + 1)) / buttons
+        flags = kwargs.get(&#34;flags&#34;, 3)
+
+        for button in range(buttons):
+            but = SimpleButton(
+                x + self.padding,
+                y + self.padding + (button_height + self.padding) * button,
+                x_dim - self.padding * 2,
+                button_height,
+                &#34;button&#34;,
+                [event_tag, button],
+                flags,
+                font=self.font,
+            )
+
+            self.buttons.append(but)
+        text = kwargs.get(&#34;text&#34;, None)
+        if text:
+            if len(text) == buttons:
+                for i, t in enumerate(text):
+                    self.buttons[i].set_text(t)
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.visible = kwargs.get(&#34;visible&#34;, True)
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+
+    def input(self, INPUT):
+        if self.visible:
+            for button in self.buttons:
+                if button.input(INPUT):
+                    return True
+            if INPUT.mouse.click(&#34;left&#34;):
+                if self.rect.collidepoint(INPUT.mouse.pos):
+                    return True
+        return False
+
+    def process(self, delta):
+        if self.visible:
+            for button in self.buttons:
+                button.process(delta)
+
+    def draw(self, surface, offset=None):
+        if self.visible:
+            surface.blit(self.image, self.rect)
+            for button in self.buttons:
+                button.draw(surface)
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+
+    def set_text(self, index, text):
+        if index &lt; len(self.buttons):
+            self.buttons[index].set_text(text)
+        else:
+            return False
+
+
+# TODO Horizontal Container
+class HBox(BaseUI):
+    pass
+
+
+#  Button Class
+class SimpleButton(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, text, event_tag, flags=3, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+        self.event = pg.event.Event(
+            BUTTON_PRESSED, {&#34;source&#34;: &#34;Button&#34;, &#34;flag&#34;: event_tag}
+        )
+        self.callback = kwargs.get(&#34;callback&#34;, None)
+
+        self.radius = kwargs.get(&#34;radius&#34;, 3)
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+        self._color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.unpressed_color = self.color
+        self.pressed_color = color_mult(self.color, 0.9)
+        self.hover_color = color_mult(self.color, 1.2)
+
+        # Flags
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.on_release = flags &amp; 4 == 4
+        self.pressed = False
+
+        self.update_image()
+
+    def input(self, INPUT):
+        if not self.visible:
+            return
+        if INPUT.mouse.click(&#34;left&#34;):
+            if self.rect.collidepoint(INPUT.mouse.pos):
+                if not self.on_release:
+                    if callable(self.callback):
+                        self.callback()
+                    pg.event.post(self.event)
+                self.pressed = True
+                self._color = self.pressed_color
+                return True
+        if INPUT.mouse.release(&#34;left&#34;):
+            if self.rect.collidepoint(INPUT.mouse.pos):
+                if self.on_release and self.pressed:
+                    if callable(self.callback):
+                        self.callback()
+                    pg.event.post(self.event)
+                self.pressed = False
+                self._color = self.unpressed_color
+                return True
+        return False
+
+    def process(self, _delta):
+        if not self.visible:
+            return
+        mouse_pos = pg.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos) and not self.pressed:
+            self._color = self.hover_color
+        elif not self.pressed:
+            self._color = self.unpressed_color
+        elif not self.rect.collidepoint(mouse_pos):
+            self.pressed = False
+            self._color = self.unpressed_color
+        self.update_image()
+
+    def draw(self, surface, offset=None):
+        if self.visible:
+            surface.blit(self.image, self.rect)
+
+    def set_flags(self, flags):
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.on_release = flags &amp; 4 == 4
+        self.update_image()
+
+    def set_text(self, text):
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+        self.update_image()
+
+    def update_image(self):
+        draw_pos = [self.padding, self.padding]
+
+        if self.h_cent:
+            draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+        if self.v_cent:
+            draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+        if self.pressed:
+            border_color = color_mult(self.color, 0.5)
+        else:
+            border_color = color_mult(self.color, 1.5)
+
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+        pg.draw.rect(
+            self.image,
+            border_color,
+            self.image.get_rect(),
+            border_radius=self.radius,
+            width=self.radius,
+        )
+        self.image.blit(self.text, draw_pos)
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.unpressed_color = self.color
+        self.pressed_color = color_mult(self.color, 0.9)
+        self.hover_color = color_mult(self.color, 1.2)
+
+
+# Text Box
+class Label(BaseUI):
+    def __init__(self, text, flags=3, **kwargs):
+        super().__init__(name=&#34;label&#34;, **kwargs)
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+
+        self.text_content = text
+        self.source = self.font.render(text, True, self.text_color)
+        self.size = self.source.get_size()
+
+        # Flags
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.update_image()
+
+    def draw(self, surface, offset=None):
+        if offset is None:
+            offset = pg.Vector2()
+        surface.blit(self.image, self.rect.topleft + offset)
+
+    def set_text(self, text):
+        if self.text_content != text:
+            self.text_content = text
+            self.source = self.font.render(text, True, self.text_color)
+            self.text_size = self.text.get_size()
+            self.update_image()
+
+    def update_image(self):
+        draw_pos = [self.padding, self.padding]
+        if self.h_cent:
+            draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+        if self.v_cent:
+            draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+        self.image.blit(self.text, draw_pos)
+
+    def set_flags(self, flags):
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.update_image()
+
+    def append_text(self, text):
+        self.text_content += text
+        self.set_text(self.text_content)
+
+
+
+# Input Box
+class InputBox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, text, flags=2, **kwargs):
+        &#34;&#34;&#34;
+        UI Element for user string input
+
+        Render an input box in the window that allows user to select and input
+        text.
+
+        Parameters
+        ----------
+        x : int
+            Leftmost x position in pixels.
+        y : int
+            Topmost y position in pixels.
+        x_dim : int
+            Width of the graphical input box in pixels.
+        y_dim : int
+            Height of the graphical input box in pixels.
+        &#34;&#34;&#34;
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.text_content = text
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.active_color = kwargs.get(&#34;active_color&#34;, (192, 192, 192))
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.radius = kwargs.get(&#34;radius&#34;, 3)
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+
+        self.active = False
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.clear_on_input = flags &amp; 8 == 8
+        self.clear_on_first_input = flags &amp; 16 == 16
+        self.clear = self.clear_on_first_input
+
+    def input(self, INPUT):
+        if INPUT.just_pressed(0, True):
+            if self.rect.collidepoint(INPUT.mouse_pos):
+                self.active = True
+                # pg.key.start_text_input()
+            else:
+                self.active = False
+                # pg.key.stop_text_input()
+                if not self.clear:
+                    self.clear = self.clear_on_input
+
+        if INPUT._just_pressed and self.active:
+            if self.clear:
+                self.text_content = &#34;&#34;
+                self.clear = False
+            for keypress in INPUT._just_pressed:
+                if keypress == pg.K_BACKSPACE:
+                    self.text_content = self.text_content[:-1]
+                elif keypress == pg.K_RETURN:
+                    self.active = False
+                else:
+                    self.text_content += pg.key.name(keypress)
+            self.update_text()
+
+    def draw(self, surface, offset=None):
+        if self.active:
+            color = self.active_color
+        else:
+            color = self.color
+
+        draw_pos = [self.padding, self.padding]
+        if self.h_cent:
+            draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+        if self.v_cent:
+            draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+        pg.draw.rect(
+            self.image, color, self.image.get_rect(), border_radius=self.radius
+        )
+        pg.draw.rect(
+            self.image,
+            self.color,
+            self.image.get_rect(),
+            width=3,
+            border_radius=self.radius,
+        )
+        self.image.blit(self.text, draw_pos)
+        surface.blit(self.image, self.rect)
+
+    def set_text(self, text):
+        self.text_content = text
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+
+    def get_text(self):
+        text = self.text_content
+        self.set_text(&#34;&#34;)
+        return text
+
+    def update_text(self):
+        text = self.text_content
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+
+    def set_pos(self, v_centered, h_centered):
+        self.v_cent = v_centered
+        self.h_cent = h_centered
+
+    def append_text(self, text):
+        self.text_content += text
+        self.set_text(self.text_content)
+
+
+# Multiline Text Box
+class MultilineTextBox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, text, flags=0, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.text_content = text
+        self.text = []
+        self.text_height = self.font.get_height()
+        for string in text:
+            self.text.append(self.font.render(string, True, self.text_color))
+        self.bottom_align = kwargs.get(&#34;bottom_align&#34;, False)
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.update_image()
+
+    def set_flags(self, flags):
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+
+    def update_image(self):
+        # Set the intial draw position
+        if self.bottom_align:
+            draw_pos = [
+                self.padding,
+                self.rect.height - self.padding - self.text_height,
+            ]
+        else:
+            draw_pos = [self.padding, self.padding]
+
+        # Draw the background of the text box
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+
+        # Loop through the text and draw it onto the background
+        if self.bottom_align:
+            if self.v_cent:
+                draw_pos[1] = (
+                    self.rect.height / 2
+                    + (
+                        len(self.text_content) * (self.text_height + self.padding)
+                        + self.padding
+                    )
+                    / 2
+                )
+            for text in self.text[::-1]:
+                if self.h_cent:
+                    draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
+                self.image.blit(text, draw_pos)
+                draw_pos[1] -= self.text_height + self.padding
+        else:
+            if self.v_cent:
+                draw_pos[1] = (
+                    self.rect.height / 2
+                    - (
+                        len(self.text_content) * (self.text_height + self.padding)
+                        + self.padding
+                    )
+                    / 2
+                )
+            for text in self.text:
+                if self.h_cent:
+                    draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
+                self.image.blit(text, draw_pos)
+                draw_pos[1] += self.text_height + self.padding
+
+    def draw(self, surface, offset=None):
+        # Draw the image onto the given surface
+        surface.blit(self.image, self.rect)
+
+    def set_text(self, text):
+        self.text_content = text
+        self.text = []
+        for string in text:
+            self.text.append(self.font.render(string, True, self.text_color))
+
+    def append_text(self, text):
+        self.text_content.append(text)
+        if (
+            len(self.text_content) * (self.text_height + self.padding) + self.padding
+            &gt; self.rect.height
+        ):
+            self.text_content.pop(0)
+        self.set_text(self.text_content)
+
+
+# TODO Slider
+class Slider(BaseUI):
+    pass
+
+
+# Progress Bar
+class ProgressBar(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, value, max_value, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.value = value
+        self.max_value = max_value
+        self.bg_color = kwargs.get(&#34;bg_color&#34;, (100, 100, 100))
+        self.color = kwargs.get(&#34;color&#34;, (100, 100, 200))
+        self.line_color = kwargs.get(&#34;line_color&#34;, (50, 50, 50))
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.line_width = kwargs.get(&#34;line_width&#34;, 3)
+        self.update_image()
+
+    def update_image(self):
+        # Draw the background color
+        pg.draw.rect(
+            self.image, self.bg_color, self.image.get_rect(), border_radius=self.radius
+        )
+        # Draw the bar fill
+        if self.value &gt; 0:
+            fill_height = self.image.get_height() - self.line_width * 2
+            fill_width = map_range(
+                self.value,
+                0,
+                self.max_value,
+                0,
+                self.image.get_width() - self.line_width * 2,
+            )
+            fill_rect = pg.Rect(
+                self.line_width, self.line_width, fill_width, fill_height
+            )
+            pg.draw.rect(self.image, self.color, fill_rect)
+        # Draw the border
+        if self.line_width &gt; 0:
+            pg.draw.rect(
+                self.image,
+                self.line_color,
+                self.image.get_rect(),
+                self.line_width,
+                border_radius=self.radius,
+            )
+
+    def update_value(self, value):
+        self.value = value
+        self.update_image()
+
+    def update_max_value(self, max_value):
+        self.max_value = max_value
+        self.update_image()
+
+    def draw(self, surface, offset=None):
+        surface.blit(self.image, self.rect)
+
+
+class ImageBox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, image, flags=3, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.contained_image = image
+        self.bg_color = kwargs.get(&#34;bg_color&#34;, (100, 100, 100))
+        self.line_color = kwargs.get(&#34;line_color&#34;, (50, 50, 50))
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.line_width = kwargs.get(&#34;line_width&#34;, 0)
+
+        self.h_centered = flags &amp; H_CENTERED
+        self.v_centered = flags &amp; V_CENTERED
+
+        self.update_image()
+
+    def update_image(self):
+        # Draw the background color
+        pg.draw.rect(
+            self.image, self.bg_color, self.image.get_rect(), border_radius=self.radius
+        )
+        # Draw the border
+        pg.draw.rect(
+            self.image,
+            self.line_color,
+            self.image.get_rect(),
+            self.line_width,
+            border_radius=self.radius,
+        )
+        # Draw the image contained
+        draw_pos = [self.radius, self.radius]
+        if self.h_centered:
+            draw_pos[0] = self.rect.width / 2 - self.contained_image.get_width() / 2
+        if self.v_centered:
+            draw_pos[1] = self.rect.height / 2 - self.contained_image.get_height() / 2
+        self.image.blit(self.contained_image, draw_pos)
+
+    def set_image(self, image):
+        self.contained_image = image
+        self.update_image()
+
+    def draw(self, surface, offset):
+        surface.blit(self.image, self.rect)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="jazz.user_interface.set_default_font"><code class="name flex">
+<span>def <span class="ident">set_default_font</span></span>(<span>font)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_default_font(font):
+    global DEFAULT_FONT
+    if not isinstance(font, pg.font.Font):
+        raise TypeError(&#34;Must pass a Font object&#34;)
+    DEFAULT_FONT = font</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="jazz.user_interface.BaseUI"><code class="flex name class">
+<span>class <span class="ident">BaseUI</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class BaseUI(GameObject):
+    def __init__(self, **kwargs):
+        super().__init__(self, name=&#34;UI&#34;,**kwargs)
+        self.screen_layer = kwargs.get(&#34;screen_layer&#34;, True)
+        self.font = kwargs.get(&#34;font&#34;, DEFAULT_FONT)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.HBox" href="#jazz.user_interface.HBox">HBox</a></li>
+<li><a title="jazz.user_interface.ImageBox" href="#jazz.user_interface.ImageBox">ImageBox</a></li>
+<li><a title="jazz.user_interface.InputBox" href="#jazz.user_interface.InputBox">InputBox</a></li>
+<li><a title="jazz.user_interface.Label" href="#jazz.user_interface.Label">Label</a></li>
+<li><a title="jazz.user_interface.MultilineTextBox" href="#jazz.user_interface.MultilineTextBox">MultilineTextBox</a></li>
+<li><a title="jazz.user_interface.ProgressBar" href="#jazz.user_interface.ProgressBar">ProgressBar</a></li>
+<li><a title="jazz.user_interface.SimpleButton" href="#jazz.user_interface.SimpleButton">SimpleButton</a></li>
+<li><a title="jazz.user_interface.Slider" href="#jazz.user_interface.Slider">Slider</a></li>
+<li><a title="jazz.user_interface.Vbox" href="#jazz.user_interface.Vbox">Vbox</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.engine.base_object.GameObject.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.HBox"><code class="flex name class">
+<span>class <span class="ident">HBox</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class HBox(BaseUI):
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.ImageBox"><code class="flex name class">
+<span>class <span class="ident">ImageBox</span></span>
+<span>(</span><span>x, y, x_dim, y_dim, image, flags=3, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ImageBox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, image, flags=3, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.contained_image = image
+        self.bg_color = kwargs.get(&#34;bg_color&#34;, (100, 100, 100))
+        self.line_color = kwargs.get(&#34;line_color&#34;, (50, 50, 50))
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.line_width = kwargs.get(&#34;line_width&#34;, 0)
+
+        self.h_centered = flags &amp; H_CENTERED
+        self.v_centered = flags &amp; V_CENTERED
+
+        self.update_image()
+
+    def update_image(self):
+        # Draw the background color
+        pg.draw.rect(
+            self.image, self.bg_color, self.image.get_rect(), border_radius=self.radius
+        )
+        # Draw the border
+        pg.draw.rect(
+            self.image,
+            self.line_color,
+            self.image.get_rect(),
+            self.line_width,
+            border_radius=self.radius,
+        )
+        # Draw the image contained
+        draw_pos = [self.radius, self.radius]
+        if self.h_centered:
+            draw_pos[0] = self.rect.width / 2 - self.contained_image.get_width() / 2
+        if self.v_centered:
+            draw_pos[1] = self.rect.height / 2 - self.contained_image.get_height() / 2
+        self.image.blit(self.contained_image, draw_pos)
+
+    def set_image(self, image):
+        self.contained_image = image
+        self.update_image()
+
+    def draw(self, surface, offset):
+        surface.blit(self.image, self.rect)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.ImageBox.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset):
+    surface.blit(self.image, self.rect)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.ImageBox.set_image"><code class="name flex">
+<span>def <span class="ident">set_image</span></span>(<span>self, image)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_image(self, image):
+    self.contained_image = image
+    self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.ImageBox.update_image"><code class="name flex">
+<span>def <span class="ident">update_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_image(self):
+    # Draw the background color
+    pg.draw.rect(
+        self.image, self.bg_color, self.image.get_rect(), border_radius=self.radius
+    )
+    # Draw the border
+    pg.draw.rect(
+        self.image,
+        self.line_color,
+        self.image.get_rect(),
+        self.line_width,
+        border_radius=self.radius,
+    )
+    # Draw the image contained
+    draw_pos = [self.radius, self.radius]
+    if self.h_centered:
+        draw_pos[0] = self.rect.width / 2 - self.contained_image.get_width() / 2
+    if self.v_centered:
+        draw_pos[1] = self.rect.height / 2 - self.contained_image.get_height() / 2
+    self.image.blit(self.contained_image, draw_pos)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.InputBox"><code class="flex name class">
+<span>class <span class="ident">InputBox</span></span>
+<span>(</span><span>x, y, x_dim, y_dim, text, flags=2, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>UI Element for user string input</p>
+<p>Render an input box in the window that allows user to select and input
+text.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>x</code></strong> :&ensp;<code>int</code></dt>
+<dd>Leftmost x position in pixels.</dd>
+<dt><strong><code>y</code></strong> :&ensp;<code>int</code></dt>
+<dd>Topmost y position in pixels.</dd>
+<dt><strong><code>x_dim</code></strong> :&ensp;<code>int</code></dt>
+<dd>Width of the graphical input box in pixels.</dd>
+<dt><strong><code>y_dim</code></strong> :&ensp;<code>int</code></dt>
+<dd>Height of the graphical input box in pixels.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class InputBox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, text, flags=2, **kwargs):
+        &#34;&#34;&#34;
+        UI Element for user string input
+
+        Render an input box in the window that allows user to select and input
+        text.
+
+        Parameters
+        ----------
+        x : int
+            Leftmost x position in pixels.
+        y : int
+            Topmost y position in pixels.
+        x_dim : int
+            Width of the graphical input box in pixels.
+        y_dim : int
+            Height of the graphical input box in pixels.
+        &#34;&#34;&#34;
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.text_content = text
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.active_color = kwargs.get(&#34;active_color&#34;, (192, 192, 192))
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.radius = kwargs.get(&#34;radius&#34;, 3)
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+
+        self.active = False
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.clear_on_input = flags &amp; 8 == 8
+        self.clear_on_first_input = flags &amp; 16 == 16
+        self.clear = self.clear_on_first_input
+
+    def input(self, INPUT):
+        if INPUT.just_pressed(0, True):
+            if self.rect.collidepoint(INPUT.mouse_pos):
+                self.active = True
+                # pg.key.start_text_input()
+            else:
+                self.active = False
+                # pg.key.stop_text_input()
+                if not self.clear:
+                    self.clear = self.clear_on_input
+
+        if INPUT._just_pressed and self.active:
+            if self.clear:
+                self.text_content = &#34;&#34;
+                self.clear = False
+            for keypress in INPUT._just_pressed:
+                if keypress == pg.K_BACKSPACE:
+                    self.text_content = self.text_content[:-1]
+                elif keypress == pg.K_RETURN:
+                    self.active = False
+                else:
+                    self.text_content += pg.key.name(keypress)
+            self.update_text()
+
+    def draw(self, surface, offset=None):
+        if self.active:
+            color = self.active_color
+        else:
+            color = self.color
+
+        draw_pos = [self.padding, self.padding]
+        if self.h_cent:
+            draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+        if self.v_cent:
+            draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+        pg.draw.rect(
+            self.image, color, self.image.get_rect(), border_radius=self.radius
+        )
+        pg.draw.rect(
+            self.image,
+            self.color,
+            self.image.get_rect(),
+            width=3,
+            border_radius=self.radius,
+        )
+        self.image.blit(self.text, draw_pos)
+        surface.blit(self.image, self.rect)
+
+    def set_text(self, text):
+        self.text_content = text
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+
+    def get_text(self):
+        text = self.text_content
+        self.set_text(&#34;&#34;)
+        return text
+
+    def update_text(self):
+        text = self.text_content
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+
+    def set_pos(self, v_centered, h_centered):
+        self.v_cent = v_centered
+        self.h_cent = h_centered
+
+    def append_text(self, text):
+        self.text_content += text
+        self.set_text(self.text_content)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.InputBox.append_text"><code class="name flex">
+<span>def <span class="ident">append_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_text(self, text):
+    self.text_content += text
+    self.set_text(self.text_content)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.InputBox.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    if self.active:
+        color = self.active_color
+    else:
+        color = self.color
+
+    draw_pos = [self.padding, self.padding]
+    if self.h_cent:
+        draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+    if self.v_cent:
+        draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+    pg.draw.rect(
+        self.image, color, self.image.get_rect(), border_radius=self.radius
+    )
+    pg.draw.rect(
+        self.image,
+        self.color,
+        self.image.get_rect(),
+        width=3,
+        border_radius=self.radius,
+    )
+    self.image.blit(self.text, draw_pos)
+    surface.blit(self.image, self.rect)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.InputBox.get_text"><code class="name flex">
+<span>def <span class="ident">get_text</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_text(self):
+    text = self.text_content
+    self.set_text(&#34;&#34;)
+    return text</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.InputBox.input"><code class="name flex">
+<span>def <span class="ident">input</span></span>(<span>self, INPUT)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def input(self, INPUT):
+    if INPUT.just_pressed(0, True):
+        if self.rect.collidepoint(INPUT.mouse_pos):
+            self.active = True
+            # pg.key.start_text_input()
+        else:
+            self.active = False
+            # pg.key.stop_text_input()
+            if not self.clear:
+                self.clear = self.clear_on_input
+
+    if INPUT._just_pressed and self.active:
+        if self.clear:
+            self.text_content = &#34;&#34;
+            self.clear = False
+        for keypress in INPUT._just_pressed:
+            if keypress == pg.K_BACKSPACE:
+                self.text_content = self.text_content[:-1]
+            elif keypress == pg.K_RETURN:
+                self.active = False
+            else:
+                self.text_content += pg.key.name(keypress)
+        self.update_text()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.InputBox.set_pos"><code class="name flex">
+<span>def <span class="ident">set_pos</span></span>(<span>self, v_centered, h_centered)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_pos(self, v_centered, h_centered):
+    self.v_cent = v_centered
+    self.h_cent = h_centered</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.InputBox.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, text):
+    self.text_content = text
+    self.text = self.font.render(text, True, self.text_color)
+    self.text_size = self.text.get_size()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.InputBox.update_text"><code class="name flex">
+<span>def <span class="ident">update_text</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_text(self):
+    text = self.text_content
+    self.text = self.font.render(text, True, self.text_color)
+    self.text_size = self.text.get_size()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.Label"><code class="flex name class">
+<span>class <span class="ident">Label</span></span>
+<span>(</span><span>text, flags=3, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Label(BaseUI):
+    def __init__(self, text, flags=3, **kwargs):
+        super().__init__(name=&#34;label&#34;, **kwargs)
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+
+        self.text_content = text
+        self.source = self.font.render(text, True, self.text_color)
+        self.size = self.source.get_size()
+
+        # Flags
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.update_image()
+
+    def draw(self, surface, offset=None):
+        if offset is None:
+            offset = pg.Vector2()
+        surface.blit(self.image, self.rect.topleft + offset)
+
+    def set_text(self, text):
+        if self.text_content != text:
+            self.text_content = text
+            self.source = self.font.render(text, True, self.text_color)
+            self.text_size = self.text.get_size()
+            self.update_image()
+
+    def update_image(self):
+        draw_pos = [self.padding, self.padding]
+        if self.h_cent:
+            draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+        if self.v_cent:
+            draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+        self.image.blit(self.text, draw_pos)
+
+    def set_flags(self, flags):
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.update_image()
+
+    def append_text(self, text):
+        self.text_content += text
+        self.set_text(self.text_content)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.Label.append_text"><code class="name flex">
+<span>def <span class="ident">append_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_text(self, text):
+    self.text_content += text
+    self.set_text(self.text_content)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Label.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    if offset is None:
+        offset = pg.Vector2()
+    surface.blit(self.image, self.rect.topleft + offset)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Label.set_flags"><code class="name flex">
+<span>def <span class="ident">set_flags</span></span>(<span>self, flags)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_flags(self, flags):
+    self.h_cent = flags &amp; 1 == 1
+    self.v_cent = flags &amp; 2 == 2
+    self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Label.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, text):
+    if self.text_content != text:
+        self.text_content = text
+        self.source = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+        self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Label.update_image"><code class="name flex">
+<span>def <span class="ident">update_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_image(self):
+    draw_pos = [self.padding, self.padding]
+    if self.h_cent:
+        draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+    if self.v_cent:
+        draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+    pg.draw.rect(
+        self.image, self.color, self.image.get_rect(), border_radius=self.radius
+    )
+    self.image.blit(self.text, draw_pos)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.MultilineTextBox"><code class="flex name class">
+<span>class <span class="ident">MultilineTextBox</span></span>
+<span>(</span><span>x, y, x_dim, y_dim, text, flags=0, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class MultilineTextBox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, text, flags=0, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.text_content = text
+        self.text = []
+        self.text_height = self.font.get_height()
+        for string in text:
+            self.text.append(self.font.render(string, True, self.text_color))
+        self.bottom_align = kwargs.get(&#34;bottom_align&#34;, False)
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.update_image()
+
+    def set_flags(self, flags):
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+
+    def update_image(self):
+        # Set the intial draw position
+        if self.bottom_align:
+            draw_pos = [
+                self.padding,
+                self.rect.height - self.padding - self.text_height,
+            ]
+        else:
+            draw_pos = [self.padding, self.padding]
+
+        # Draw the background of the text box
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+
+        # Loop through the text and draw it onto the background
+        if self.bottom_align:
+            if self.v_cent:
+                draw_pos[1] = (
+                    self.rect.height / 2
+                    + (
+                        len(self.text_content) * (self.text_height + self.padding)
+                        + self.padding
+                    )
+                    / 2
+                )
+            for text in self.text[::-1]:
+                if self.h_cent:
+                    draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
+                self.image.blit(text, draw_pos)
+                draw_pos[1] -= self.text_height + self.padding
+        else:
+            if self.v_cent:
+                draw_pos[1] = (
+                    self.rect.height / 2
+                    - (
+                        len(self.text_content) * (self.text_height + self.padding)
+                        + self.padding
+                    )
+                    / 2
+                )
+            for text in self.text:
+                if self.h_cent:
+                    draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
+                self.image.blit(text, draw_pos)
+                draw_pos[1] += self.text_height + self.padding
+
+    def draw(self, surface, offset=None):
+        # Draw the image onto the given surface
+        surface.blit(self.image, self.rect)
+
+    def set_text(self, text):
+        self.text_content = text
+        self.text = []
+        for string in text:
+            self.text.append(self.font.render(string, True, self.text_color))
+
+    def append_text(self, text):
+        self.text_content.append(text)
+        if (
+            len(self.text_content) * (self.text_height + self.padding) + self.padding
+            &gt; self.rect.height
+        ):
+            self.text_content.pop(0)
+        self.set_text(self.text_content)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.MultilineTextBox.append_text"><code class="name flex">
+<span>def <span class="ident">append_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_text(self, text):
+    self.text_content.append(text)
+    if (
+        len(self.text_content) * (self.text_height + self.padding) + self.padding
+        &gt; self.rect.height
+    ):
+        self.text_content.pop(0)
+    self.set_text(self.text_content)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.MultilineTextBox.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    # Draw the image onto the given surface
+    surface.blit(self.image, self.rect)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.MultilineTextBox.set_flags"><code class="name flex">
+<span>def <span class="ident">set_flags</span></span>(<span>self, flags)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_flags(self, flags):
+    self.h_cent = flags &amp; 1 == 1
+    self.v_cent = flags &amp; 2 == 2</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.MultilineTextBox.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, text):
+    self.text_content = text
+    self.text = []
+    for string in text:
+        self.text.append(self.font.render(string, True, self.text_color))</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.MultilineTextBox.update_image"><code class="name flex">
+<span>def <span class="ident">update_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_image(self):
+    # Set the intial draw position
+    if self.bottom_align:
+        draw_pos = [
+            self.padding,
+            self.rect.height - self.padding - self.text_height,
+        ]
+    else:
+        draw_pos = [self.padding, self.padding]
+
+    # Draw the background of the text box
+    pg.draw.rect(
+        self.image, self.color, self.image.get_rect(), border_radius=self.radius
+    )
+
+    # Loop through the text and draw it onto the background
+    if self.bottom_align:
+        if self.v_cent:
+            draw_pos[1] = (
+                self.rect.height / 2
+                + (
+                    len(self.text_content) * (self.text_height + self.padding)
+                    + self.padding
+                )
+                / 2
+            )
+        for text in self.text[::-1]:
+            if self.h_cent:
+                draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
+            self.image.blit(text, draw_pos)
+            draw_pos[1] -= self.text_height + self.padding
+    else:
+        if self.v_cent:
+            draw_pos[1] = (
+                self.rect.height / 2
+                - (
+                    len(self.text_content) * (self.text_height + self.padding)
+                    + self.padding
+                )
+                / 2
+            )
+        for text in self.text:
+            if self.h_cent:
+                draw_pos[0] = self.rect.width / 2 - text.get_width() / 2
+            self.image.blit(text, draw_pos)
+            draw_pos[1] += self.text_height + self.padding</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.ProgressBar"><code class="flex name class">
+<span>class <span class="ident">ProgressBar</span></span>
+<span>(</span><span>x, y, x_dim, y_dim, value, max_value, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ProgressBar(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, value, max_value, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.value = value
+        self.max_value = max_value
+        self.bg_color = kwargs.get(&#34;bg_color&#34;, (100, 100, 100))
+        self.color = kwargs.get(&#34;color&#34;, (100, 100, 200))
+        self.line_color = kwargs.get(&#34;line_color&#34;, (50, 50, 50))
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.line_width = kwargs.get(&#34;line_width&#34;, 3)
+        self.update_image()
+
+    def update_image(self):
+        # Draw the background color
+        pg.draw.rect(
+            self.image, self.bg_color, self.image.get_rect(), border_radius=self.radius
+        )
+        # Draw the bar fill
+        if self.value &gt; 0:
+            fill_height = self.image.get_height() - self.line_width * 2
+            fill_width = map_range(
+                self.value,
+                0,
+                self.max_value,
+                0,
+                self.image.get_width() - self.line_width * 2,
+            )
+            fill_rect = pg.Rect(
+                self.line_width, self.line_width, fill_width, fill_height
+            )
+            pg.draw.rect(self.image, self.color, fill_rect)
+        # Draw the border
+        if self.line_width &gt; 0:
+            pg.draw.rect(
+                self.image,
+                self.line_color,
+                self.image.get_rect(),
+                self.line_width,
+                border_radius=self.radius,
+            )
+
+    def update_value(self, value):
+        self.value = value
+        self.update_image()
+
+    def update_max_value(self, max_value):
+        self.max_value = max_value
+        self.update_image()
+
+    def draw(self, surface, offset=None):
+        surface.blit(self.image, self.rect)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.ProgressBar.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    surface.blit(self.image, self.rect)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.ProgressBar.update_image"><code class="name flex">
+<span>def <span class="ident">update_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_image(self):
+    # Draw the background color
+    pg.draw.rect(
+        self.image, self.bg_color, self.image.get_rect(), border_radius=self.radius
+    )
+    # Draw the bar fill
+    if self.value &gt; 0:
+        fill_height = self.image.get_height() - self.line_width * 2
+        fill_width = map_range(
+            self.value,
+            0,
+            self.max_value,
+            0,
+            self.image.get_width() - self.line_width * 2,
+        )
+        fill_rect = pg.Rect(
+            self.line_width, self.line_width, fill_width, fill_height
+        )
+        pg.draw.rect(self.image, self.color, fill_rect)
+    # Draw the border
+    if self.line_width &gt; 0:
+        pg.draw.rect(
+            self.image,
+            self.line_color,
+            self.image.get_rect(),
+            self.line_width,
+            border_radius=self.radius,
+        )</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.ProgressBar.update_max_value"><code class="name flex">
+<span>def <span class="ident">update_max_value</span></span>(<span>self, max_value)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_max_value(self, max_value):
+    self.max_value = max_value
+    self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.ProgressBar.update_value"><code class="name flex">
+<span>def <span class="ident">update_value</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_value(self, value):
+    self.value = value
+    self.update_image()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.SimpleButton"><code class="flex name class">
+<span>class <span class="ident">SimpleButton</span></span>
+<span>(</span><span>x, y, x_dim, y_dim, text, event_tag, flags=3, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SimpleButton(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, text, event_tag, flags=3, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+        self.event = pg.event.Event(
+            BUTTON_PRESSED, {&#34;source&#34;: &#34;Button&#34;, &#34;flag&#34;: event_tag}
+        )
+        self.callback = kwargs.get(&#34;callback&#34;, None)
+
+        self.radius = kwargs.get(&#34;radius&#34;, 3)
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+        self._color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.unpressed_color = self.color
+        self.pressed_color = color_mult(self.color, 0.9)
+        self.hover_color = color_mult(self.color, 1.2)
+
+        # Flags
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.on_release = flags &amp; 4 == 4
+        self.pressed = False
+
+        self.update_image()
+
+    def input(self, INPUT):
+        if not self.visible:
+            return
+        if INPUT.mouse.click(&#34;left&#34;):
+            if self.rect.collidepoint(INPUT.mouse.pos):
+                if not self.on_release:
+                    if callable(self.callback):
+                        self.callback()
+                    pg.event.post(self.event)
+                self.pressed = True
+                self._color = self.pressed_color
+                return True
+        if INPUT.mouse.release(&#34;left&#34;):
+            if self.rect.collidepoint(INPUT.mouse.pos):
+                if self.on_release and self.pressed:
+                    if callable(self.callback):
+                        self.callback()
+                    pg.event.post(self.event)
+                self.pressed = False
+                self._color = self.unpressed_color
+                return True
+        return False
+
+    def process(self, _delta):
+        if not self.visible:
+            return
+        mouse_pos = pg.mouse.get_pos()
+        if self.rect.collidepoint(mouse_pos) and not self.pressed:
+            self._color = self.hover_color
+        elif not self.pressed:
+            self._color = self.unpressed_color
+        elif not self.rect.collidepoint(mouse_pos):
+            self.pressed = False
+            self._color = self.unpressed_color
+        self.update_image()
+
+    def draw(self, surface, offset=None):
+        if self.visible:
+            surface.blit(self.image, self.rect)
+
+    def set_flags(self, flags):
+        self.h_cent = flags &amp; 1 == 1
+        self.v_cent = flags &amp; 2 == 2
+        self.on_release = flags &amp; 4 == 4
+        self.update_image()
+
+    def set_text(self, text):
+        self.text = self.font.render(text, True, self.text_color)
+        self.text_size = self.text.get_size()
+        self.update_image()
+
+    def update_image(self):
+        draw_pos = [self.padding, self.padding]
+
+        if self.h_cent:
+            draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+        if self.v_cent:
+            draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+        if self.pressed:
+            border_color = color_mult(self.color, 0.5)
+        else:
+            border_color = color_mult(self.color, 1.5)
+
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+        pg.draw.rect(
+            self.image,
+            border_color,
+            self.image.get_rect(),
+            border_radius=self.radius,
+            width=self.radius,
+        )
+        self.image.blit(self.text, draw_pos)
+
+    @property
+    def color(self):
+        return self._color
+
+    @color.setter
+    def color(self, color):
+        self._color = color
+        self.unpressed_color = self.color
+        self.pressed_color = color_mult(self.color, 0.9)
+        self.hover_color = color_mult(self.color, 1.2)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="jazz.user_interface.SimpleButton.color"><code class="name">var <span class="ident">color</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def color(self):
+    return self._color</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.SimpleButton.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    if self.visible:
+        surface.blit(self.image, self.rect)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.SimpleButton.input"><code class="name flex">
+<span>def <span class="ident">input</span></span>(<span>self, INPUT)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def input(self, INPUT):
+    if not self.visible:
+        return
+    if INPUT.mouse.click(&#34;left&#34;):
+        if self.rect.collidepoint(INPUT.mouse.pos):
+            if not self.on_release:
+                if callable(self.callback):
+                    self.callback()
+                pg.event.post(self.event)
+            self.pressed = True
+            self._color = self.pressed_color
+            return True
+    if INPUT.mouse.release(&#34;left&#34;):
+        if self.rect.collidepoint(INPUT.mouse.pos):
+            if self.on_release and self.pressed:
+                if callable(self.callback):
+                    self.callback()
+                pg.event.post(self.event)
+            self.pressed = False
+            self._color = self.unpressed_color
+            return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.SimpleButton.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self, _delta)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self, _delta):
+    if not self.visible:
+        return
+    mouse_pos = pg.mouse.get_pos()
+    if self.rect.collidepoint(mouse_pos) and not self.pressed:
+        self._color = self.hover_color
+    elif not self.pressed:
+        self._color = self.unpressed_color
+    elif not self.rect.collidepoint(mouse_pos):
+        self.pressed = False
+        self._color = self.unpressed_color
+    self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.SimpleButton.set_flags"><code class="name flex">
+<span>def <span class="ident">set_flags</span></span>(<span>self, flags)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_flags(self, flags):
+    self.h_cent = flags &amp; 1 == 1
+    self.v_cent = flags &amp; 2 == 2
+    self.on_release = flags &amp; 4 == 4
+    self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.SimpleButton.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, text):
+    self.text = self.font.render(text, True, self.text_color)
+    self.text_size = self.text.get_size()
+    self.update_image()</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.SimpleButton.update_image"><code class="name flex">
+<span>def <span class="ident">update_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_image(self):
+    draw_pos = [self.padding, self.padding]
+
+    if self.h_cent:
+        draw_pos[0] = self.rect.width / 2 - self.text_size[0] / 2
+    if self.v_cent:
+        draw_pos[1] = self.rect.height / 2 - self.text_size[1] / 2
+
+    if self.pressed:
+        border_color = color_mult(self.color, 0.5)
+    else:
+        border_color = color_mult(self.color, 1.5)
+
+    pg.draw.rect(
+        self.image, self.color, self.image.get_rect(), border_radius=self.radius
+    )
+    pg.draw.rect(
+        self.image,
+        border_color,
+        self.image.get_rect(),
+        border_radius=self.radius,
+        width=self.radius,
+    )
+    self.image.blit(self.text, draw_pos)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.Slider"><code class="flex name class">
+<span>class <span class="ident">Slider</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Slider(BaseUI):
+    pass</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.user_interface.UIContainer"><code class="flex name class">
+<span>class <span class="ident">UIContainer</span></span>
+<span>(</span><span>initial_items=None, visible=True, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class UIContainer:
+    def __init__(self, initial_items=None, visible=True, **kwargs):
+        self.game_process = kwargs.get(&#34;game_process&#34;, True)
+        self.pause_process = kwargs.get(&#34;pause_process&#34;, False)
+        self.game_input = kwargs.get(&#34;game_input&#34;, True)
+        self.screen_layer = kwargs.get(&#34;screen_layer&#34;, True)
+        self.visible = kwargs.get(&#34;visible&#34;, True)
+        if initial_items:
+            self.elements = initial_items
+        else:
+            self.elements = []
+        self.visible = visible
+
+    def process(self, delta):
+        if not self.visible:
+            return
+        for element in self.elements:
+            element.process(delta)
+
+    def input(self, INPUT):
+        if not self.visible:
+            return
+        for element in self.elements[::-1]:
+            if element.input(INPUT):
+                return
+
+    def draw(self, surface, offset=None):
+        if not self.visible:
+            return
+        for element in self.elements:
+            element.draw(surface, offset)
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+
+    def set_visible(self, visible=True):
+        self.visible = visible
+
+    def add(self, element):
+        self.elements.append(element)
+        element.game_process = False
+        element.pause_process = False
+        element.game_input = False
+
+    def remove(self, element):
+        self.elements.remove(element)
+        element.game_process = True
+        element.game_input = True</code></pre>
+</details>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.UIContainer.add"><code class="name flex">
+<span>def <span class="ident">add</span></span>(<span>self, element)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def add(self, element):
+    self.elements.append(element)
+    element.game_process = False
+    element.pause_process = False
+    element.game_input = False</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.UIContainer.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    if not self.visible:
+        return
+    for element in self.elements:
+        element.draw(surface, offset)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.UIContainer.input"><code class="name flex">
+<span>def <span class="ident">input</span></span>(<span>self, INPUT)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def input(self, INPUT):
+    if not self.visible:
+        return
+    for element in self.elements[::-1]:
+        if element.input(INPUT):
+            return</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.UIContainer.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self, delta)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self, delta):
+    if not self.visible:
+        return
+    for element in self.elements:
+        element.process(delta)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.UIContainer.remove"><code class="name flex">
+<span>def <span class="ident">remove</span></span>(<span>self, element)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def remove(self, element):
+    self.elements.remove(element)
+    element.game_process = True
+    element.game_input = True</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.UIContainer.set_visible"><code class="name flex">
+<span>def <span class="ident">set_visible</span></span>(<span>self, visible=True)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_visible(self, visible=True):
+    self.visible = visible</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.UIContainer.toggle_visible"><code class="name flex">
+<span>def <span class="ident">toggle_visible</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def toggle_visible(self):
+    self.visible = not self.visible</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="jazz.user_interface.Vbox"><code class="flex name class">
+<span>class <span class="ident">Vbox</span></span>
+<span>(</span><span>x, y, x_dim, y_dim, buttons, event_tag, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Vbox(BaseUI):
+    def __init__(self, x, y, x_dim, y_dim, buttons, event_tag, **kwargs):
+        BaseUI.__init__(self, x, y, x_dim, y_dim, **kwargs)
+
+        self.buttons = []
+        self.padding = kwargs.get(&#34;padding&#34;, 5)
+        self.radius = kwargs.get(&#34;radius&#34;, 3)
+        button_height = (y_dim - self.padding * (buttons + 1)) / buttons
+        flags = kwargs.get(&#34;flags&#34;, 3)
+
+        for button in range(buttons):
+            but = SimpleButton(
+                x + self.padding,
+                y + self.padding + (button_height + self.padding) * button,
+                x_dim - self.padding * 2,
+                button_height,
+                &#34;button&#34;,
+                [event_tag, button],
+                flags,
+                font=self.font,
+            )
+
+            self.buttons.append(but)
+        text = kwargs.get(&#34;text&#34;, None)
+        if text:
+            if len(text) == buttons:
+                for i, t in enumerate(text):
+                    self.buttons[i].set_text(t)
+        self.color = kwargs.get(&#34;color&#34;, (128, 128, 128))
+        self.visible = kwargs.get(&#34;visible&#34;, True)
+        pg.draw.rect(
+            self.image, self.color, self.image.get_rect(), border_radius=self.radius
+        )
+
+    def input(self, INPUT):
+        if self.visible:
+            for button in self.buttons:
+                if button.input(INPUT):
+                    return True
+            if INPUT.mouse.click(&#34;left&#34;):
+                if self.rect.collidepoint(INPUT.mouse.pos):
+                    return True
+        return False
+
+    def process(self, delta):
+        if self.visible:
+            for button in self.buttons:
+                button.process(delta)
+
+    def draw(self, surface, offset=None):
+        if self.visible:
+            surface.blit(self.image, self.rect)
+            for button in self.buttons:
+                button.draw(surface)
+
+    def toggle_visible(self):
+        self.visible = not self.visible
+
+    def set_text(self, index, text):
+        if index &lt; len(self.buttons):
+            self.buttons[index].set_text(text)
+        else:
+            return False</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.user_interface.Vbox.draw"><code class="name flex">
+<span>def <span class="ident">draw</span></span>(<span>self, surface, offset=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def draw(self, surface, offset=None):
+    if self.visible:
+        surface.blit(self.image, self.rect)
+        for button in self.buttons:
+            button.draw(surface)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Vbox.input"><code class="name flex">
+<span>def <span class="ident">input</span></span>(<span>self, INPUT)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def input(self, INPUT):
+    if self.visible:
+        for button in self.buttons:
+            if button.input(INPUT):
+                return True
+        if INPUT.mouse.click(&#34;left&#34;):
+            if self.rect.collidepoint(INPUT.mouse.pos):
+                return True
+    return False</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Vbox.process"><code class="name flex">
+<span>def <span class="ident">process</span></span>(<span>self, delta)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def process(self, delta):
+    if self.visible:
+        for button in self.buttons:
+            button.process(delta)</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Vbox.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, index, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, index, text):
+    if index &lt; len(self.buttons):
+        self.buttons[index].set_text(text)
+    else:
+        return False</code></pre>
+</details>
+</dd>
+<dt id="jazz.user_interface.Vbox.toggle_visible"><code class="name flex">
+<span>def <span class="ident">toggle_visible</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def toggle_visible(self):
+    self.visible = not self.visible</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.user_interface.BaseUI.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.user_interface.BaseUI.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="jazz" href="index.html">jazz</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="jazz.user_interface.set_default_font" href="#jazz.user_interface.set_default_font">set_default_font</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="jazz.user_interface.BaseUI" href="#jazz.user_interface.BaseUI">BaseUI</a></code></h4>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.HBox" href="#jazz.user_interface.HBox">HBox</a></code></h4>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.ImageBox" href="#jazz.user_interface.ImageBox">ImageBox</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.user_interface.ImageBox.draw" href="#jazz.user_interface.ImageBox.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.ImageBox.set_image" href="#jazz.user_interface.ImageBox.set_image">set_image</a></code></li>
+<li><code><a title="jazz.user_interface.ImageBox.update_image" href="#jazz.user_interface.ImageBox.update_image">update_image</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.InputBox" href="#jazz.user_interface.InputBox">InputBox</a></code></h4>
+<ul class="two-column">
+<li><code><a title="jazz.user_interface.InputBox.append_text" href="#jazz.user_interface.InputBox.append_text">append_text</a></code></li>
+<li><code><a title="jazz.user_interface.InputBox.draw" href="#jazz.user_interface.InputBox.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.InputBox.get_text" href="#jazz.user_interface.InputBox.get_text">get_text</a></code></li>
+<li><code><a title="jazz.user_interface.InputBox.input" href="#jazz.user_interface.InputBox.input">input</a></code></li>
+<li><code><a title="jazz.user_interface.InputBox.set_pos" href="#jazz.user_interface.InputBox.set_pos">set_pos</a></code></li>
+<li><code><a title="jazz.user_interface.InputBox.set_text" href="#jazz.user_interface.InputBox.set_text">set_text</a></code></li>
+<li><code><a title="jazz.user_interface.InputBox.update_text" href="#jazz.user_interface.InputBox.update_text">update_text</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.Label" href="#jazz.user_interface.Label">Label</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.user_interface.Label.append_text" href="#jazz.user_interface.Label.append_text">append_text</a></code></li>
+<li><code><a title="jazz.user_interface.Label.draw" href="#jazz.user_interface.Label.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.Label.set_flags" href="#jazz.user_interface.Label.set_flags">set_flags</a></code></li>
+<li><code><a title="jazz.user_interface.Label.set_text" href="#jazz.user_interface.Label.set_text">set_text</a></code></li>
+<li><code><a title="jazz.user_interface.Label.update_image" href="#jazz.user_interface.Label.update_image">update_image</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.MultilineTextBox" href="#jazz.user_interface.MultilineTextBox">MultilineTextBox</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.user_interface.MultilineTextBox.append_text" href="#jazz.user_interface.MultilineTextBox.append_text">append_text</a></code></li>
+<li><code><a title="jazz.user_interface.MultilineTextBox.draw" href="#jazz.user_interface.MultilineTextBox.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.MultilineTextBox.set_flags" href="#jazz.user_interface.MultilineTextBox.set_flags">set_flags</a></code></li>
+<li><code><a title="jazz.user_interface.MultilineTextBox.set_text" href="#jazz.user_interface.MultilineTextBox.set_text">set_text</a></code></li>
+<li><code><a title="jazz.user_interface.MultilineTextBox.update_image" href="#jazz.user_interface.MultilineTextBox.update_image">update_image</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.ProgressBar" href="#jazz.user_interface.ProgressBar">ProgressBar</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.user_interface.ProgressBar.draw" href="#jazz.user_interface.ProgressBar.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.ProgressBar.update_image" href="#jazz.user_interface.ProgressBar.update_image">update_image</a></code></li>
+<li><code><a title="jazz.user_interface.ProgressBar.update_max_value" href="#jazz.user_interface.ProgressBar.update_max_value">update_max_value</a></code></li>
+<li><code><a title="jazz.user_interface.ProgressBar.update_value" href="#jazz.user_interface.ProgressBar.update_value">update_value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.SimpleButton" href="#jazz.user_interface.SimpleButton">SimpleButton</a></code></h4>
+<ul class="two-column">
+<li><code><a title="jazz.user_interface.SimpleButton.color" href="#jazz.user_interface.SimpleButton.color">color</a></code></li>
+<li><code><a title="jazz.user_interface.SimpleButton.draw" href="#jazz.user_interface.SimpleButton.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.SimpleButton.input" href="#jazz.user_interface.SimpleButton.input">input</a></code></li>
+<li><code><a title="jazz.user_interface.SimpleButton.process" href="#jazz.user_interface.SimpleButton.process">process</a></code></li>
+<li><code><a title="jazz.user_interface.SimpleButton.set_flags" href="#jazz.user_interface.SimpleButton.set_flags">set_flags</a></code></li>
+<li><code><a title="jazz.user_interface.SimpleButton.set_text" href="#jazz.user_interface.SimpleButton.set_text">set_text</a></code></li>
+<li><code><a title="jazz.user_interface.SimpleButton.update_image" href="#jazz.user_interface.SimpleButton.update_image">update_image</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.Slider" href="#jazz.user_interface.Slider">Slider</a></code></h4>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.UIContainer" href="#jazz.user_interface.UIContainer">UIContainer</a></code></h4>
+<ul class="two-column">
+<li><code><a title="jazz.user_interface.UIContainer.add" href="#jazz.user_interface.UIContainer.add">add</a></code></li>
+<li><code><a title="jazz.user_interface.UIContainer.draw" href="#jazz.user_interface.UIContainer.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.UIContainer.input" href="#jazz.user_interface.UIContainer.input">input</a></code></li>
+<li><code><a title="jazz.user_interface.UIContainer.process" href="#jazz.user_interface.UIContainer.process">process</a></code></li>
+<li><code><a title="jazz.user_interface.UIContainer.remove" href="#jazz.user_interface.UIContainer.remove">remove</a></code></li>
+<li><code><a title="jazz.user_interface.UIContainer.set_visible" href="#jazz.user_interface.UIContainer.set_visible">set_visible</a></code></li>
+<li><code><a title="jazz.user_interface.UIContainer.toggle_visible" href="#jazz.user_interface.UIContainer.toggle_visible">toggle_visible</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.user_interface.Vbox" href="#jazz.user_interface.Vbox">Vbox</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.user_interface.Vbox.draw" href="#jazz.user_interface.Vbox.draw">draw</a></code></li>
+<li><code><a title="jazz.user_interface.Vbox.input" href="#jazz.user_interface.Vbox.input">input</a></code></li>
+<li><code><a title="jazz.user_interface.Vbox.process" href="#jazz.user_interface.Vbox.process">process</a></code></li>
+<li><code><a title="jazz.user_interface.Vbox.set_text" href="#jazz.user_interface.Vbox.set_text">set_text</a></code></li>
+<li><code><a title="jazz.user_interface.Vbox.toggle_visible" href="#jazz.user_interface.Vbox.toggle_visible">toggle_visible</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

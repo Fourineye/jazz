@@ -1,0 +1,1694 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>jazz.components API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>jazz.components</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import pygame
+
+from .engine.base_object import GameObject
+from .global_dict import GAME_GLOBALS
+from .user_interface import DEFAULT_FONT
+from .utils import Vec2, load_image, map_range
+
+
+class Sprite(GameObject):
+    def __init__(self, name=&#34;Sprite&#34;, **kwargs):
+        super().__init__(name, **kwargs)
+        self.asset = kwargs.get(&#34;asset&#34;, None)
+        self._source = None
+        self._flip_x = kwargs.get(&#34;flip_x&#34;, False)
+        self._flip_y = kwargs.get(&#34;flip_y&#34;, False)
+        self._scale = Vec2(kwargs.get(&#34;scale&#34;, Vec2(1, 1)))
+        self._alpha = kwargs.get(&#34;alpha&#34;, 255)
+        self._anchor = [1, 1]
+
+        self._img_updated = False
+        if self.source is None:
+            if self.asset is None:
+                temp_source = pygame.Surface((10, 10))
+                temp_source.fill(self._color)
+                self.source = temp_source
+            else:
+                if isinstance(self.asset, pygame.Surface):
+                    self.source = self.asset
+                else:
+                    self.source = GAME_GLOBALS[&#34;Scene&#34;].load_resource(self.asset)
+
+        anchor = kwargs.get(&#34;anchor&#34;, None)
+        if anchor is not None:
+            self.set_anchor(*anchor)
+
+    def on_load(self):
+        ...
+
+    def _draw(self, surface: pygame.Surface, offset=None):
+        &#34;&#34;&#34;
+        Method called in the scene render function to draw the Entity on a surface.
+
+        Args:
+            surface (pygame.Surface): Surface to draw the Entity on.
+            offset (Vec2, optional): Offset to add to pos for the draw
+                destination. Defaults to None.
+        &#34;&#34;&#34;
+        if offset is None:
+            offset = Vec2()
+        self.update_image()
+        if (
+            self.image.get_rect(center=self.pos).colliderect(
+                GAME_GLOBALS[&#34;Scene&#34;].camera.screen_rect
+            )
+        ) or self.screen_space:
+            surface.blit(self.image, self.draw_pos + Vec2(offset))
+
+    def update_image(self):
+        if not self._img_updated:
+            self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
+            self.image = pygame.transform.scale_by(self.image, self.scale)
+            self.image = pygame.transform.rotate(self.image, -self.rotation)
+            self.image.set_alpha(self.alpha)
+            self._set_offset()
+            self._img_updated = True
+
+    def _set_offset(self):
+        self._draw_offset = -Vec2(
+            self.image.get_width() * self._anchor[0] / 2,
+            self.image.get_height() * self._anchor[1] / 2,
+        )
+
+    def set_anchor(self, horizontal=None, vertical=None):
+        if vertical in [&#34;top&#34;, 0]:
+            self._anchor[1] = 0
+        elif vertical in [&#34;center&#34;, 1]:
+            self._anchor[1] = 1
+        elif vertical in [&#34;bottom&#34;, 2]:
+            self._anchor[1] = 2
+        if horizontal in [&#34;left&#34;, 0]:
+            self._anchor[0] = 0
+        elif horizontal in [&#34;center&#34;, 1]:
+            self._anchor[0] = 1
+        elif horizontal in [&#34;right&#34;, 2]:
+            self._anchor[0] = 2
+        self._set_offset()
+
+    @property
+    def draw_pos(self):
+        &#34;&#34;&#34;Returns the top left of self.image when centered on self.pos&#34;&#34;&#34;
+        return Vec2(self.pos + self._draw_offset)
+
+    @draw_pos.setter
+    def draw_pos(self, new_offset):
+        &#34;&#34;&#34;Set new draw offset&#34;&#34;&#34;
+        self._draw_offset = Vec2(new_offset)
+
+    @property
+    def source(self):
+        return self._source
+
+    @source.setter
+    def source(self, new_source):
+        if not isinstance(new_source, pygame.Surface):
+            new_source = GAME_GLOBALS[&#34;Scene&#34;].load_resource(new_source)
+        self._source = new_source
+        self._img_updated = False
+        self.update_image()
+
+    @property
+    def flip_x(self):
+        return self._flip_x
+
+    @flip_x.setter
+    def flip_x(self, flip_x):
+        self._flip_x = flip_x
+        self._img_updated = False
+
+    @property
+    def flip_y(self):
+        return self._flip_y
+
+    @flip_y.setter
+    def flip_y(self, flip_y):
+        self._flip_y = flip_y
+        self._img_updated = False
+
+    @property
+    def scale(self):
+        return Vec2(self._scale)
+
+    @scale.setter
+    def scale(self, scale):
+        self._scale = Vec2(scale)
+        self._img_updated = False
+
+    @property
+    def alpha(self):
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, new_alpha):
+        if 0 &lt;= new_alpha &lt;= 255:
+            self._alpha = new_alpha
+            self._img_updated = False
+        else:
+            raise Exception()
+
+    @property
+    def local_rotation(self):
+        return self._rotation
+
+    @local_rotation.setter
+    def local_rotation(self, angle):
+        self._rotation = angle % 360
+        self._img_updated = False
+
+    @property
+    def rotation(self):
+        if self._parent is not None:
+            return self._parent.rotation + self._rotation
+        else:
+            return self._rotation
+
+    @rotation.setter
+    def rotation(self, degrees):
+        if self._parent is not None:
+            self._rotation = degrees - self._parent.rotation
+        else:
+            self._rotation = degrees
+        self._img_updated = False
+
+    @property
+    def rect(self):
+        return pygame.Rect(self.draw_pos, self.image.get_size())
+
+
+class AnimatedSprite(Sprite):
+    def __init__(self, name=&#34;animated sprite&#34;, **kwargs):
+        super().__init__(**kwargs)
+        self.animation_frames = kwargs.get(&#34;animation_frames&#34;, [None])
+        self._sheet = kwargs.get(&#34;spritesheet&#34;, None)
+        self._sprite_dim = kwargs.get(&#34;sprite_dim&#34;, (0, 0))
+        self._sprite_offset = kwargs.get(&#34;sprite_offset&#34;, (0, 0))
+        self._playing = kwargs.get(&#34;playing&#34;, True)
+        self._one_shot = kwargs.get(&#34;oneshot&#34;, False)
+        self._frame = 0
+        self.animation_fps = kwargs.get(&#34;animation_fps&#34;, 30)
+
+    def on_load(self):
+        if self._sheet is None:
+            self._sheet = [pygame.Surface((10, 10))]
+        else:
+            if isinstance(self._sheet, str):
+                self._sheet = GAME_GLOBALS[&#34;Scene&#34;].make_sprite_sheet(
+                    self._sheet, self._sprite_dim, self._sprite_offset
+                )
+            else:
+                for sprite in self._sheet:
+                    if isinstance(sprite, str):
+                        sprite = GAME_GLOBALS[&#34;Scene&#34;].load_resource(sprite)
+                    if not isinstance(sprite, pygame.Surface):
+                        raise TypeError(
+                            &#34;&#39;spritesheet&#39; must be one of the following:\n-Valid path\n-list containing surfaces or valid paths&#34;
+                        )
+
+        if self.animation_frames[0] is None:
+            self.animation_frames = [i for i in range(len(self._sheet))]
+
+        self.source = self._sheet[self.animation_frames[0]]
+
+    def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
+        if spritesheet is not None:
+            if isinstance(spritesheet, str):
+                self._sheet = GAME_GLOBALS[&#34;Scene&#34;].make_sprite_sheet(
+                    spritesheet, self._sprite_dim, self._sprite_offset
+                )
+            else:
+                self._sheet = spritesheet
+                for sprite in self._sheet:
+                    if isinstance(sprite, str):
+                        sprite = GAME_GLOBALS[&#34;Scene&#34;].load_resource(sprite)
+                    if not isinstance(sprite, pygame.Surface):
+                        raise TypeError(
+                            &#34;&#39;spritesheet&#39; must be one of the following:\n-Valid path\n-list containing surfaces or valid paths&#34;
+                        )
+
+        if animation_frames is not None:
+            for frame in animation_frames:
+                if not 0 &lt;= frame &lt; len(self._sheet):
+                    raise Exception(f&#34;Frame {frame} out  of bounds&#34;)
+            self.animation_frames = animation_frames
+        else:
+            self.animation_frames = [i for i in range(len(self._sheet))]
+
+        if fps is not None:
+            self.set_fps(fps)
+
+    def update(self, delta):
+        if self._playing:
+            self._frame = self._frame + delta * self.animation_fps
+            if self._frame &gt;= len(self.animation_frames):
+                if self._one_shot:
+                    self._frame = len(self.animation_frames) - 1
+                    self._playing = False
+                else:
+                    self._frame %= len(self.animation_frames)
+            self.source = self._sheet[self.animation_frames[int(self._frame)]]
+
+    def play(self, start_over=False):
+        self._playing = True
+        if start_over:
+            self._frame = 0
+
+    def stop(self):
+        self._playing = False
+
+    def set_fps(self, fps):
+        if fps &lt; 0:
+            raise Exception(f&#34;invalid fps {fps}, fps must be greater than 0&#34;)
+        self.animation_fps = fps
+
+
+class Label(Sprite):
+    def __init__(self, name=&#34;label&#34;, **kwargs):
+        super().__init__(name, **kwargs)
+        self.font = kwargs.get(&#34;font&#34;, DEFAULT_FONT)
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+
+        self.text_content = kwargs.get(&#34;text&#34;, &#34;&#34;)
+        self.source = self.font.render(self.text_content, True, self.text_color)
+
+    def set_text(self, text):
+        if not isinstance(text, str):
+            text = str(text)
+        if self.text_content != text:
+            self.text_content = text
+            self.source = self.font.render(text, True, self.text_color)
+
+    def append_text(self, text):
+        self.text_content += text
+        self.set_text(self.text_content)
+
+
+class ProgressBar(Sprite):
+    def __init__(self, value, max_value, **kwargs):
+        kwargs.setdefault(&#34;name&#34;, &#34;Progress Bar&#34;)
+        super().__init__(**kwargs)
+        self.size = kwargs.get(&#34;size&#34;, Vec2(200, 50))
+        self.value = value
+        self.max_value = max_value
+        self.bg_color = kwargs.get(&#34;bg_color&#34;, (100, 100, 100))
+        self.color = kwargs.get(&#34;color&#34;, (100, 100, 200))
+        self.line_color = kwargs.get(&#34;line_color&#34;, (50, 50, 50))
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.line_width = kwargs.get(&#34;line_width&#34;, 3)
+        self.update_bar()
+
+    def update_bar(self):
+        # Draw the background color
+        self.source = pygame.Surface(self.size)
+        pygame.draw.rect(
+            self.source,
+            self.bg_color,
+            self.source.get_rect(),
+            border_radius=self.radius,
+        )
+        # Draw the bar fill
+        if self.value &gt; 0:
+            fill_height = self.source.get_height() - self.line_width * 2
+            fill_width = map_range(
+                self.value,
+                0,
+                self.max_value,
+                0,
+                self.source.get_width() - self.line_width * 2,
+            )
+            fill_rect = pygame.Rect(
+                self.line_width, self.line_width, fill_width, fill_height
+            )
+            pygame.draw.rect(self.source, self.color, fill_rect)
+        # Draw the border
+        if self.line_width &gt; 0:
+            pygame.draw.rect(
+                self.source,
+                self.line_color,
+                self.source.get_rect(),
+                self.line_width,
+                border_radius=self.radius,
+            )
+        self._img_updated = False
+
+    def update_value(self, value):
+        self.value = value
+        self.update_bar()
+
+    def update_max_value(self, max_value):
+        self.max_value = max_value
+        self.update_bar()
+
+
+class Button(GameObject):
+    STATES = [&#34;UNPRESSED&#34;, &#34;HOVER&#34;, &#34;PRESSED&#34;]
+    UNPRESSED = 0
+    HOVER = 1
+    PRESSED = 2
+
+    def __init__(self, name=&#34;button&#34;, **kwargs):
+        super().__init__(name, **kwargs)
+        self.screen_space = True
+
+        self._callback = kwargs.get(&#34;callback&#34;, None)
+        self._on_release = kwargs.get(&#34;on_release&#34;, True)
+
+        self._size = kwargs.get(&#34;size&#34;, (10, 10))
+        self._rect = pygame.Rect((0, 0), self._size)
+
+        self._unpressed_asset = kwargs.get(&#34;unpressed&#34;, None)
+        self._pressed_asset = kwargs.get(&#34;pressed&#34;, None)
+        self._hover_asset = kwargs.get(&#34;hover&#34;, None)
+
+        self.last_state = self.UNPRESSED
+        self.state = self.UNPRESSED
+
+        if self._unpressed_asset is None:
+            self._unpressed_asset = pygame.Surface(self._size)
+            self._unpressed_asset.fill((255, 255, 255))
+        if self._pressed_asset is None:
+            self._pressed_asset = pygame.Surface(self._size)
+            self._pressed_asset.fill((128, 128, 128))
+        if self._hover_asset is None:
+            self._hover_asset = pygame.Surface(self._size)
+            self._hover_asset.fill((192, 192, 192))
+
+        self.add_child(
+            Sprite(asset=self._unpressed_asset),
+            &#34;sprite&#34;,
+        )
+
+    def on_load(self):
+        self._rect.center = self.pos
+
+    def update(self, _delta):
+        mouse_pos = GAME_GLOBALS[&#34;Input&#34;].mouse.pos
+        if self.visible:
+            if self._rect.collidepoint(mouse_pos):
+                if GAME_GLOBALS[&#34;Input&#34;].mouse.click(0):
+                    self.state = self.PRESSED
+                elif self.state != self.PRESSED or not GAME_GLOBALS[&#34;Input&#34;].mouse.held(
+                    0
+                ):
+                    self.state = self.HOVER
+            else:
+                if self.state == self.PRESSED:
+                    if not GAME_GLOBALS[&#34;Input&#34;].mouse.held(0):
+                        self.state = self.UNPRESSED
+                else:
+                    self.state = self.UNPRESSED
+            if self.last_state != self.state:
+                if self.state == self.UNPRESSED:
+                    if self._unpressed_asset is not None:
+                        self.sprite.source = self._unpressed_asset
+                elif self.state == self.HOVER:
+                    if self._hover_asset is not None:
+                        self.sprite.source = self._hover_asset
+                    if (
+                        callable(self._callback)
+                        and self._on_release
+                        and self.last_state == self.PRESSED
+                    ):
+                        self._callback()
+                elif self.state == self.PRESSED:
+                    if self._pressed_asset is not None:
+                        self.sprite.source = self._pressed_asset
+                    if callable(self._callback) and not self._on_release:
+                        self._callback()
+            self.last_state = self.state
+
+    def _debug_draw(self, surface: pygame.Surface, offset=None):
+        super()._debug_draw(surface, offset)
+        pygame.draw.rect(surface, &#34;red&#34;, self._rect, 1)
+
+    def set_callback(self, callback):
+        self._callback = callback</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="jazz.components.AnimatedSprite"><code class="flex name class">
+<span>class <span class="ident">AnimatedSprite</span></span>
+<span>(</span><span>name='animated sprite', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class AnimatedSprite(Sprite):
+    def __init__(self, name=&#34;animated sprite&#34;, **kwargs):
+        super().__init__(**kwargs)
+        self.animation_frames = kwargs.get(&#34;animation_frames&#34;, [None])
+        self._sheet = kwargs.get(&#34;spritesheet&#34;, None)
+        self._sprite_dim = kwargs.get(&#34;sprite_dim&#34;, (0, 0))
+        self._sprite_offset = kwargs.get(&#34;sprite_offset&#34;, (0, 0))
+        self._playing = kwargs.get(&#34;playing&#34;, True)
+        self._one_shot = kwargs.get(&#34;oneshot&#34;, False)
+        self._frame = 0
+        self.animation_fps = kwargs.get(&#34;animation_fps&#34;, 30)
+
+    def on_load(self):
+        if self._sheet is None:
+            self._sheet = [pygame.Surface((10, 10))]
+        else:
+            if isinstance(self._sheet, str):
+                self._sheet = GAME_GLOBALS[&#34;Scene&#34;].make_sprite_sheet(
+                    self._sheet, self._sprite_dim, self._sprite_offset
+                )
+            else:
+                for sprite in self._sheet:
+                    if isinstance(sprite, str):
+                        sprite = GAME_GLOBALS[&#34;Scene&#34;].load_resource(sprite)
+                    if not isinstance(sprite, pygame.Surface):
+                        raise TypeError(
+                            &#34;&#39;spritesheet&#39; must be one of the following:\n-Valid path\n-list containing surfaces or valid paths&#34;
+                        )
+
+        if self.animation_frames[0] is None:
+            self.animation_frames = [i for i in range(len(self._sheet))]
+
+        self.source = self._sheet[self.animation_frames[0]]
+
+    def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
+        if spritesheet is not None:
+            if isinstance(spritesheet, str):
+                self._sheet = GAME_GLOBALS[&#34;Scene&#34;].make_sprite_sheet(
+                    spritesheet, self._sprite_dim, self._sprite_offset
+                )
+            else:
+                self._sheet = spritesheet
+                for sprite in self._sheet:
+                    if isinstance(sprite, str):
+                        sprite = GAME_GLOBALS[&#34;Scene&#34;].load_resource(sprite)
+                    if not isinstance(sprite, pygame.Surface):
+                        raise TypeError(
+                            &#34;&#39;spritesheet&#39; must be one of the following:\n-Valid path\n-list containing surfaces or valid paths&#34;
+                        )
+
+        if animation_frames is not None:
+            for frame in animation_frames:
+                if not 0 &lt;= frame &lt; len(self._sheet):
+                    raise Exception(f&#34;Frame {frame} out  of bounds&#34;)
+            self.animation_frames = animation_frames
+        else:
+            self.animation_frames = [i for i in range(len(self._sheet))]
+
+        if fps is not None:
+            self.set_fps(fps)
+
+    def update(self, delta):
+        if self._playing:
+            self._frame = self._frame + delta * self.animation_fps
+            if self._frame &gt;= len(self.animation_frames):
+                if self._one_shot:
+                    self._frame = len(self.animation_frames) - 1
+                    self._playing = False
+                else:
+                    self._frame %= len(self.animation_frames)
+            self.source = self._sheet[self.animation_frames[int(self._frame)]]
+
+    def play(self, start_over=False):
+        self._playing = True
+        if start_over:
+            self._frame = 0
+
+    def stop(self):
+        self._playing = False
+
+    def set_fps(self, fps):
+        if fps &lt; 0:
+            raise Exception(f&#34;invalid fps {fps}, fps must be greater than 0&#34;)
+        self.animation_fps = fps</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.components.AnimatedSprite.play"><code class="name flex">
+<span>def <span class="ident">play</span></span>(<span>self, start_over=False)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def play(self, start_over=False):
+    self._playing = True
+    if start_over:
+        self._frame = 0</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.AnimatedSprite.set_fps"><code class="name flex">
+<span>def <span class="ident">set_fps</span></span>(<span>self, fps)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_fps(self, fps):
+    if fps &lt; 0:
+        raise Exception(f&#34;invalid fps {fps}, fps must be greater than 0&#34;)
+    self.animation_fps = fps</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.AnimatedSprite.stop"><code class="name flex">
+<span>def <span class="ident">stop</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def stop(self):
+    self._playing = False</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.AnimatedSprite.update_animation"><code class="name flex">
+<span>def <span class="ident">update_animation</span></span>(<span>self, spritesheet=None, animation_frames=None, fps=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
+    if spritesheet is not None:
+        if isinstance(spritesheet, str):
+            self._sheet = GAME_GLOBALS[&#34;Scene&#34;].make_sprite_sheet(
+                spritesheet, self._sprite_dim, self._sprite_offset
+            )
+        else:
+            self._sheet = spritesheet
+            for sprite in self._sheet:
+                if isinstance(sprite, str):
+                    sprite = GAME_GLOBALS[&#34;Scene&#34;].load_resource(sprite)
+                if not isinstance(sprite, pygame.Surface):
+                    raise TypeError(
+                        &#34;&#39;spritesheet&#39; must be one of the following:\n-Valid path\n-list containing surfaces or valid paths&#34;
+                    )
+
+    if animation_frames is not None:
+        for frame in animation_frames:
+            if not 0 &lt;= frame &lt; len(self._sheet):
+                raise Exception(f&#34;Frame {frame} out  of bounds&#34;)
+        self.animation_frames = animation_frames
+    else:
+        self.animation_frames = [i for i in range(len(self._sheet))]
+
+    if fps is not None:
+        self.set_fps(fps)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.components.Sprite.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.components.Sprite.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.components.Sprite.draw_pos" href="#jazz.components.Sprite.draw_pos">draw_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.components.Sprite.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.components.Sprite.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.components.Sprite.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.components.Sprite.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.components.Sprite.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.components.Sprite.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.components.Sprite.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.components.Sprite.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.components.Sprite.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.components.Sprite.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.components.Sprite.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.components.Sprite.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.components.Sprite.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.components.Sprite.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.components.Sprite.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.components.Sprite.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.components.Button"><code class="flex name class">
+<span>class <span class="ident">Button</span></span>
+<span>(</span><span>name='button', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Button(GameObject):
+    STATES = [&#34;UNPRESSED&#34;, &#34;HOVER&#34;, &#34;PRESSED&#34;]
+    UNPRESSED = 0
+    HOVER = 1
+    PRESSED = 2
+
+    def __init__(self, name=&#34;button&#34;, **kwargs):
+        super().__init__(name, **kwargs)
+        self.screen_space = True
+
+        self._callback = kwargs.get(&#34;callback&#34;, None)
+        self._on_release = kwargs.get(&#34;on_release&#34;, True)
+
+        self._size = kwargs.get(&#34;size&#34;, (10, 10))
+        self._rect = pygame.Rect((0, 0), self._size)
+
+        self._unpressed_asset = kwargs.get(&#34;unpressed&#34;, None)
+        self._pressed_asset = kwargs.get(&#34;pressed&#34;, None)
+        self._hover_asset = kwargs.get(&#34;hover&#34;, None)
+
+        self.last_state = self.UNPRESSED
+        self.state = self.UNPRESSED
+
+        if self._unpressed_asset is None:
+            self._unpressed_asset = pygame.Surface(self._size)
+            self._unpressed_asset.fill((255, 255, 255))
+        if self._pressed_asset is None:
+            self._pressed_asset = pygame.Surface(self._size)
+            self._pressed_asset.fill((128, 128, 128))
+        if self._hover_asset is None:
+            self._hover_asset = pygame.Surface(self._size)
+            self._hover_asset.fill((192, 192, 192))
+
+        self.add_child(
+            Sprite(asset=self._unpressed_asset),
+            &#34;sprite&#34;,
+        )
+
+    def on_load(self):
+        self._rect.center = self.pos
+
+    def update(self, _delta):
+        mouse_pos = GAME_GLOBALS[&#34;Input&#34;].mouse.pos
+        if self.visible:
+            if self._rect.collidepoint(mouse_pos):
+                if GAME_GLOBALS[&#34;Input&#34;].mouse.click(0):
+                    self.state = self.PRESSED
+                elif self.state != self.PRESSED or not GAME_GLOBALS[&#34;Input&#34;].mouse.held(
+                    0
+                ):
+                    self.state = self.HOVER
+            else:
+                if self.state == self.PRESSED:
+                    if not GAME_GLOBALS[&#34;Input&#34;].mouse.held(0):
+                        self.state = self.UNPRESSED
+                else:
+                    self.state = self.UNPRESSED
+            if self.last_state != self.state:
+                if self.state == self.UNPRESSED:
+                    if self._unpressed_asset is not None:
+                        self.sprite.source = self._unpressed_asset
+                elif self.state == self.HOVER:
+                    if self._hover_asset is not None:
+                        self.sprite.source = self._hover_asset
+                    if (
+                        callable(self._callback)
+                        and self._on_release
+                        and self.last_state == self.PRESSED
+                    ):
+                        self._callback()
+                elif self.state == self.PRESSED:
+                    if self._pressed_asset is not None:
+                        self.sprite.source = self._pressed_asset
+                    if callable(self._callback) and not self._on_release:
+                        self._callback()
+            self.last_state = self.state
+
+    def _debug_draw(self, surface: pygame.Surface, offset=None):
+        super()._debug_draw(surface, offset)
+        pygame.draw.rect(surface, &#34;red&#34;, self._rect, 1)
+
+    def set_callback(self, callback):
+        self._callback = callback</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="jazz.components.Button.HOVER"><code class="name">var <span class="ident">HOVER</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jazz.components.Button.PRESSED"><code class="name">var <span class="ident">PRESSED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jazz.components.Button.STATES"><code class="name">var <span class="ident">STATES</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+<dt id="jazz.components.Button.UNPRESSED"><code class="name">var <span class="ident">UNPRESSED</span></code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.components.Button.set_callback"><code class="name flex">
+<span>def <span class="ident">set_callback</span></span>(<span>self, callback)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_callback(self, callback):
+    self._callback = callback</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.engine.base_object.GameObject.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.components.Label"><code class="flex name class">
+<span>class <span class="ident">Label</span></span>
+<span>(</span><span>name='label', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Label(Sprite):
+    def __init__(self, name=&#34;label&#34;, **kwargs):
+        super().__init__(name, **kwargs)
+        self.font = kwargs.get(&#34;font&#34;, DEFAULT_FONT)
+        self.text_color = kwargs.get(&#34;text_color&#34;, (255, 255, 255))
+
+        self.text_content = kwargs.get(&#34;text&#34;, &#34;&#34;)
+        self.source = self.font.render(self.text_content, True, self.text_color)
+
+    def set_text(self, text):
+        if not isinstance(text, str):
+            text = str(text)
+        if self.text_content != text:
+            self.text_content = text
+            self.source = self.font.render(text, True, self.text_color)
+
+    def append_text(self, text):
+        self.text_content += text
+        self.set_text(self.text_content)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.components.Label.append_text"><code class="name flex">
+<span>def <span class="ident">append_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def append_text(self, text):
+    self.text_content += text
+    self.set_text(self.text_content)</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Label.set_text"><code class="name flex">
+<span>def <span class="ident">set_text</span></span>(<span>self, text)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_text(self, text):
+    if not isinstance(text, str):
+        text = str(text)
+    if self.text_content != text:
+        self.text_content = text
+        self.source = self.font.render(text, True, self.text_color)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.components.Sprite.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.components.Sprite.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.components.Sprite.draw_pos" href="#jazz.components.Sprite.draw_pos">draw_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.components.Sprite.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.components.Sprite.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.components.Sprite.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.components.Sprite.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.components.Sprite.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.components.Sprite.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.components.Sprite.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.components.Sprite.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.components.Sprite.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.components.Sprite.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.components.Sprite.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.components.Sprite.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.components.Sprite.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.components.Sprite.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.components.Sprite.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.components.Sprite.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.components.ProgressBar"><code class="flex name class">
+<span>class <span class="ident">ProgressBar</span></span>
+<span>(</span><span>value, max_value, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ProgressBar(Sprite):
+    def __init__(self, value, max_value, **kwargs):
+        kwargs.setdefault(&#34;name&#34;, &#34;Progress Bar&#34;)
+        super().__init__(**kwargs)
+        self.size = kwargs.get(&#34;size&#34;, Vec2(200, 50))
+        self.value = value
+        self.max_value = max_value
+        self.bg_color = kwargs.get(&#34;bg_color&#34;, (100, 100, 100))
+        self.color = kwargs.get(&#34;color&#34;, (100, 100, 200))
+        self.line_color = kwargs.get(&#34;line_color&#34;, (50, 50, 50))
+        self.radius = kwargs.get(&#34;radius&#34;, 0)
+        self.line_width = kwargs.get(&#34;line_width&#34;, 3)
+        self.update_bar()
+
+    def update_bar(self):
+        # Draw the background color
+        self.source = pygame.Surface(self.size)
+        pygame.draw.rect(
+            self.source,
+            self.bg_color,
+            self.source.get_rect(),
+            border_radius=self.radius,
+        )
+        # Draw the bar fill
+        if self.value &gt; 0:
+            fill_height = self.source.get_height() - self.line_width * 2
+            fill_width = map_range(
+                self.value,
+                0,
+                self.max_value,
+                0,
+                self.source.get_width() - self.line_width * 2,
+            )
+            fill_rect = pygame.Rect(
+                self.line_width, self.line_width, fill_width, fill_height
+            )
+            pygame.draw.rect(self.source, self.color, fill_rect)
+        # Draw the border
+        if self.line_width &gt; 0:
+            pygame.draw.rect(
+                self.source,
+                self.line_color,
+                self.source.get_rect(),
+                self.line_width,
+                border_radius=self.radius,
+            )
+        self._img_updated = False
+
+    def update_value(self, value):
+        self.value = value
+        self.update_bar()
+
+    def update_max_value(self, max_value):
+        self.max_value = max_value
+        self.update_bar()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.components.ProgressBar.update_bar"><code class="name flex">
+<span>def <span class="ident">update_bar</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_bar(self):
+    # Draw the background color
+    self.source = pygame.Surface(self.size)
+    pygame.draw.rect(
+        self.source,
+        self.bg_color,
+        self.source.get_rect(),
+        border_radius=self.radius,
+    )
+    # Draw the bar fill
+    if self.value &gt; 0:
+        fill_height = self.source.get_height() - self.line_width * 2
+        fill_width = map_range(
+            self.value,
+            0,
+            self.max_value,
+            0,
+            self.source.get_width() - self.line_width * 2,
+        )
+        fill_rect = pygame.Rect(
+            self.line_width, self.line_width, fill_width, fill_height
+        )
+        pygame.draw.rect(self.source, self.color, fill_rect)
+    # Draw the border
+    if self.line_width &gt; 0:
+        pygame.draw.rect(
+            self.source,
+            self.line_color,
+            self.source.get_rect(),
+            self.line_width,
+            border_radius=self.radius,
+        )
+    self._img_updated = False</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.ProgressBar.update_max_value"><code class="name flex">
+<span>def <span class="ident">update_max_value</span></span>(<span>self, max_value)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_max_value(self, max_value):
+    self.max_value = max_value
+    self.update_bar()</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.ProgressBar.update_value"><code class="name flex">
+<span>def <span class="ident">update_value</span></span>(<span>self, value)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_value(self, value):
+    self.value = value
+    self.update_bar()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.components.Sprite.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.components.Sprite.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.components.Sprite.draw_pos" href="#jazz.components.Sprite.draw_pos">draw_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.components.Sprite.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.components.Sprite.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.components.Sprite.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.components.Sprite.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.components.Sprite.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.components.Sprite.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.components.Sprite.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.components.Sprite.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.components.Sprite.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.components.Sprite.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.components.Sprite.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.components.Sprite.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.components.Sprite.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.components.Sprite.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.components.Sprite.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.components.Sprite.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.components.Sprite"><code class="flex name class">
+<span>class <span class="ident">Sprite</span></span>
+<span>(</span><span>name='Sprite', **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Sprite(GameObject):
+    def __init__(self, name=&#34;Sprite&#34;, **kwargs):
+        super().__init__(name, **kwargs)
+        self.asset = kwargs.get(&#34;asset&#34;, None)
+        self._source = None
+        self._flip_x = kwargs.get(&#34;flip_x&#34;, False)
+        self._flip_y = kwargs.get(&#34;flip_y&#34;, False)
+        self._scale = Vec2(kwargs.get(&#34;scale&#34;, Vec2(1, 1)))
+        self._alpha = kwargs.get(&#34;alpha&#34;, 255)
+        self._anchor = [1, 1]
+
+        self._img_updated = False
+        if self.source is None:
+            if self.asset is None:
+                temp_source = pygame.Surface((10, 10))
+                temp_source.fill(self._color)
+                self.source = temp_source
+            else:
+                if isinstance(self.asset, pygame.Surface):
+                    self.source = self.asset
+                else:
+                    self.source = GAME_GLOBALS[&#34;Scene&#34;].load_resource(self.asset)
+
+        anchor = kwargs.get(&#34;anchor&#34;, None)
+        if anchor is not None:
+            self.set_anchor(*anchor)
+
+    def on_load(self):
+        ...
+
+    def _draw(self, surface: pygame.Surface, offset=None):
+        &#34;&#34;&#34;
+        Method called in the scene render function to draw the Entity on a surface.
+
+        Args:
+            surface (pygame.Surface): Surface to draw the Entity on.
+            offset (Vec2, optional): Offset to add to pos for the draw
+                destination. Defaults to None.
+        &#34;&#34;&#34;
+        if offset is None:
+            offset = Vec2()
+        self.update_image()
+        if (
+            self.image.get_rect(center=self.pos).colliderect(
+                GAME_GLOBALS[&#34;Scene&#34;].camera.screen_rect
+            )
+        ) or self.screen_space:
+            surface.blit(self.image, self.draw_pos + Vec2(offset))
+
+    def update_image(self):
+        if not self._img_updated:
+            self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
+            self.image = pygame.transform.scale_by(self.image, self.scale)
+            self.image = pygame.transform.rotate(self.image, -self.rotation)
+            self.image.set_alpha(self.alpha)
+            self._set_offset()
+            self._img_updated = True
+
+    def _set_offset(self):
+        self._draw_offset = -Vec2(
+            self.image.get_width() * self._anchor[0] / 2,
+            self.image.get_height() * self._anchor[1] / 2,
+        )
+
+    def set_anchor(self, horizontal=None, vertical=None):
+        if vertical in [&#34;top&#34;, 0]:
+            self._anchor[1] = 0
+        elif vertical in [&#34;center&#34;, 1]:
+            self._anchor[1] = 1
+        elif vertical in [&#34;bottom&#34;, 2]:
+            self._anchor[1] = 2
+        if horizontal in [&#34;left&#34;, 0]:
+            self._anchor[0] = 0
+        elif horizontal in [&#34;center&#34;, 1]:
+            self._anchor[0] = 1
+        elif horizontal in [&#34;right&#34;, 2]:
+            self._anchor[0] = 2
+        self._set_offset()
+
+    @property
+    def draw_pos(self):
+        &#34;&#34;&#34;Returns the top left of self.image when centered on self.pos&#34;&#34;&#34;
+        return Vec2(self.pos + self._draw_offset)
+
+    @draw_pos.setter
+    def draw_pos(self, new_offset):
+        &#34;&#34;&#34;Set new draw offset&#34;&#34;&#34;
+        self._draw_offset = Vec2(new_offset)
+
+    @property
+    def source(self):
+        return self._source
+
+    @source.setter
+    def source(self, new_source):
+        if not isinstance(new_source, pygame.Surface):
+            new_source = GAME_GLOBALS[&#34;Scene&#34;].load_resource(new_source)
+        self._source = new_source
+        self._img_updated = False
+        self.update_image()
+
+    @property
+    def flip_x(self):
+        return self._flip_x
+
+    @flip_x.setter
+    def flip_x(self, flip_x):
+        self._flip_x = flip_x
+        self._img_updated = False
+
+    @property
+    def flip_y(self):
+        return self._flip_y
+
+    @flip_y.setter
+    def flip_y(self, flip_y):
+        self._flip_y = flip_y
+        self._img_updated = False
+
+    @property
+    def scale(self):
+        return Vec2(self._scale)
+
+    @scale.setter
+    def scale(self, scale):
+        self._scale = Vec2(scale)
+        self._img_updated = False
+
+    @property
+    def alpha(self):
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, new_alpha):
+        if 0 &lt;= new_alpha &lt;= 255:
+            self._alpha = new_alpha
+            self._img_updated = False
+        else:
+            raise Exception()
+
+    @property
+    def local_rotation(self):
+        return self._rotation
+
+    @local_rotation.setter
+    def local_rotation(self, angle):
+        self._rotation = angle % 360
+        self._img_updated = False
+
+    @property
+    def rotation(self):
+        if self._parent is not None:
+            return self._parent.rotation + self._rotation
+        else:
+            return self._rotation
+
+    @rotation.setter
+    def rotation(self, degrees):
+        if self._parent is not None:
+            self._rotation = degrees - self._parent.rotation
+        else:
+            self._rotation = degrees
+        self._img_updated = False
+
+    @property
+    def rect(self):
+        return pygame.Rect(self.draw_pos, self.image.get_size())</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="jazz.components.AnimatedSprite" href="#jazz.components.AnimatedSprite">AnimatedSprite</a></li>
+<li><a title="jazz.components.Label" href="#jazz.components.Label">Label</a></li>
+<li><a title="jazz.components.ProgressBar" href="#jazz.components.ProgressBar">ProgressBar</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="jazz.components.Sprite.alpha"><code class="name">var <span class="ident">alpha</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def alpha(self):
+    return self._alpha</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.draw_pos"><code class="name">var <span class="ident">draw_pos</span></code></dt>
+<dd>
+<div class="desc"><p>Returns the top left of self.image when centered on self.pos</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def draw_pos(self):
+    &#34;&#34;&#34;Returns the top left of self.image when centered on self.pos&#34;&#34;&#34;
+    return Vec2(self.pos + self._draw_offset)</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.flip_x"><code class="name">var <span class="ident">flip_x</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def flip_x(self):
+    return self._flip_x</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.flip_y"><code class="name">var <span class="ident">flip_y</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def flip_y(self):
+    return self._flip_y</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.rect"><code class="name">var <span class="ident">rect</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def rect(self):
+    return pygame.Rect(self.draw_pos, self.image.get_size())</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.scale"><code class="name">var <span class="ident">scale</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def scale(self):
+    return Vec2(self._scale)</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.source"><code class="name">var <span class="ident">source</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def source(self):
+    return self._source</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.components.Sprite.set_anchor"><code class="name flex">
+<span>def <span class="ident">set_anchor</span></span>(<span>self, horizontal=None, vertical=None)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_anchor(self, horizontal=None, vertical=None):
+    if vertical in [&#34;top&#34;, 0]:
+        self._anchor[1] = 0
+    elif vertical in [&#34;center&#34;, 1]:
+        self._anchor[1] = 1
+    elif vertical in [&#34;bottom&#34;, 2]:
+        self._anchor[1] = 2
+    if horizontal in [&#34;left&#34;, 0]:
+        self._anchor[0] = 0
+    elif horizontal in [&#34;center&#34;, 1]:
+        self._anchor[0] = 1
+    elif horizontal in [&#34;right&#34;, 2]:
+        self._anchor[0] = 2
+    self._set_offset()</code></pre>
+</details>
+</dd>
+<dt id="jazz.components.Sprite.update_image"><code class="name flex">
+<span>def <span class="ident">update_image</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def update_image(self):
+    if not self._img_updated:
+        self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
+        self.image = pygame.transform.scale_by(self.image, self.scale)
+        self.image = pygame.transform.rotate(self.image, -self.rotation)
+        self.image.set_alpha(self.alpha)
+        self._set_offset()
+        self._img_updated = True</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.engine.base_object.GameObject" href="engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.engine.base_object.GameObject.add_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.add_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.facing" href="engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.late_update" href="engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.move" href="engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.on_load" href="engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.pos" href="engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.queue_kill" href="engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_child" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_group" href="engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.root" href="engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotate" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotation" href="engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.screen_space" href="engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.update" href="engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.visible" href="engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.x" href="engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.y" href="engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="jazz" href="index.html">jazz</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="jazz.components.AnimatedSprite" href="#jazz.components.AnimatedSprite">AnimatedSprite</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.components.AnimatedSprite.play" href="#jazz.components.AnimatedSprite.play">play</a></code></li>
+<li><code><a title="jazz.components.AnimatedSprite.set_fps" href="#jazz.components.AnimatedSprite.set_fps">set_fps</a></code></li>
+<li><code><a title="jazz.components.AnimatedSprite.stop" href="#jazz.components.AnimatedSprite.stop">stop</a></code></li>
+<li><code><a title="jazz.components.AnimatedSprite.update_animation" href="#jazz.components.AnimatedSprite.update_animation">update_animation</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.components.Button" href="#jazz.components.Button">Button</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.components.Button.HOVER" href="#jazz.components.Button.HOVER">HOVER</a></code></li>
+<li><code><a title="jazz.components.Button.PRESSED" href="#jazz.components.Button.PRESSED">PRESSED</a></code></li>
+<li><code><a title="jazz.components.Button.STATES" href="#jazz.components.Button.STATES">STATES</a></code></li>
+<li><code><a title="jazz.components.Button.UNPRESSED" href="#jazz.components.Button.UNPRESSED">UNPRESSED</a></code></li>
+<li><code><a title="jazz.components.Button.set_callback" href="#jazz.components.Button.set_callback">set_callback</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.components.Label" href="#jazz.components.Label">Label</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.components.Label.append_text" href="#jazz.components.Label.append_text">append_text</a></code></li>
+<li><code><a title="jazz.components.Label.set_text" href="#jazz.components.Label.set_text">set_text</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.components.ProgressBar" href="#jazz.components.ProgressBar">ProgressBar</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.components.ProgressBar.update_bar" href="#jazz.components.ProgressBar.update_bar">update_bar</a></code></li>
+<li><code><a title="jazz.components.ProgressBar.update_max_value" href="#jazz.components.ProgressBar.update_max_value">update_max_value</a></code></li>
+<li><code><a title="jazz.components.ProgressBar.update_value" href="#jazz.components.ProgressBar.update_value">update_value</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.components.Sprite" href="#jazz.components.Sprite">Sprite</a></code></h4>
+<ul class="two-column">
+<li><code><a title="jazz.components.Sprite.alpha" href="#jazz.components.Sprite.alpha">alpha</a></code></li>
+<li><code><a title="jazz.components.Sprite.draw_pos" href="#jazz.components.Sprite.draw_pos">draw_pos</a></code></li>
+<li><code><a title="jazz.components.Sprite.flip_x" href="#jazz.components.Sprite.flip_x">flip_x</a></code></li>
+<li><code><a title="jazz.components.Sprite.flip_y" href="#jazz.components.Sprite.flip_y">flip_y</a></code></li>
+<li><code><a title="jazz.components.Sprite.rect" href="#jazz.components.Sprite.rect">rect</a></code></li>
+<li><code><a title="jazz.components.Sprite.scale" href="#jazz.components.Sprite.scale">scale</a></code></li>
+<li><code><a title="jazz.components.Sprite.set_anchor" href="#jazz.components.Sprite.set_anchor">set_anchor</a></code></li>
+<li><code><a title="jazz.components.Sprite.source" href="#jazz.components.Sprite.source">source</a></code></li>
+<li><code><a title="jazz.components.Sprite.update_image" href="#jazz.components.Sprite.update_image">update_image</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

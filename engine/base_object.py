@@ -29,14 +29,14 @@ class GameObject:
             name (str, optional): sets name property. Defaults to "Object".
             pause_process (bool, optional): Sets whether the object will run
                 the update method while the scene is paused. Defaults to False.
-            game_process (bool, optional: Sets whether the object will run the
+            game_process (bool, optional): Sets whether the object will run the
                 update method. Defaults to True.
             visible (bool, optional): Sets whether the object will run the draw
                 method. Defaults to True
             screen_space (bool, optional): Sets whether the object is drawn in
                 screen space or world space. Defaults to False
             z (int, optional): Sets the z-index of the object to determine draw order.
-            pos ((tuple[float], jazz.Vec2), optional): Sets the local space position of the
+            pos (tuple[float], optional): Sets the local space position of the
                 object. Defaults to (0, 0).
             rotation (float, optional): Sets the local rotation of the object. Defaults
                 to 0.

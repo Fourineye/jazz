@@ -1,0 +1,1715 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>jazz.physics.colliders API documentation</title>
+<meta name="description" content="" />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>jazz.physics.colliders</code></h1>
+</header>
+<section id="section-intro">
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">import pygame
+
+from ..engine.base_object import GameObject
+from ..utils import Rect, Vec2, direction_to, dist_to, line_circle, line_intersection
+
+
+class Collider(GameObject):
+    def __init__(self, **kwargs):
+        kwargs.setdefault(&#34;name&#34;, &#34;Collider&#34;)
+        super().__init__(**kwargs)
+        self.collider = self
+        self.collider_type = None
+        if not hasattr(self, &#34;_vertices&#34;):
+            self._vertices = [Vec2(0, 0)]
+        self._edges = []
+        self._normals = []
+        if not hasattr(self, &#34;_radius&#34;):
+            self._radius = 0
+        self.color = &#34;white&#34;
+
+        self._left = 0
+        self._right = 0
+        self._top = 0
+        self._bottom = 0
+        self._center = Vec2()
+        self._rot_cache = 1000000
+
+        self._size = len(self._vertices)
+        if self._size &gt; 1:
+            for i, vert in enumerate(self._vertices):
+                vert = Vec2(vert)
+                self._center += vert
+                self._vertices[i] = vert
+                self._radius = max(self._radius, vert.magnitude())
+            self._center /= self._size
+            if self._size &gt; 2:
+                for i in range(self._size):
+                    j = (i + 1) % self._size
+                    self._edges.append((i, j))
+            else:
+                self._center = Vec2()
+                self._edges.append((0, 1))
+        self.get_rect()
+
+    def _debug_draw(self, surface, offset=None):
+        if offset is None:
+            offset = Vec2()
+        for edge in self.edges:
+            pygame.draw.aaline(
+                surface,
+                self.color,
+                edge[0] + offset,
+                edge[1] + offset,
+            )
+        pygame.draw.aaline(
+            surface,
+            &#34;red&#34;,
+            self.center + offset,
+            self.center + self.facing * 5 + offset,
+        )
+        for vert in self.vertices:
+            pygame.draw.circle(surface, &#34;gray&#34;, vert + offset, 2, 1)
+        pygame.draw.circle(surface, &#34;red&#34;, self.pos + offset, 2, 1)
+        pygame.draw.circle(surface, &#34;gray&#34;, self.pos + self._center + offset, 2, 1)
+        pygame.draw.rect(
+            surface,
+            &#34;yellow&#34;,
+            pygame.Rect(
+                self.rect.topleft + offset,
+                Vec2(self.size[0], self.size[1]),
+            ),
+            1,
+        )
+
+    def project(self, axis):
+        min_v, max_v = None, None
+        for vert in self.vertices:
+            proj = (vert).dot(axis)
+            if min_v is None:
+                min_v = proj
+                max_v = proj
+            if proj &lt; min_v:
+                min_v = proj
+            if proj &gt; max_v:
+                max_v = proj
+        return min_v, max_v
+
+    def collide_circle(self, collider):
+        return dist_to(self.center, collider.center) &lt;= self._radius + collider._radius
+
+    def collide_rect(self, collider):
+        return self.rect.colliderect(collider.rect)
+
+    def __collide_rect(self, collider):
+        if (
+            (self.top) &lt; (collider.bottom)
+            and (self.bottom) &gt; (collider.top)
+            and (self.left) &lt; (collider.right)
+            and (self.right) &gt; (collider.left)
+        ):
+            return True
+        else:
+            return False
+
+    def get_rect(self):
+        if self._rot_cache == self.rotation:
+            return pygame.Rect(
+                self.left,
+                self.top,
+                self.right - self.left,
+                self.bottom - self.top,
+            )
+        left, right, top, bottom = (
+            self.x,
+            self.x,
+            self.y,
+            self.y,
+        )
+        vertices = self.vertices
+        for vert in vertices:
+            left = min(vert.x, left)
+            right = max(vert.x, right)
+            top = min(vert.y, top)
+            bottom = max(vert.y, bottom)
+        self._left = left - self.x
+        self._right = right - self.x
+        self._top = top - self.y
+        self._bottom = bottom - self.y
+        self._rot_cache = self.rotation
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
+        )
+
+    def collide_sat(self, collider):
+        if not isinstance(collider, Collider):
+            collider = getattr(collider, &#34;collider&#34;, None)
+        if isinstance(collider, pygame.Rect):
+            collider = RectCollider(collider.center, collider.width, collider.height)
+        if collider is None:
+            print(&#34;Invalid collider&#34;)
+            return False
+
+        axes = self.normals + collider.normals
+        if self._size == 1:
+            normal = Vec2()
+            min_dist = 1000000.0
+            for vert in collider.vertices:
+                dist = vert - self.center
+                length = dist.length()
+                if length &lt; min_dist and length != 0:
+                    min_dist = dist.length()
+                    normal = dist.normalize()
+            axes.append(normal)
+        elif collider._size == 1:
+            normal = Vec2()
+            min_dist = 1000000.0
+            for vert in self.vertices:
+                dist = vert - collider.center
+                length = dist.length()
+                if length &lt; min_dist and length != 0:
+                    min_dist = dist.length()
+                    normal = dist.normalize()
+            axes.append(normal)
+
+        depth = 1000000.0
+        normal = Vec2()
+        for axis in axes:
+            p1 = self.project(axis)
+            p2 = collider.project(axis)
+            if p1[1] &lt; p2[0] or p2[1] &lt; p1[0]:
+                return 0, Vec2()
+            axis_depth = min(p2[1] - p1[0], p1[1] - p2[0])
+            if axis_depth &lt; depth:
+                depth = axis_depth
+                normal = axis
+        normal.normalize_ip()
+        if normal.dot(direction_to(self.center, collider.center)) &gt; 0:
+            return depth, normal
+        else:
+            return depth, -normal
+
+    @property
+    def vertices(self):
+        return [self.pos + vert.rotate(self.rotation) for vert in self._vertices]
+
+    @property
+    def edges(self):
+        vertices = self.vertices
+        return [(vertices[edge[0]], vertices[edge[1]]) for edge in self._edges]
+
+    @property
+    def normals(self):
+        normals = []
+        edges = self.edges
+        for edge in edges:
+            new = True
+            new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
+            for normal in normals:
+                if abs(new_normal.dot(normal)) == 1:
+                    new = False
+                    break
+            if new:
+                normals.append(Vec2(edge[1] - edge[0]).normalize().rotate(90))
+        return normals
+
+    @property
+    def top(self):
+        return self.pos.y + self._top
+
+    @property
+    def right(self):
+        return self.pos.x + self._right
+
+    @property
+    def bottom(self):
+        return self.pos.y + self._bottom
+
+    @property
+    def left(self):
+        return self.pos.x + self._left
+
+    @property
+    def center(self):
+        return self.pos + self._center
+
+    @property
+    def rect(self):
+        return self.get_rect()
+
+    @property
+    def size(self):
+        return Vec2(self.right - self.left, self.bottom - self.top)
+
+
+class RectCollider(Collider):
+    def __init__(self, w, h, **kwargs):
+        self._vertices = [
+            Vec2(w / 2, h / 2),
+            Vec2(w / 2, -h / 2),
+            Vec2(-w / 2, -h / 2),
+            Vec2(-w / 2, h / 2),
+        ]
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Rect&#34;
+
+    @staticmethod
+    def from_rect(rect: Rect, **kwargs):
+        kwargs.setdefault(&#34;pos&#34;, rect.center)
+        return RectCollider(rect.w, rect.h, **kwargs)
+
+
+class CircleCollider(Collider):
+    def __init__(self, radius, **kwargs):
+        self._radius = radius
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Circle&#34;
+        self._left = -self._radius
+        self._right = self._radius
+        self._top = -self._radius
+        self._bottom = self._radius
+
+    def project(self, axis):
+        proj = (self.pos).dot(axis)
+        min_v = proj - self._radius
+        max_v = proj + self._radius
+        if min_v &gt; max_v:
+            min_v, max_v = max_v, min_v
+        return min_v, max_v
+
+    def _debug_draw(self, surface, offset=None):
+        if offset is None:
+            offset = Vec2()
+        pygame.draw.circle(surface, self.color, self.pos + offset, self._radius, 1)
+        pygame.draw.circle(surface, &#34;red&#34;, self.pos + offset, 3, 2)
+        pygame.draw.circle(surface, &#34;gray&#34;, self.pos + self._center + offset, 2, 1)
+        pygame.draw.rect(
+            surface,
+            &#34;yellow&#34;,
+            (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]),
+            1,
+        )
+
+    def get_rect(self):
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
+        )
+
+
+class PolyCollider(Collider):
+    def __init__(self, vertices=None, **kwargs):
+        if vertices is None or len(vertices) &lt; 3:
+            raise Exception(&#34;A shape must be defined for Polygon collider&#34;)
+        self._vertices = vertices
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Polygon&#34;
+
+    def recenter(self):
+        if self.center != Vec2():
+            for i, vert in enumerate(self._vertices):
+                vert = Vec2(vert) - self._center
+                self._vertices[i] = vert
+            self._center = Vec2()
+
+
+class RayCollider(Collider):
+    def __init__(self, **kwargs):
+        length = kwargs.get(&#34;length&#34;, 1)
+        self._vertices = [Vec2(0, 0), Vec2(length, 0)]
+        self._length = length
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Ray&#34;
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    def length(self, length):
+        self._length = length
+        self._vertices[1] = Vec2(length, 0)
+
+    def collide_ray(self, collider):
+        if isinstance(collider, CircleCollider):
+            return line_circle(
+                self.pos, self.pos + self.vertices[1], collider.pos, collider.radius
+            )
+        else:
+            collisions = []
+            ray = self.vertices
+            for edge in collider.edges:
+                point = line_intersection(
+                    ray[0],
+                    ray[1],
+                    edge[0],
+                    edge[1],
+                )
+                if point is not None:
+                    collisions.append(point)
+            if collisions:
+                closest_dist = self.length * 2
+                closest_collision = Vec2()
+                for point in collisions:
+                    if dist_to(self.pos, point) &lt; closest_dist:
+                        closest_collision = point
+                        closest_dist = dist_to(self.pos, point)
+                return closest_collision
+        return None
+
+    def get_rect(self):
+        if self._rot_cache == self.rotation:
+            return pygame.Rect(
+                self.left,
+                self.top,
+                self.right - self.left + 1,
+                self.bottom - self.top + 1,
+            )
+        left, right, top, bottom = (
+            self.x,
+            self.x,
+            self.y,
+            self.y,
+        )
+        vertices = self.vertices
+        for vert in vertices:
+            left = min(vert.x, left)
+            right = max(vert.x, right)
+            top = min(vert.y, top)
+            bottom = max(vert.y, bottom)
+        self._left = left - self.x
+        self._right = right - self.x
+        self._top = top - self.y
+        self._bottom = bottom - self.y
+        self._rot_cache = self.rotation
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left + 1,
+            self.bottom - self.top + 1,
+        )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="jazz.physics.colliders.CircleCollider"><code class="flex name class">
+<span>class <span class="ident">CircleCollider</span></span>
+<span>(</span><span>radius, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class CircleCollider(Collider):
+    def __init__(self, radius, **kwargs):
+        self._radius = radius
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Circle&#34;
+        self._left = -self._radius
+        self._right = self._radius
+        self._top = -self._radius
+        self._bottom = self._radius
+
+    def project(self, axis):
+        proj = (self.pos).dot(axis)
+        min_v = proj - self._radius
+        max_v = proj + self._radius
+        if min_v &gt; max_v:
+            min_v, max_v = max_v, min_v
+        return min_v, max_v
+
+    def _debug_draw(self, surface, offset=None):
+        if offset is None:
+            offset = Vec2()
+        pygame.draw.circle(surface, self.color, self.pos + offset, self._radius, 1)
+        pygame.draw.circle(surface, &#34;red&#34;, self.pos + offset, 3, 2)
+        pygame.draw.circle(surface, &#34;gray&#34;, self.pos + self._center + offset, 2, 1)
+        pygame.draw.rect(
+            surface,
+            &#34;yellow&#34;,
+            (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]),
+            1,
+        )
+
+    def get_rect(self):
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="../engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.physics.colliders.CircleCollider.get_rect"><code class="name flex">
+<span>def <span class="ident">get_rect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_rect(self):
+    return pygame.Rect(
+        self.left,
+        self.top,
+        self.right - self.left,
+        self.bottom - self.top,
+    )</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.CircleCollider.project"><code class="name flex">
+<span>def <span class="ident">project</span></span>(<span>self, axis)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def project(self, axis):
+    proj = (self.pos).dot(axis)
+    min_v = proj - self._radius
+    max_v = proj + self._radius
+    if min_v &gt; max_v:
+        min_v, max_v = max_v, min_v
+    return min_v, max_v</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.physics.colliders.Collider.add_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.add_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.facing" href="../engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.late_update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.move" href="../engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.on_load" href="../engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.queue_kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.root" href="../engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotate" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.screen_space" href="../engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.visible" href="../engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.x" href="../engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.y" href="../engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.physics.colliders.Collider"><code class="flex name class">
+<span>class <span class="ident">Collider</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Collider(GameObject):
+    def __init__(self, **kwargs):
+        kwargs.setdefault(&#34;name&#34;, &#34;Collider&#34;)
+        super().__init__(**kwargs)
+        self.collider = self
+        self.collider_type = None
+        if not hasattr(self, &#34;_vertices&#34;):
+            self._vertices = [Vec2(0, 0)]
+        self._edges = []
+        self._normals = []
+        if not hasattr(self, &#34;_radius&#34;):
+            self._radius = 0
+        self.color = &#34;white&#34;
+
+        self._left = 0
+        self._right = 0
+        self._top = 0
+        self._bottom = 0
+        self._center = Vec2()
+        self._rot_cache = 1000000
+
+        self._size = len(self._vertices)
+        if self._size &gt; 1:
+            for i, vert in enumerate(self._vertices):
+                vert = Vec2(vert)
+                self._center += vert
+                self._vertices[i] = vert
+                self._radius = max(self._radius, vert.magnitude())
+            self._center /= self._size
+            if self._size &gt; 2:
+                for i in range(self._size):
+                    j = (i + 1) % self._size
+                    self._edges.append((i, j))
+            else:
+                self._center = Vec2()
+                self._edges.append((0, 1))
+        self.get_rect()
+
+    def _debug_draw(self, surface, offset=None):
+        if offset is None:
+            offset = Vec2()
+        for edge in self.edges:
+            pygame.draw.aaline(
+                surface,
+                self.color,
+                edge[0] + offset,
+                edge[1] + offset,
+            )
+        pygame.draw.aaline(
+            surface,
+            &#34;red&#34;,
+            self.center + offset,
+            self.center + self.facing * 5 + offset,
+        )
+        for vert in self.vertices:
+            pygame.draw.circle(surface, &#34;gray&#34;, vert + offset, 2, 1)
+        pygame.draw.circle(surface, &#34;red&#34;, self.pos + offset, 2, 1)
+        pygame.draw.circle(surface, &#34;gray&#34;, self.pos + self._center + offset, 2, 1)
+        pygame.draw.rect(
+            surface,
+            &#34;yellow&#34;,
+            pygame.Rect(
+                self.rect.topleft + offset,
+                Vec2(self.size[0], self.size[1]),
+            ),
+            1,
+        )
+
+    def project(self, axis):
+        min_v, max_v = None, None
+        for vert in self.vertices:
+            proj = (vert).dot(axis)
+            if min_v is None:
+                min_v = proj
+                max_v = proj
+            if proj &lt; min_v:
+                min_v = proj
+            if proj &gt; max_v:
+                max_v = proj
+        return min_v, max_v
+
+    def collide_circle(self, collider):
+        return dist_to(self.center, collider.center) &lt;= self._radius + collider._radius
+
+    def collide_rect(self, collider):
+        return self.rect.colliderect(collider.rect)
+
+    def __collide_rect(self, collider):
+        if (
+            (self.top) &lt; (collider.bottom)
+            and (self.bottom) &gt; (collider.top)
+            and (self.left) &lt; (collider.right)
+            and (self.right) &gt; (collider.left)
+        ):
+            return True
+        else:
+            return False
+
+    def get_rect(self):
+        if self._rot_cache == self.rotation:
+            return pygame.Rect(
+                self.left,
+                self.top,
+                self.right - self.left,
+                self.bottom - self.top,
+            )
+        left, right, top, bottom = (
+            self.x,
+            self.x,
+            self.y,
+            self.y,
+        )
+        vertices = self.vertices
+        for vert in vertices:
+            left = min(vert.x, left)
+            right = max(vert.x, right)
+            top = min(vert.y, top)
+            bottom = max(vert.y, bottom)
+        self._left = left - self.x
+        self._right = right - self.x
+        self._top = top - self.y
+        self._bottom = bottom - self.y
+        self._rot_cache = self.rotation
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
+        )
+
+    def collide_sat(self, collider):
+        if not isinstance(collider, Collider):
+            collider = getattr(collider, &#34;collider&#34;, None)
+        if isinstance(collider, pygame.Rect):
+            collider = RectCollider(collider.center, collider.width, collider.height)
+        if collider is None:
+            print(&#34;Invalid collider&#34;)
+            return False
+
+        axes = self.normals + collider.normals
+        if self._size == 1:
+            normal = Vec2()
+            min_dist = 1000000.0
+            for vert in collider.vertices:
+                dist = vert - self.center
+                length = dist.length()
+                if length &lt; min_dist and length != 0:
+                    min_dist = dist.length()
+                    normal = dist.normalize()
+            axes.append(normal)
+        elif collider._size == 1:
+            normal = Vec2()
+            min_dist = 1000000.0
+            for vert in self.vertices:
+                dist = vert - collider.center
+                length = dist.length()
+                if length &lt; min_dist and length != 0:
+                    min_dist = dist.length()
+                    normal = dist.normalize()
+            axes.append(normal)
+
+        depth = 1000000.0
+        normal = Vec2()
+        for axis in axes:
+            p1 = self.project(axis)
+            p2 = collider.project(axis)
+            if p1[1] &lt; p2[0] or p2[1] &lt; p1[0]:
+                return 0, Vec2()
+            axis_depth = min(p2[1] - p1[0], p1[1] - p2[0])
+            if axis_depth &lt; depth:
+                depth = axis_depth
+                normal = axis
+        normal.normalize_ip()
+        if normal.dot(direction_to(self.center, collider.center)) &gt; 0:
+            return depth, normal
+        else:
+            return depth, -normal
+
+    @property
+    def vertices(self):
+        return [self.pos + vert.rotate(self.rotation) for vert in self._vertices]
+
+    @property
+    def edges(self):
+        vertices = self.vertices
+        return [(vertices[edge[0]], vertices[edge[1]]) for edge in self._edges]
+
+    @property
+    def normals(self):
+        normals = []
+        edges = self.edges
+        for edge in edges:
+            new = True
+            new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
+            for normal in normals:
+                if abs(new_normal.dot(normal)) == 1:
+                    new = False
+                    break
+            if new:
+                normals.append(Vec2(edge[1] - edge[0]).normalize().rotate(90))
+        return normals
+
+    @property
+    def top(self):
+        return self.pos.y + self._top
+
+    @property
+    def right(self):
+        return self.pos.x + self._right
+
+    @property
+    def bottom(self):
+        return self.pos.y + self._bottom
+
+    @property
+    def left(self):
+        return self.pos.x + self._left
+
+    @property
+    def center(self):
+        return self.pos + self._center
+
+    @property
+    def rect(self):
+        return self.get_rect()
+
+    @property
+    def size(self):
+        return Vec2(self.right - self.left, self.bottom - self.top)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.engine.base_object.GameObject" href="../engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="jazz.physics.colliders.CircleCollider" href="#jazz.physics.colliders.CircleCollider">CircleCollider</a></li>
+<li><a title="jazz.physics.colliders.PolyCollider" href="#jazz.physics.colliders.PolyCollider">PolyCollider</a></li>
+<li><a title="jazz.physics.colliders.RayCollider" href="#jazz.physics.colliders.RayCollider">RayCollider</a></li>
+<li><a title="jazz.physics.colliders.RectCollider" href="#jazz.physics.colliders.RectCollider">RectCollider</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="jazz.physics.colliders.Collider.bottom"><code class="name">var <span class="ident">bottom</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def bottom(self):
+    return self.pos.y + self._bottom</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.center"><code class="name">var <span class="ident">center</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def center(self):
+    return self.pos + self._center</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.edges"><code class="name">var <span class="ident">edges</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def edges(self):
+    vertices = self.vertices
+    return [(vertices[edge[0]], vertices[edge[1]]) for edge in self._edges]</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.left"><code class="name">var <span class="ident">left</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def left(self):
+    return self.pos.x + self._left</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.normals"><code class="name">var <span class="ident">normals</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def normals(self):
+    normals = []
+    edges = self.edges
+    for edge in edges:
+        new = True
+        new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
+        for normal in normals:
+            if abs(new_normal.dot(normal)) == 1:
+                new = False
+                break
+        if new:
+            normals.append(Vec2(edge[1] - edge[0]).normalize().rotate(90))
+    return normals</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.rect"><code class="name">var <span class="ident">rect</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def rect(self):
+    return self.get_rect()</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.right"><code class="name">var <span class="ident">right</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def right(self):
+    return self.pos.x + self._right</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.size"><code class="name">var <span class="ident">size</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def size(self):
+    return Vec2(self.right - self.left, self.bottom - self.top)</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.top"><code class="name">var <span class="ident">top</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def top(self):
+    return self.pos.y + self._top</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.vertices"><code class="name">var <span class="ident">vertices</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def vertices(self):
+    return [self.pos + vert.rotate(self.rotation) for vert in self._vertices]</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.physics.colliders.Collider.collide_circle"><code class="name flex">
+<span>def <span class="ident">collide_circle</span></span>(<span>self, collider)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def collide_circle(self, collider):
+    return dist_to(self.center, collider.center) &lt;= self._radius + collider._radius</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.collide_rect"><code class="name flex">
+<span>def <span class="ident">collide_rect</span></span>(<span>self, collider)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def collide_rect(self, collider):
+    return self.rect.colliderect(collider.rect)</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.collide_sat"><code class="name flex">
+<span>def <span class="ident">collide_sat</span></span>(<span>self, collider)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def collide_sat(self, collider):
+    if not isinstance(collider, Collider):
+        collider = getattr(collider, &#34;collider&#34;, None)
+    if isinstance(collider, pygame.Rect):
+        collider = RectCollider(collider.center, collider.width, collider.height)
+    if collider is None:
+        print(&#34;Invalid collider&#34;)
+        return False
+
+    axes = self.normals + collider.normals
+    if self._size == 1:
+        normal = Vec2()
+        min_dist = 1000000.0
+        for vert in collider.vertices:
+            dist = vert - self.center
+            length = dist.length()
+            if length &lt; min_dist and length != 0:
+                min_dist = dist.length()
+                normal = dist.normalize()
+        axes.append(normal)
+    elif collider._size == 1:
+        normal = Vec2()
+        min_dist = 1000000.0
+        for vert in self.vertices:
+            dist = vert - collider.center
+            length = dist.length()
+            if length &lt; min_dist and length != 0:
+                min_dist = dist.length()
+                normal = dist.normalize()
+        axes.append(normal)
+
+    depth = 1000000.0
+    normal = Vec2()
+    for axis in axes:
+        p1 = self.project(axis)
+        p2 = collider.project(axis)
+        if p1[1] &lt; p2[0] or p2[1] &lt; p1[0]:
+            return 0, Vec2()
+        axis_depth = min(p2[1] - p1[0], p1[1] - p2[0])
+        if axis_depth &lt; depth:
+            depth = axis_depth
+            normal = axis
+    normal.normalize_ip()
+    if normal.dot(direction_to(self.center, collider.center)) &gt; 0:
+        return depth, normal
+    else:
+        return depth, -normal</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.get_rect"><code class="name flex">
+<span>def <span class="ident">get_rect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_rect(self):
+    if self._rot_cache == self.rotation:
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left,
+            self.bottom - self.top,
+        )
+    left, right, top, bottom = (
+        self.x,
+        self.x,
+        self.y,
+        self.y,
+    )
+    vertices = self.vertices
+    for vert in vertices:
+        left = min(vert.x, left)
+        right = max(vert.x, right)
+        top = min(vert.y, top)
+        bottom = max(vert.y, bottom)
+    self._left = left - self.x
+    self._right = right - self.x
+    self._top = top - self.y
+    self._bottom = bottom - self.y
+    self._rot_cache = self.rotation
+    return pygame.Rect(
+        self.left,
+        self.top,
+        self.right - self.left,
+        self.bottom - self.top,
+    )</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.Collider.project"><code class="name flex">
+<span>def <span class="ident">project</span></span>(<span>self, axis)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def project(self, axis):
+    min_v, max_v = None, None
+    for vert in self.vertices:
+        proj = (vert).dot(axis)
+        if min_v is None:
+            min_v = proj
+            max_v = proj
+        if proj &lt; min_v:
+            min_v = proj
+        if proj &gt; max_v:
+            max_v = proj
+    return min_v, max_v</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.engine.base_object.GameObject" href="../engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.engine.base_object.GameObject.add_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.add_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.facing" href="../engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.late_update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.local_rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.move" href="../engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.on_load" href="../engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.queue_kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.remove_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.root" href="../engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotate" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.screen_space" href="../engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.visible" href="../engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.x" href="../engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.engine.base_object.GameObject.y" href="../engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.physics.colliders.PolyCollider"><code class="flex name class">
+<span>class <span class="ident">PolyCollider</span></span>
+<span>(</span><span>vertices=None, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class PolyCollider(Collider):
+    def __init__(self, vertices=None, **kwargs):
+        if vertices is None or len(vertices) &lt; 3:
+            raise Exception(&#34;A shape must be defined for Polygon collider&#34;)
+        self._vertices = vertices
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Polygon&#34;
+
+    def recenter(self):
+        if self.center != Vec2():
+            for i, vert in enumerate(self._vertices):
+                vert = Vec2(vert) - self._center
+                self._vertices[i] = vert
+            self._center = Vec2()</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="../engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.physics.colliders.PolyCollider.recenter"><code class="name flex">
+<span>def <span class="ident">recenter</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def recenter(self):
+    if self.center != Vec2():
+        for i, vert in enumerate(self._vertices):
+            vert = Vec2(vert) - self._center
+            self._vertices[i] = vert
+        self._center = Vec2()</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.physics.colliders.Collider.add_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.add_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.facing" href="../engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.late_update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.move" href="../engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.on_load" href="../engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.queue_kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.root" href="../engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotate" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.screen_space" href="../engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.visible" href="../engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.x" href="../engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.y" href="../engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.physics.colliders.RayCollider"><code class="flex name class">
+<span>class <span class="ident">RayCollider</span></span>
+<span>(</span><span>**kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RayCollider(Collider):
+    def __init__(self, **kwargs):
+        length = kwargs.get(&#34;length&#34;, 1)
+        self._vertices = [Vec2(0, 0), Vec2(length, 0)]
+        self._length = length
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Ray&#34;
+
+    @property
+    def length(self):
+        return self._length
+
+    @length.setter
+    def length(self, length):
+        self._length = length
+        self._vertices[1] = Vec2(length, 0)
+
+    def collide_ray(self, collider):
+        if isinstance(collider, CircleCollider):
+            return line_circle(
+                self.pos, self.pos + self.vertices[1], collider.pos, collider.radius
+            )
+        else:
+            collisions = []
+            ray = self.vertices
+            for edge in collider.edges:
+                point = line_intersection(
+                    ray[0],
+                    ray[1],
+                    edge[0],
+                    edge[1],
+                )
+                if point is not None:
+                    collisions.append(point)
+            if collisions:
+                closest_dist = self.length * 2
+                closest_collision = Vec2()
+                for point in collisions:
+                    if dist_to(self.pos, point) &lt; closest_dist:
+                        closest_collision = point
+                        closest_dist = dist_to(self.pos, point)
+                return closest_collision
+        return None
+
+    def get_rect(self):
+        if self._rot_cache == self.rotation:
+            return pygame.Rect(
+                self.left,
+                self.top,
+                self.right - self.left + 1,
+                self.bottom - self.top + 1,
+            )
+        left, right, top, bottom = (
+            self.x,
+            self.x,
+            self.y,
+            self.y,
+        )
+        vertices = self.vertices
+        for vert in vertices:
+            left = min(vert.x, left)
+            right = max(vert.x, right)
+            top = min(vert.y, top)
+            bottom = max(vert.y, bottom)
+        self._left = left - self.x
+        self._right = right - self.x
+        self._top = top - self.y
+        self._bottom = bottom - self.y
+        self._rot_cache = self.rotation
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left + 1,
+            self.bottom - self.top + 1,
+        )</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="../engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Instance variables</h3>
+<dl>
+<dt id="jazz.physics.colliders.RayCollider.length"><code class="name">var <span class="ident">length</span></code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@property
+def length(self):
+    return self._length</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="jazz.physics.colliders.RayCollider.collide_ray"><code class="name flex">
+<span>def <span class="ident">collide_ray</span></span>(<span>self, collider)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def collide_ray(self, collider):
+    if isinstance(collider, CircleCollider):
+        return line_circle(
+            self.pos, self.pos + self.vertices[1], collider.pos, collider.radius
+        )
+    else:
+        collisions = []
+        ray = self.vertices
+        for edge in collider.edges:
+            point = line_intersection(
+                ray[0],
+                ray[1],
+                edge[0],
+                edge[1],
+            )
+            if point is not None:
+                collisions.append(point)
+        if collisions:
+            closest_dist = self.length * 2
+            closest_collision = Vec2()
+            for point in collisions:
+                if dist_to(self.pos, point) &lt; closest_dist:
+                    closest_collision = point
+                    closest_dist = dist_to(self.pos, point)
+            return closest_collision
+    return None</code></pre>
+</details>
+</dd>
+<dt id="jazz.physics.colliders.RayCollider.get_rect"><code class="name flex">
+<span>def <span class="ident">get_rect</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_rect(self):
+    if self._rot_cache == self.rotation:
+        return pygame.Rect(
+            self.left,
+            self.top,
+            self.right - self.left + 1,
+            self.bottom - self.top + 1,
+        )
+    left, right, top, bottom = (
+        self.x,
+        self.x,
+        self.y,
+        self.y,
+    )
+    vertices = self.vertices
+    for vert in vertices:
+        left = min(vert.x, left)
+        right = max(vert.x, right)
+        top = min(vert.y, top)
+        bottom = max(vert.y, bottom)
+    self._left = left - self.x
+    self._right = right - self.x
+    self._top = top - self.y
+    self._bottom = bottom - self.y
+    self._rot_cache = self.rotation
+    return pygame.Rect(
+        self.left,
+        self.top,
+        self.right - self.left + 1,
+        self.bottom - self.top + 1,
+    )</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.physics.colliders.Collider.add_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.add_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.facing" href="../engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.late_update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.move" href="../engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.on_load" href="../engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.queue_kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.root" href="../engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotate" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.screen_space" href="../engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.visible" href="../engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.x" href="../engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.y" href="../engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="jazz.physics.colliders.RectCollider"><code class="flex name class">
+<span>class <span class="ident">RectCollider</span></span>
+<span>(</span><span>w, h, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Base object in jazz</p>
+<p>Base object in jazz.</p>
+<h2 id="args">Args</h2>
+<dl>
+<dt><strong><code>name</code></strong> :&ensp;<code>str</code>, optional</dt>
+<dd>sets name property. Defaults to "Object".</dd>
+<dt><strong><code>pause_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run
+the update method while the scene is paused. Defaults to False.</dd>
+<dt><strong><code>game_process</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the
+update method. Defaults to True.</dd>
+<dt><strong><code>visible</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object will run the draw
+method. Defaults to True</dd>
+<dt><strong><code>screen_space</code></strong> :&ensp;<code>bool</code>, optional</dt>
+<dd>Sets whether the object is drawn in
+screen space or world space. Defaults to False</dd>
+<dt><strong><code>z</code></strong> :&ensp;<code>int</code>, optional</dt>
+<dd>Sets the z-index of the object to determine draw order.</dd>
+<dt><strong><code>pos</code></strong> :&ensp;<code>tuple[float]</code>, optional</dt>
+<dd>Sets the local space position of the
+object. Defaults to (0, 0).</dd>
+<dt><strong><code>rotation</code></strong> :&ensp;<code>float</code>, optional</dt>
+<dd>Sets the local rotation of the object. Defaults
+to 0.</dd>
+<dt><strong><code>color</code></strong> :&ensp;<code>pygame.Color, tuple[int]</code>, optional</dt>
+<dd>Sets the color that the debug graphics
+will be drawn in. Defaults to (255, 255, 255).</dd>
+<dt><strong><code>groups</code></strong> :&ensp;<code>list[str]</code>, optional</dt>
+<dd>The list of groups to add the object to. Defaults to [].</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RectCollider(Collider):
+    def __init__(self, w, h, **kwargs):
+        self._vertices = [
+            Vec2(w / 2, h / 2),
+            Vec2(w / 2, -h / 2),
+            Vec2(-w / 2, -h / 2),
+            Vec2(-w / 2, h / 2),
+        ]
+        super().__init__(**kwargs)
+        self.collider_type = &#34;Rect&#34;
+
+    @staticmethod
+    def from_rect(rect: Rect, **kwargs):
+        kwargs.setdefault(&#34;pos&#34;, rect.center)
+        return RectCollider(rect.w, rect.h, **kwargs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></li>
+<li><a title="jazz.engine.base_object.GameObject" href="../engine/base_object.html#jazz.engine.base_object.GameObject">GameObject</a></li>
+</ul>
+<h3>Static methods</h3>
+<dl>
+<dt id="jazz.physics.colliders.RectCollider.from_rect"><code class="name flex">
+<span>def <span class="ident">from_rect</span></span>(<span>rect: pygame.rect.Rect, **kwargs)</span>
+</code></dt>
+<dd>
+<div class="desc"></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@staticmethod
+def from_rect(rect: Rect, **kwargs):
+    kwargs.setdefault(&#34;pos&#34;, rect.center)
+    return RectCollider(rect.w, rect.h, **kwargs)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></b></code>:
+<ul class="hlist">
+<li><code><a title="jazz.physics.colliders.Collider.add_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_child">add_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.add_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.add_group">add_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.facing" href="../engine/base_object.html#jazz.engine.base_object.GameObject.facing">facing</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.kill">kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.late_update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.late_update">late_update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_pos">local_pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.local_rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.local_rotation">local_rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.move" href="../engine/base_object.html#jazz.engine.base_object.GameObject.move">move</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.on_load" href="../engine/base_object.html#jazz.engine.base_object.GameObject.on_load">on_load</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.pos" href="../engine/base_object.html#jazz.engine.base_object.GameObject.pos">pos</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.queue_kill" href="../engine/base_object.html#jazz.engine.base_object.GameObject.queue_kill">queue_kill</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_child" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_child">remove_child</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.remove_group" href="../engine/base_object.html#jazz.engine.base_object.GameObject.remove_group">remove_group</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.root" href="../engine/base_object.html#jazz.engine.base_object.GameObject.root">root</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotate" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotate">rotate</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rotation" href="../engine/base_object.html#jazz.engine.base_object.GameObject.rotation">rotation</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.screen_space" href="../engine/base_object.html#jazz.engine.base_object.GameObject.screen_space">screen_space</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.update" href="../engine/base_object.html#jazz.engine.base_object.GameObject.update">update</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.visible" href="../engine/base_object.html#jazz.engine.base_object.GameObject.visible">visible</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.x" href="../engine/base_object.html#jazz.engine.base_object.GameObject.x">x</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.y" href="../engine/base_object.html#jazz.engine.base_object.GameObject.y">y</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="jazz.physics" href="index.html">jazz.physics</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="jazz.physics.colliders.CircleCollider" href="#jazz.physics.colliders.CircleCollider">CircleCollider</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.physics.colliders.CircleCollider.get_rect" href="#jazz.physics.colliders.CircleCollider.get_rect">get_rect</a></code></li>
+<li><code><a title="jazz.physics.colliders.CircleCollider.project" href="#jazz.physics.colliders.CircleCollider.project">project</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.physics.colliders.Collider" href="#jazz.physics.colliders.Collider">Collider</a></code></h4>
+<ul class="two-column">
+<li><code><a title="jazz.physics.colliders.Collider.bottom" href="#jazz.physics.colliders.Collider.bottom">bottom</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.center" href="#jazz.physics.colliders.Collider.center">center</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.collide_circle" href="#jazz.physics.colliders.Collider.collide_circle">collide_circle</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.collide_rect" href="#jazz.physics.colliders.Collider.collide_rect">collide_rect</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.collide_sat" href="#jazz.physics.colliders.Collider.collide_sat">collide_sat</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.edges" href="#jazz.physics.colliders.Collider.edges">edges</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.get_rect" href="#jazz.physics.colliders.Collider.get_rect">get_rect</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.left" href="#jazz.physics.colliders.Collider.left">left</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.normals" href="#jazz.physics.colliders.Collider.normals">normals</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.project" href="#jazz.physics.colliders.Collider.project">project</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.rect" href="#jazz.physics.colliders.Collider.rect">rect</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.right" href="#jazz.physics.colliders.Collider.right">right</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.size" href="#jazz.physics.colliders.Collider.size">size</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.top" href="#jazz.physics.colliders.Collider.top">top</a></code></li>
+<li><code><a title="jazz.physics.colliders.Collider.vertices" href="#jazz.physics.colliders.Collider.vertices">vertices</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.physics.colliders.PolyCollider" href="#jazz.physics.colliders.PolyCollider">PolyCollider</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.physics.colliders.PolyCollider.recenter" href="#jazz.physics.colliders.PolyCollider.recenter">recenter</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.physics.colliders.RayCollider" href="#jazz.physics.colliders.RayCollider">RayCollider</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.physics.colliders.RayCollider.collide_ray" href="#jazz.physics.colliders.RayCollider.collide_ray">collide_ray</a></code></li>
+<li><code><a title="jazz.physics.colliders.RayCollider.get_rect" href="#jazz.physics.colliders.RayCollider.get_rect">get_rect</a></code></li>
+<li><code><a title="jazz.physics.colliders.RayCollider.length" href="#jazz.physics.colliders.RayCollider.length">length</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="jazz.physics.colliders.RectCollider" href="#jazz.physics.colliders.RectCollider">RectCollider</a></code></h4>
+<ul class="">
+<li><code><a title="jazz.physics.colliders.RectCollider.from_rect" href="#jazz.physics.colliders.RectCollider.from_rect">from_rect</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
