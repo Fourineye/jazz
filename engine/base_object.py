@@ -255,9 +255,8 @@ class GameObject:
     def kill(self):
         """Destroys the object and all of its children"""
 
-        if self.scene is not None:
-            self.scene.remove_physics_object(self)
-            self.scene.remove_object(self)
+        GAME_GLOBALS["Scene"].remove_physics_object(self)
+        GAME_GLOBALS["Scene"].remove_object(self)
         if self._parent is not None:
             self._parent.remove_child(self, False)
 
