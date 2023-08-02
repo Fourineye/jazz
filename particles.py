@@ -33,6 +33,7 @@ class ParticleEmitter(GameObject):
         self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
         self.active = active
         self.rate = rate
+        self._emission = 0
         if self._particle_graphics is None:
             default = pygame.Surface((10, 10))
             default.fill((255, 255, 255))
@@ -101,7 +102,10 @@ class ParticleEmitter(GameObject):
             delta (float): Time in seconds since last frame.
         """
         if self.active:
-            self.emit_particles(self.rate)
+            self._emission += self.rate * delta
+            if self._emission > 1:
+                self.emit_particles(int(self._emission))
+                self._emission %= 1
         for particle in self._particles[::-1]:
             particle.pos += particle.vel * delta
             particle.life -= delta
@@ -109,3 +113,10 @@ class ParticleEmitter(GameObject):
                 self._particle_update(particle, delta)
             if particle.life < 0:
                 self._particles.remove(particle)
+
+    def activate(self):
+        self._emission = 0
+        self.active = True
+
+    def deactivate(self):
+        self.active = False
