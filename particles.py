@@ -28,6 +28,7 @@ class ParticleEmitter(GameObject):
         self._particle_graphics = kwargs.get("particle_graphics", None)
         self._particle_spawn = kwargs.get("particle_spawn", None)
         self._particle_life = kwargs.get("particle_life", 2)
+        self._particle_update = kwargs.get("particle_update", None)
         self._emission_angles = kwargs.get("emission_angles", [(0, 360)])
         self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
         self.active = active
@@ -104,5 +105,7 @@ class ParticleEmitter(GameObject):
         for particle in self._particles[::-1]:
             particle.pos += particle.vel * delta
             particle.life -= delta
+            if callable(self._particle_update):
+                self._particle_update(particle, delta)
             if particle.life < 0:
                 self._particles.remove(particle)
