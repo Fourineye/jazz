@@ -72,7 +72,7 @@ class ParticleEmitter(GameObject):
             Vec2(uniform(*choice(self._emission_speed)), 0).rotate(
                 uniform(*choice(self._emission_angles))
             ),
-            randint(0, len(self._particle_graphics) - 1),
+            self._particle_graphics[randint(0, len(self._particle_graphics) - 1)],
             self._particle_life,
         )
         self._particles.append(particle)
@@ -90,8 +90,12 @@ class ParticleEmitter(GameObject):
             offset = Vec2()
         blits = []
         for particle in self._particles:
-            surf = self._particle_graphics[particle.img]
-            blits.append((surf, particle.pos + offset - Vec2(surf.get_size()) / 2))
+            blits.append(
+                (
+                    particle.img,
+                    particle.pos + offset - Vec2(particle.img.get_size()) / 2,
+                )
+            )
         surface.fblits(blits)
 
     def update(self, delta: float):
