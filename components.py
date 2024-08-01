@@ -58,7 +58,7 @@ class Sprite(GameObject):
     def update_image(self):
         if not self._img_updated:
             self.image = pygame.transform.flip(self.source, self.flip_x, self.flip_y)
-            self.image = pygame.transform.scale_by(self.image, self.scale)
+            #self.image = pygame.transform.scale_by(self.image, self.scale)
             self.image = pygame.transform.rotate(self.image, -self.rotation)
             self.image.set_alpha(self.alpha)
             self._set_offset()

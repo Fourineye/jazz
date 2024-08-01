@@ -9,6 +9,6 @@ from .components import AnimatedSprite, Button, Label, ProgressBar, Sprite
 from .engine.application import Application
 from .engine.base_object import GameObject
 from .engine.scene import Scene
-from .global_dict import GAME_GLOBALS, SETTINGS
+from .global_dict import GAME_GLOBALS, SETTINGS, Globals
 from .physics import Area, Body, Ray
 from .utils import Rect, Surface, Vec2

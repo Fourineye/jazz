@@ -1,6 +1,6 @@
 import pygame
 
-from ..global_dict import GAME_GLOBALS, SETTINGS
+from ..global_dict import GAME_GLOBALS, SETTINGS, Globals
 from ..utils import load_ini
 from .input_handler import InputHandler
 from .sound_manager import SoundManager
@@ -78,6 +78,13 @@ class Application:
         GAME_GLOBALS["Mouse"] = self._input.mouse
         GAME_GLOBALS["Display"] = self.display
         GAME_GLOBALS["Sound"] = self._sound
+        
+        Globals.app = self
+        Globals.input = self._input
+        Globals.key = self._input.key
+        Globals.mouse = self._input.mouse
+        Globals.display = self.display
+        Globals.sound = self._sound
 
     def add_scene(self, scene):
         """Adds a scene class reference to the game to be initilaized at
@@ -124,6 +131,7 @@ class Application:
             # Load next scene
             self._active_scene = self._load_scene(self._next_scene)
             GAME_GLOBALS["Scene"] = self._active_scene
+            Globals.scene = self._active_scene
             self._active_scene.on_load(scene_transfer_data)
 
             # Main scene loop
