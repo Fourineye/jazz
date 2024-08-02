@@ -3,7 +3,7 @@ import pygame as pg
 from ..utils import load_image
 
 
-class ResourceManager:
+class ResourceManager:  # TODO add font to resource manager
     def __init__(self):
         self._images = {}
         self._sprite_sheets = {}

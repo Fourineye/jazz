@@ -1,15 +1,32 @@
-from jazz import Globals, Label, Sprite
-# import pygame
+from . import Surface, Vec2
+from .global_dict import Globals
+from .components import Label, Sprite
+from .user_interface import DEFAULT_FONT
 
 
-class TextBox(Label):
+class TextBox(Sprite):
     def __init__(self, name="TextBox", **kwargs):
+        font = kwargs.get("font", DEFAULT_FONT)
+        text_color = kwargs.get("text_color", (255, 255, 255))
+        text = kwargs.get("text", "")
+        if not kwargs.get("asset", False):
+            size = kwargs.get("size", Vec2(font.size(text)) + (10, 10))
+            box = Surface(size)
+            box.fill(kwargs.get("bg_color", (32, 32, 32)))
+            kwargs.setdefault("asset", box)
         super().__init__(name, **kwargs)
-        self._blink_rate: float = kwargs.get("blink_rate", 0.25)
-        self._blink: float = 0.0
+        self._text = Label(
+            font=font,
+            text_color=text_color,
+            text=text,
+            pos=(self._draw_offset[0] + 5, self._draw_offset[1] + self.source.get_height() / 2),
+            anchor=(0, 1)
+        )
+        self.add_child(self._text)
+
         self._cursor = Label(
-            font=self.font,
-            text_color=self.text_color,
+            font=font,
+            text_color=text_color,
             text="|",
             anchor=(0, 1),
             pos=(self._draw_offset[0] + self.source.get_width(), self._draw_offset[1] + self.source.get_height() / 2),
@@ -17,6 +34,8 @@ class TextBox(Label):
         )
         self.add_child(self._cursor)
 
+        self._blink_rate: float = kwargs.get("blink_rate", 0.25)
+        self._blink: float = 0.0
         self._active: bool = False
 
     def update(self, delta: float):
@@ -27,9 +46,9 @@ class TextBox(Label):
                 self._cursor.visible = not self._cursor.visible
 
             if Globals.input.text:
-                self.set_text(self.text_content + Globals.input.text)
+                self.set_text(self._text.text_content + Globals.input.text)
             elif Globals.key.press("backspace"):
-                self.set_text(self.text_content[:-1])
+                self.set_text(self._text.text_content[:-1])
             elif not self.rect.collidepoint(Globals.mouse.pos):
                 if Globals.mouse.click(0):
                     self._cursor.visible = False
@@ -43,8 +62,11 @@ class TextBox(Label):
                     self._active = True
 
     def set_text(self, text):
-        super().set_text(text)
-        self._cursor.local_pos = (self._draw_offset[0] + self.source.get_width(), self._draw_offset[1] + self.source.get_height() / 2)
+        self._text.set_text(text)
+        self._cursor.local_pos = (
+            self._text._draw_offset[0] + self._text.source.get_width(),
+            self._text._draw_offset[1] + self._text.source.get_height() / 2
+        )
 
 
 # class CheckBox(Sprite):

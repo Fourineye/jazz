@@ -1,6 +1,8 @@
 from .base_object import GameObject
 
 
+# TODO Rework "Group" into some other tag type system
+
 class Group:
     """A container for Entities that allows for checking of collisions and other methods"""
 

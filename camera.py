@@ -48,7 +48,7 @@ class Camera:
             self.shake = Vec2()
             self.magnitude = 0
 
-    def render(self):
+    def render(self):  # TODO rework to make use of fblits eventually try to use opengl
         draw_objects = list(Globals.scene.values())
         draw_objects.sort(key=lambda obj: obj._z, reverse=False)
 

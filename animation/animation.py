@@ -6,6 +6,8 @@ import pygame
 from pygame import USEREVENT
 from pygame.event import Event
 
+# TODO Bring this up to speed with engine
+
 
 class Animation:
     """Object to hold frame data for an animation"""
