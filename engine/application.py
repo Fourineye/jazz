@@ -1,6 +1,6 @@
 import pygame
 
-from ..global_dict import GAME_GLOBALS, SETTINGS, Globals
+from ..global_dict import SETTINGS, Globals
 from ..utils import load_ini
 from .input_handler import InputHandler
 from .sound_manager import SoundManager
@@ -71,13 +71,6 @@ class Application:
         self.max_frame_time = 1 / 15
         self.running = True
         self.fps_max = fps_max
-
-        GAME_GLOBALS["App"] = self
-        GAME_GLOBALS["Input"] = self._input
-        GAME_GLOBALS["Key"] = self._input.key
-        GAME_GLOBALS["Mouse"] = self._input.mouse
-        GAME_GLOBALS["Display"] = self.display
-        GAME_GLOBALS["Sound"] = self._sound
         
         Globals.app = self
         Globals.input = self._input
@@ -130,7 +123,6 @@ class Application:
         while self.running:
             # Load next scene
             self._active_scene = self._load_scene(self._next_scene)
-            GAME_GLOBALS["Scene"] = self._active_scene
             Globals.scene = self._active_scene
             self._active_scene.on_load(scene_transfer_data)
 

@@ -6,7 +6,7 @@ from pygame import Vector2
 
 from jazz import GameObject
 
-from .global_dict import GAME_GLOBALS
+from .global_dict import Globals
 from .utils import Vec2
 
 
@@ -42,7 +42,7 @@ class ParticleEmitter(GameObject):
     def on_load(self):
         for i, graphic in enumerate(self._particle_graphics):
             if not isinstance(graphic, pygame.Surface):
-                self._particle_graphics[i] = GAME_GLOBALS["Scene"].load_resource(
+                self._particle_graphics[i] = Globals.scene.load_resource(
                     graphic
                 )
 

@@ -1,5 +1,5 @@
 from ..engine.base_object import GameObject
-from ..global_dict import GAME_GLOBALS
+from ..global_dict import Globals
 from .colliders import CircleCollider, PolyCollider, RayCollider, RectCollider
 
 
@@ -13,7 +13,7 @@ class PhysicsObject(GameObject):
     def on_load(self):
         if not hasattr(self, "collider"):
             raise (Exception("Body does not have collider"))
-        GAME_GLOBALS["Scene"].add_physics_object(self, self._layers)
+        Globals.scene.add_physics_object(self, self._layers)
 
     def add_collider(self, type, **kwargs):
         if type == "Rect":

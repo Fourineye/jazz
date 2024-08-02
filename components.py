@@ -1,7 +1,7 @@
 import pygame
 
 from .engine.base_object import GameObject
-from .global_dict import GAME_GLOBALS
+from .global_dict import Globals
 from .user_interface import DEFAULT_FONT
 from .utils import Vec2, load_image, map_range
 
@@ -27,7 +27,7 @@ class Sprite(GameObject):
                 if isinstance(self.asset, pygame.Surface):
                     self.source = self.asset
                 else:
-                    self.source = GAME_GLOBALS["Scene"].load_resource(self.asset)
+                    self.source = Globals.scene.load_resource(self.asset)
 
         anchor = kwargs.get("anchor", None)
         if anchor is not None:
@@ -50,7 +50,7 @@ class Sprite(GameObject):
         self.update_image()
         if (
             self.image.get_rect(center=self.pos).colliderect(
-                GAME_GLOBALS["Scene"].camera.screen_rect
+                Globals.scene.camera.screen_rect
             )
         ) or self.screen_space:
             surface.blit(self.image, self.draw_pos + Vec2(offset))
@@ -102,7 +102,7 @@ class Sprite(GameObject):
     @source.setter
     def source(self, new_source):
         if not isinstance(new_source, pygame.Surface):
-            new_source = GAME_GLOBALS["Scene"].load_resource(new_source)
+            new_source = Globals.scene.load_resource(new_source)
         self._source = new_source
         self._img_updated = False
         self.update_image()
@@ -192,13 +192,13 @@ class AnimatedSprite(Sprite):
             self._sheet = [pygame.Surface((10, 10))]
         else:
             if isinstance(self._sheet, str):
-                self._sheet = GAME_GLOBALS["Scene"].make_sprite_sheet(
+                self._sheet = Globals.scene.make_sprite_sheet(
                     self._sheet, self._sprite_dim, self._sprite_offset
                 )
             else:
                 for sprite in self._sheet:
                     if isinstance(sprite, str):
-                        sprite = GAME_GLOBALS["Scene"].load_resource(sprite)
+                        sprite = Globals.scene.load_resource(sprite)
                     if not isinstance(sprite, pygame.Surface):
                         raise TypeError(
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
@@ -212,14 +212,14 @@ class AnimatedSprite(Sprite):
     def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
         if spritesheet is not None:
             if isinstance(spritesheet, str):
-                self._sheet = GAME_GLOBALS["Scene"].make_sprite_sheet(
+                self._sheet = globals.scene.make_sprite_sheet(
                     spritesheet, self._sprite_dim, self._sprite_offset
                 )
             else:
                 self._sheet = spritesheet
                 for sprite in self._sheet:
                     if isinstance(sprite, str):
-                        sprite = GAME_GLOBALS["Scene"].load_resource(sprite)
+                        sprite = Globals.scene.load_resource(sprite)
                     if not isinstance(sprite, pygame.Surface):
                         raise TypeError(
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
@@ -381,18 +381,18 @@ class Button(GameObject):
         self._rect.center = self.pos
 
     def update(self, _delta):
-        mouse_pos = GAME_GLOBALS["Input"].mouse.pos
+        mouse_pos = Globals.mouse.pos
         if self.visible:
             if self._rect.collidepoint(mouse_pos):
-                if GAME_GLOBALS["Input"].mouse.click(0):
+                if Globals.mouse.click(0):
                     self.state = self.PRESSED
-                elif self.state != self.PRESSED or not GAME_GLOBALS["Input"].mouse.held(
+                elif self.state != self.PRESSED or not Globals.mouse.held(
                     0
                 ):
                     self.state = self.HOVER
             else:
                 if self.state == self.PRESSED:
-                    if not GAME_GLOBALS["Input"].mouse.held(0):
+                    if not Globals.mouse.held(0):
                         self.state = self.UNPRESSED
                 else:
                     self.state = self.UNPRESSED

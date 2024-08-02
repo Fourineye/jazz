@@ -2,7 +2,7 @@
 
 import pygame
 
-from ..global_dict import GAME_GLOBALS
+from ..global_dict import Globals
 from ..utils import Vec2, key_from_value
 
 
@@ -12,6 +12,7 @@ class InputHandler:
     def __init__(self):
         self.mouse = Mouse()
         self.key = Keyboard()
+        self.text = ""
         self.user_events = []
         self.event_handler = None
 
@@ -24,9 +25,13 @@ class InputHandler:
         self.user_events = []
         self.mouse.update()
         self.key.update()
+        self.text = ""
 
         for event in pygame.event.get(pygame.USEREVENT):
             self.user_events.append(event)
+
+        for event in pygame.event.get(pygame.TEXTINPUT):
+            self.text = event.text
 
         for event in pygame.event.get():
             if self.event_handler is not None:
@@ -59,8 +64,8 @@ class Mouse:
         self._just_released = {}
         self._pos = Vec2(pygame.mouse.get_pos())
         self.rel = Vec2(pygame.mouse.get_rel())
-        if GAME_GLOBALS["Scene"] is not None:
-            self._world_offset = GAME_GLOBALS["Scene"].camera_offset
+        if Globals.scene is not None:
+            self._world_offset = Globals.scene.camera_offset
         for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
             button = event.button - 1
             if button < len(Mouse.BUTTONS):

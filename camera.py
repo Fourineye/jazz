@@ -2,7 +2,7 @@ from random import randint
 
 import pygame
 
-from .global_dict import GAME_GLOBALS
+from .global_dict import Globals
 from .utils import Rect, Vec2, clamp
 
 
@@ -49,7 +49,7 @@ class Camera:
             self.magnitude = 0
 
     def render(self):
-        draw_objects = list(GAME_GLOBALS["Scene"].values())
+        draw_objects = list(Globals.scene.values())
         draw_objects.sort(key=lambda obj: obj._z, reverse=False)
 
         if self._blanking:

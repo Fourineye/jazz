@@ -1,4 +1,4 @@
-from ..global_dict import GAME_GLOBALS
+from ..global_dict import Globals
 from ..utils import Vec2, dist_to
 from ._physics_object import PhysicsObject
 
@@ -19,7 +19,7 @@ class Body(PhysicsObject):
                 if left blank it will default to the Entity's collision_groups. Defaults to None.
         """
         self.pos = self.pos + direction
-        collisions = GAME_GLOBALS["Scene"].get_AABB_collisions(self)
+        collisions = Globals.scene.get_AABB_collisions(self)
         precise_collisions = []
 
         if collisions:
