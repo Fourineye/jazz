@@ -122,6 +122,9 @@ class Scene:
     def get_layer_collisions(self, collider, layer=0):
         return self._physics_world[layer].get_AABB_collisions(collider)
 
+    def get_font(self, *args, **kwargs):
+        return self.resource_manager.get_font(*args, **kwargs)
+
     def load_resource(self, path, resource_type=IMAGE):
         if resource_type == self.IMAGE:
             return self.resource_manager.get_image(path)

@@ -3,16 +3,29 @@ import pygame as pg
 from ..utils import load_image
 
 
-class ResourceManager:  # TODO add font to resource manager
+class ResourceManager:
+    DEFAULT_FONT = "jazz/resources/Roboto-Regular.ttf"
+    
     def __init__(self):
         self._images = {}
         self._sprite_sheets = {}
+        self._fonts = {}
+
+    def get_font(self, path: str = DEFAULT_FONT, size: int = 12):
+        if path not in self._fonts.keys():
+            self._fonts[path] = {}
+        font = self._fonts.get(size, None)
+        if font is None:
+            font = pg.font.Font(path, size)
+            self._fonts.setdefault(size, font)
+        return font
 
     def get_image(self, path):
         resource = self._images.get(path, None)
         if resource is None:
-            self._images.setdefault(path, load_image(path))
-        return self._images.get(path)
+            resource = load_image(path)
+            self._images.setdefault(path, resource)
+        return resource
 
     def get_sprite_sheet(self, path):
         resource = self._sprite_sheets.get(path, None)
