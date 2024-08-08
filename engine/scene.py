@@ -2,15 +2,16 @@
 Scene class
 
 """
+from typing import TYPE_CHECKING
 
-import pygame
-
+from .group import Group
+from .resource_manager import ResourceManager
 from ..camera import Camera
 from ..global_dict import Globals
 from ..physics.physics import PhysicsGrid
-from .group import Group
-from .resource_manager import ResourceManager
-from .sound_manager import SoundManager
+
+if TYPE_CHECKING:
+    from .base_object import GameObject
 
 
 class Scene:
@@ -135,7 +136,7 @@ class Scene:
         return self.resource_manager.make_sprite_sheet(path, dimensions, offset)
 
     # Object Management
-    def add_object(self, obj, name=None):
+    def add_object(self, obj: 'GameObject', name=None):
         """
         Add an object to the scene, give it a name, and add it to the camera.
 

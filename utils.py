@@ -1,7 +1,6 @@
-import json
 import math
+from configparser import ConfigParser
 from csv import reader
-from os import walk
 from random import randint
 
 import pygame
@@ -15,18 +14,36 @@ Surface = pygame.Surface
 
 
 def load_ini(path="./.jini"):
+    settings = ConfigParser()
     try:
         with open(path, "r") as ini:
-            data = json.load(ini)
-        for key, value in data.items():
+            settings.read(ini)
+        for key, value in settings.items():
             SETTINGS[key] = value
     except:
         save_ini()
 
 
 def save_ini(path="./.jini"):
+    settings = ConfigParser()
+    settings.read_dict(SETTINGS)
     with open(path, "w") as ini:
-        json.dump(SETTINGS, ini)
+        settings.write(ini)
+
+
+# def load_ini(path="./.jini"):
+#     try:
+#         with open(path, "r") as ini:
+#             data = json.load(ini)
+#         for key, value in data.items():
+#             SETTINGS[key] = value
+#     except:
+#         save_ini()
+
+
+# def save_ini(path="./.jini"):
+#     with open(path, "w") as ini:
+#         json.dump(SETTINGS, ini)
 
 
 def import_csv_layout(path):
@@ -119,10 +136,10 @@ def line_intersection(p_0, p_1, p_2, p_3):
         return None
 
     s = (-s_1.y * (p_0.x - p_2.x) + s_1.x * (p_0.y - p_2.y)) / (
-        -s_2.x * s_1.y + s_1.x * s_2.y
+            -s_2.x * s_1.y + s_1.x * s_2.y
     )
     t = (s_2.x * (p_0.y - p_2.y) - s_2.y * (p_0.x - p_2.x)) / (
-        -s_2.x * s_1.y + s_1.x * s_2.y
+            -s_2.x * s_1.y + s_1.x * s_2.y
     )
 
     if 0 <= s <= 1 and 0 <= t <= 1:

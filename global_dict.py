@@ -7,7 +7,7 @@ if TYPE_CHECKING:
 
 class Globals:
     app: 'Application' = None
-    scene: type['Scene'] = None
+    scene: 'Scene' = None
     input: 'InputHandler' = None
     key: 'Keyboard' = None
     mouse: 'Mouse' = None
@@ -15,4 +15,4 @@ class Globals:
     sound: 'SoundManager' = None
 
 
-SETTINGS = {"master_volume": 1.0, "music_volume": 1.0, "sound_volume": 1.0}
+SETTINGS = {"AUDIO": {"master_volume": 1.0, "music_volume": 1.0, "sound_volume": 1.0}}

@@ -1,10 +1,9 @@
 import pygame.mixer as mix
 
+from .. import SETTINGS
 from ..utils import clamp, save_ini
 
 music = mix.music
-
-from ..global_dict import Globals, SETTINGS
 
 
 class SoundManager:
@@ -15,15 +14,15 @@ class SoundManager:
         self._volume_s = 1.0
 
     def save_to_ini(self):
-        SETTINGS["master_volume"] = self._master_volume
-        SETTINGS["music_volume"] = self._volume_m
-        SETTINGS["sound_volume"] = self._volume_s
+        SETTINGS["AUDIO"]["master_volume"] = self._master_volume
+        SETTINGS["AUDIO"]["music_volume"] = self._volume_m
+        SETTINGS["AUDIO"]["sound_volume"] = self._volume_s
         save_ini()
 
     def load_settings(self):
-        self._volume_m = SETTINGS["music_volume"]
-        self._volume_s = SETTINGS["sound_volume"]
-        self.set_master_volume(SETTINGS["master_volume"])
+        self._volume_m = SETTINGS["AUDIO"]["music_volume"]
+        self._volume_s = SETTINGS["AUDIO"]["sound_volume"]
+        self.set_master_volume(SETTINGS["AUDIO"]["master_volume"])
 
     def set_master_volume(self, volume):
         self._master_volume = clamp(volume, 0.0, 1.0)
