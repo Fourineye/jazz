@@ -1,10 +1,10 @@
 import pygame as pg
 
-from ..utils import load_image
+from ..utils import load_image, INTERNAL_PATH
 
 
 class ResourceManager:
-    DEFAULT_FONT = "jazz/resources/Roboto-Regular.ttf"
+    DEFAULT_FONT = INTERNAL_PATH + "/resources/Roboto-Regular.ttf"
     
     def __init__(self):
         self._images = {}

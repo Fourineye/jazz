@@ -2,6 +2,7 @@ import math
 from configparser import ConfigParser
 from csv import reader
 from random import randint
+import importlib
 
 import pygame
 
@@ -11,7 +12,7 @@ from .global_dict import SETTINGS
 Vec2 = pygame.Vector2
 Rect = pygame.Rect
 Surface = pygame.Surface
-
+INTERNAL_PATH = str(importlib.resources.files("jazz"))
 
 def load_ini(path="./.jini"):
     settings = ConfigParser()
