@@ -1,6 +1,6 @@
-from ..engine.base_object import GameObject
-from ..utils import map_range
 from .easing import LINEAR
+from .. import GameObject
+from ..utils import map_range
 
 
 class Tween(GameObject):

@@ -1,9 +1,10 @@
 import pygame
 
-from ..global_dict import SETTINGS, Globals
-from ..utils import load_ini
 from .input_handler import InputHandler
+from .scene import Scene
 from .sound_manager import SoundManager
+from ..global_dict import Globals
+from ..utils import load_ini
 
 
 class Application:
@@ -31,13 +32,13 @@ class Application:
     """
 
     def __init__(
-        self,
-        width: int,
-        height: int,
-        name: str = None,
-        flags=0,
-        fps_max=60,
-        vsync=False,
+            self,
+            width: int,
+            height: int,
+            name: str = None,
+            flags=0,
+            fps_max=60,
+            vsync=False,
     ):
         """Initializes the Application object and pygame, creates the
         application window
@@ -71,7 +72,7 @@ class Application:
         self.max_frame_time = 1 / 15
         self.running = True
         self.fps_max = fps_max
-        
+
         Globals.app = self
         Globals.input = self._input
         Globals.key = self._input.key
@@ -79,7 +80,7 @@ class Application:
         Globals.display = self.display
         Globals.sound = self._sound
 
-    def add_scene(self, scene):
+    def add_scene(self, scene: type[Scene]):
         """Adds a scene class reference to the game to be initilaized at
         a later point. Setting the next scene if on is not already set
 
