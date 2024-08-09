@@ -11,10 +11,11 @@ class PhysicsGrid:
         self._bounds = (x_min, y_min, x_max, y_max)
 
     def add_to_grid(self, physics_object):
-        g_top = int(physics_object.collider.top // self._grid_size)
-        g_bottom = int(physics_object.collider.bottom // self._grid_size)
-        g_left = int(physics_object.collider.left // self._grid_size)
-        g_right = int(physics_object.collider.right // self._grid_size)
+        rect = physics_object.collider.get_rect()
+        g_top = int(rect.top // self._grid_size)
+        g_bottom = int(rect.bottom // self._grid_size)
+        g_left = int(rect.left // self._grid_size)
+        g_right = int(rect.right // self._grid_size)
 
         for x in range(g_right - g_left + 1):
             for y in range(g_bottom - g_top + 1):
@@ -59,10 +60,11 @@ class PhysicsGrid:
 
     def get_AABB_collisions(self, collider):
         collisions = set()
-        x = int(collider.collider.left // self._grid_size)
-        y = int(collider.collider.top // self._grid_size)
-        w = int(collider.collider.right // self._grid_size - x)
-        h = int(collider.collider.bottom // self._grid_size - y)
+        rect = collider.collider.get_rect()
+        x = int(rect.left // self._grid_size)
+        y = int(rect.top // self._grid_size)
+        w = int(rect.right // self._grid_size - x)
+        h = int(rect.bottom // self._grid_size - y)
         physics_objects = self.get_grid_cells(x - 1, y - 1, w + 3, h + 3)
         for physics_object in physics_objects:
             if physics_object is not collider:
