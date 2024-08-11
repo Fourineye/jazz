@@ -93,10 +93,10 @@ class Collider(GameObject):
 
     def __collide_rect(self, collider):
         if (
-            (self.top) < (collider.bottom)
-            and (self.bottom) > (collider.top)
-            and (self.left) < (collider.right)
-            and (self.right) > (collider.left)
+                (self.top) < (collider.bottom)
+                and (self.bottom) > (collider.top)
+                and (self.left) < (collider.right)
+                and (self.right) > (collider.left)
         ):
             return True
         else:
@@ -328,7 +328,7 @@ class RayCollider(Collider):
     def collide_ray(self, collider):
         if isinstance(collider, CircleCollider):
             return line_circle(
-                self.pos, self.pos + self.vertices[1], collider.pos, collider.radius
+                self.pos, self.pos + self.vertices[1], collider.pos, collider._radius
             )
         else:
             collisions = []

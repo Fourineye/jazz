@@ -9,4 +9,7 @@ from .animation.easing import *
 from .animation.tween import Tween
 from .utils import Rect, Surface, Vec2
 
+__version__ = "dev"
+
 pygame.init()
+print(f"Thank you for using jazz {__version__}")

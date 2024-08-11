@@ -1,10 +1,9 @@
 """
 Module to provide a base for active game entities.
 """
+from ._physics_object import PhysicsObject
 from ..global_dict import Globals
 from ..utils import Vec2, dist_to
-from ._physics_object import PhysicsObject
-from .colliders import RayCollider
 
 
 class Ray(PhysicsObject):
@@ -12,7 +11,7 @@ class Ray(PhysicsObject):
         kwargs.setdefault("name", "Ray")
         super().__init__(**kwargs)
         length = kwargs.get("length", 1)
-        self.add_child(RayCollider(length=length), "collider")
+        self.add_collider("Ray", length=length)
         self._active = kwargs.get("active", True)
         self.collision_point = None
         self.collision_object = None
@@ -44,9 +43,9 @@ class Ray(PhysicsObject):
             for obj, point in precise_collisions:
                 test = obj.root != self.root
                 if test:
-                    if self.length**2 >= dist_to(self.pos, point) >= 0:
+                    if self.length ** 2 >= dist_to(self.pos, point) >= 0:
                         if dist_to(self.pos, point) < dist_to(
-                            self.pos, closest_collision[1]
+                                self.pos, closest_collision[1]
                         ):
                             closest_collision = (obj, point)
             return closest_collision

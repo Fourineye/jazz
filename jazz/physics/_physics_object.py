@@ -1,6 +1,6 @@
+from .colliders import CircleCollider, PolyCollider, RayCollider, RectCollider, Collider
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
-from .colliders import CircleCollider, PolyCollider, RayCollider, RectCollider
 
 
 class PhysicsObject(GameObject):
@@ -9,20 +9,22 @@ class PhysicsObject(GameObject):
         super().__init__(**kwargs)
         self._layers = kwargs.get("layers", "0001")
         self.collision_layers = kwargs.get("collision_layers", "0001")
+        self.collider: Collider | None = None
 
     def on_load(self):
-        if not hasattr(self, "collider"):
+        if self.collider is None:
             raise (Exception("Body does not have collider"))
         Globals.scene.add_physics_object(self, self._layers)
 
     def add_collider(self, type, **kwargs):
         if type == "Rect":
-            self.add_child(RectCollider(**kwargs), "collider")
+            self.collider = RectCollider(**kwargs)
         elif type == "Circle":
-            self.add_child(CircleCollider(**kwargs), "collider")
+            self.collider = CircleCollider(**kwargs)
         elif type == "Poly":
-            self.add_child(PolyCollider(**kwargs), "collider")
+            self.collider = PolyCollider(**kwargs)
         elif type == "Ray":
-            self.add_child(RayCollider(**kwargs), "collider")
+            self.collider = RayCollider(**kwargs)
         else:
             raise Exception("Invalid collider type")
+        self.add_child(self.collider)
