@@ -8,7 +8,8 @@ from .group import Group
 from .resource_manager import ResourceManager
 from ..camera import Camera
 from ..global_dict import Globals
-from ..physics.physics import PhysicsGrid
+from ..physics import Ray, PhysicsGrid
+from ..utils import dist_to, direction_to
 
 if TYPE_CHECKING:
     from .base_object import GameObject
@@ -119,6 +120,11 @@ class Scene:
                     physics_object
                 )
         return collisions
+
+    def physics_raycast(self, start, end, layers="0001", blacklist=None):
+        ray_cast = Ray(pos=start, length=dist_to(start, end), layers=layers)
+        ray_cast.facing = direction_to(start, end)
+        return ray_cast.cast(blacklist)
 
     def get_layer_collisions(self, collider, layer=0):
         return self._physics_world[layer].get_AABB_collisions(collider)

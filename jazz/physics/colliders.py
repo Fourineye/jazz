@@ -328,7 +328,7 @@ class RayCollider(Collider):
     def collide_ray(self, collider):
         if isinstance(collider, CircleCollider):
             return line_circle(
-                self.pos, self.pos + self.vertices[1], collider.pos, collider._radius
+                self.pos, self.vertices[1], collider.pos, collider._radius
             )
         else:
             collisions = []

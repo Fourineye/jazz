@@ -1,8 +1,8 @@
+import importlib.resources
 import math
 from configparser import ConfigParser
 from csv import reader
 from random import randint
-import importlib.resources
 
 import pygame
 
@@ -13,6 +13,7 @@ Vec2 = pygame.Vector2
 Rect = pygame.Rect
 Surface = pygame.Surface
 INTERNAL_PATH = str(importlib.resources.files())
+
 
 def load_ini(path="./.jini"):
     settings = ConfigParser()
