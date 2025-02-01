@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='jazz',
     version='0.1.1',
-    description='A example Python package',
+    description='A pygame wrapper that provides tools to quickly build games.',
     url='https://github.com/Fourineye/jazz',
     author='Paul Smith',
     author_email='',
