@@ -12,6 +12,7 @@ class Sprite(GameObject):
         self._source = None
         self._flip_x = kwargs.get("flip_x", False)
         self._flip_y = kwargs.get("flip_y", False)
+        self._size: Vec2 = kwargs.get("size", Vec2(10, 10))
         self._scale = Vec2(kwargs.get("scale", Vec2(1, 1)))
         self._alpha = kwargs.get("alpha", 255)
         self._anchor = [1, 1]
@@ -19,7 +20,7 @@ class Sprite(GameObject):
         self._img_updated = False
         if self.source is None:
             if self.asset is None:
-                temp_source = pygame.Surface((10, 10))
+                temp_source = pygame.Surface(self._size)
                 temp_source.fill(self._color)
                 self.source = temp_source
             else:
@@ -33,26 +34,13 @@ class Sprite(GameObject):
             self.set_anchor(*anchor)
 
     def on_load(self):
+        Globals.scene.add_sprite(self)
         ...
 
-    def _draw(self, surface: pygame.Surface, offset=None):
-        """
-        Method called in the scene render function to draw the Entity on a surface.
 
-        Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vec2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
-        """
-        if offset is None:
-            offset = Vec2()
+    def render(self):
         self.update_image()
-        if (
-                self.image.get_rect(center=self.pos).colliderect(
-                    Globals.scene.camera.screen_rect
-                )
-        ) or self.screen_space:
-            surface.blit(self.image, self.draw_pos + Vec2(offset))
+        return (self.image, self.draw_pos)
 
     def update_image(self):
         if not self._img_updated:

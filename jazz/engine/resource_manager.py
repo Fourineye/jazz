@@ -1,6 +1,6 @@
 import pygame as pg
 
-from ..utils import load_image, INTERNAL_PATH
+from ..utils import load_image, INTERNAL_PATH, load_texture
 
 
 class ResourceManager:
@@ -8,6 +8,7 @@ class ResourceManager:
     
     def __init__(self):
         self._images = {}
+        self._textures = {}
         self._sprite_sheets = {}
         self._fonts = {}
 
@@ -19,6 +20,13 @@ class ResourceManager:
             font = pg.font.Font(path, size)
             self._fonts.setdefault(size, font)
         return font
+
+    def get_texture(self, path):
+        resource = self._textures.get(path, None)
+        if resource is None:
+            resource = load_texture(path)
+            self._textures.setdefault(path, resource)
+        return resource
 
     def get_image(self, path):
         resource = self._images.get(path, None)

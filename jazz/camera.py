@@ -1,6 +1,8 @@
 from random import randint
 
 import pygame
+from pygame.window import Window
+from pygame._sdl2 import Renderer
 
 from .global_dict import Globals
 from .utils import Rect, Vec2, clamp
@@ -13,7 +15,6 @@ class Camera:
     SMOOTH = 1
 
     def __init__(self):
-        self.display = pygame.display.get_surface()
         self._bg_color = (0, 0, 0)
         self._blanking = True
         self.target = None
@@ -24,11 +25,15 @@ class Camera:
         self.magnitude = 0
         self.damping = 0.1
         self.display_center = (
-            self.display.get_width() / 2,
-            self.display.get_height() / 2,
+            Globals.display.get_width() / 2,
+            Globals.display.get_height() / 2,
         )
         self.zoom = 1
         self.debug = False
+        if Globals.app.experimental:
+            self.render = self.render_experimental
+        else:
+            self.render = self.render_software
 
     def update(self, _delta):
         """
@@ -48,37 +53,33 @@ class Camera:
             self.shake = Vec2()
             self.magnitude = 0
 
-    def render(self):  # TODO rework to make use of fblits eventually try to use opengl
-        draw_objects = list(Globals.scene.values())
-        draw_objects.sort(key=lambda obj: obj._z, reverse=False)
-
+    def render_software(self) -> None:
+        # Get Objects
+        draw_objects = Globals.scene.sprites
+        
+        # Blank Screen
         if self._blanking:
-            self.display.fill(self._bg_color)
-        [
-            (
-                obj.draw(
-                    self.display,
-                    (self.offset + self.shake) if not obj.screen_space else None,
-                ),
-                obj.debug_draw(
-                    self.display,
-                    (self.offset + self.shake) if not obj.screen_space else None,
-                )
-                if self.debug
-                else None,
-            )
-            if obj.visible
-            else None
-            for obj in draw_objects
-        ]
-        if self.zoom > 1:
-            zoomed_display = self.display.copy()
-            zoomed_display = pygame.transform.scale_by(zoomed_display, self.zoom)
-            blit_pos = (
-                self.display_center[0] - zoomed_display.get_width() / 2,
-                self.display_center[1] - zoomed_display.get_height() / 2,
-            )
-            self.display.blit(zoomed_display, blit_pos)
+            Globals.display.fill(self._bg_color)
+
+        # Build Surface list
+        world_surface_list: list[tuple["Surface", Vec2]] = []
+        screen_surface_list: list[tuple["Surface", Vec2]] = []
+        for obj in draw_objects:
+            if obj.visible:
+                if obj.screen_space:
+                    screen_surface_list.append(obj.render())
+                else:
+                    surface, pos = obj.render()
+                    pos += self.offset + self.shake
+                    world_surface_list.append((surface, pos))
+
+        if world_surface_list:
+            Globals.display.fblits(world_surface_list)
+
+        if screen_surface_list:
+            Globals.display.fblits(screen_surface_list)
+
+        
 
     def update_offset(self):
         """Updates the Camera offset to the target."""
@@ -101,12 +102,12 @@ class Camera:
         if self.bounds is not None:
             offset_x = clamp(
                 offset_x,
-                -self.bounds.right + self.display.get_width(),
+                -self.bounds.right + Globals.display.get_width(),
                 -self.bounds.left,
             )
             offset_y = clamp(
                 offset_y,
-                -self.bounds.bottom + self.display.get_height(),
+                -self.bounds.bottom + Globals.display.get_height(),
                 -self.bounds.top,
             )
 
@@ -168,5 +169,5 @@ class Camera:
     @property
     def screen_rect(self):
         return Rect(
-            *(-self.offset), self.display.get_width(), self.display.get_height()
+            *(-self.offset), Globals.display.get_width(), Globals.display.get_height()
         )

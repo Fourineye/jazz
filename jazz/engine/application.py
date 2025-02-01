@@ -35,10 +35,11 @@ class Application:
             self,
             width: int,
             height: int,
-            name: str = None,
+            name: str = "",
             flags=0,
             fps_max=60,
             vsync=False,
+            experimental=False
     ):
         """Initializes the Application object and pygame, creates the
         application window
@@ -53,11 +54,12 @@ class Application:
         """
 
         load_ini()
-        if name:
-            pygame.display.set_caption(name)
-        self.display = pygame.display.set_mode(
-            (width, height), flags=flags, vsync=vsync
-        )
+        self.experimental = experimental
+
+        self._window = pygame.Window(name, (width, height), flags=flags, vsync=vsync)
+        self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
+        self._display = self._window.get_surface()
+        
         self._clock = pygame.time.Clock()
         self._input = InputHandler()
         self._sound = SoundManager()
@@ -77,8 +79,9 @@ class Application:
         Globals.input = self._input
         Globals.key = self._input.key
         Globals.mouse = self._input.mouse
-        Globals.display = self.display
+        Globals.display = self._display
         Globals.sound = self._sound
+
 
     def add_scene(self, scene: type[Scene]):
         """Adds a scene class reference to the game to be initilaized at
@@ -138,7 +141,10 @@ class Application:
 
                 # render game window
                 self._active_scene.render()
-                pygame.display.flip()
+                if self.experimental:
+                    self._renderer.present()
+                else:
+                    self._window.flip()
 
                 # Control fps and record delta time
                 self._delta = self._clock.tick(self.fps_max) / 1000
@@ -185,7 +191,7 @@ class Application:
         """
         if not isinstance(text, str):
             text = str(text)
-        pygame.display.set_caption(text)
+        self._window.title = text
 
     def get_fps(self):
         """Returns fps as a float

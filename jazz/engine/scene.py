@@ -2,7 +2,8 @@
 Scene class
 
 """
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Callable
+from dataclasses import dataclass
 
 from .group import Group
 from .resource_manager import ResourceManager
@@ -13,6 +14,14 @@ from ..utils import dist_to, direction_to
 
 if TYPE_CHECKING:
     from .base_object import GameObject
+    from ..components import Sprite
+
+@dataclass
+class Timer:
+    time_left : float
+    callback : Callable
+    args : tuple[any]
+    game_time : bool = True
 
 
 class Scene:
@@ -41,12 +50,15 @@ class Scene:
 
     IMAGE = 0
     SPRITE_SHEET = 1
+    TEXTURE = 2
 
     def __init__(self):
         self.camera = Camera()
         self.resource_manager = ResourceManager()
         self._groups = {}
         self._objects = {}
+        self._sprites = []
+        self._timers: list[Timer] = []
         self._physics_world = {
             0: PhysicsGrid(),
             1: PhysicsGrid(),
@@ -58,7 +70,7 @@ class Scene:
         self._paused = False
         Globals.sound.clear_sounds()
 
-    def on_load(self, data):
+    def on_load(self, data) -> None:
         """
         Empty method that can be overwritten by a child class to add
         additional attributes and will be called on loading into the
@@ -72,47 +84,50 @@ class Scene:
         """
         return {}
 
-    def update(self, delta):
+    def update(self, delta) -> None:
         """
         Empty method that can be overwritten by a child class. Is called
         once per frame, intended hold all the game logic.
         """
 
-    def late_update(self, delta):
+    def late_update(self, delta) -> None:
         """
         Empty method that can be overwritten by a child class. Is called
         once per frame, intended hold all the game logic.
         """
 
-    def render(self):
+    def render(self) -> None:
         """
         Method that can be overwritten by a child class. Is called once
         per frame and renders all game objects to the screen.
         """
-        self.camera.render()
+        self.camera.render_indev()
 
     # Utility Methods
 
-    def stop(self):
+    def stop(self) -> None:
         """Set the flag for the scene to end after the current frame."""
         self.running = False
 
-    def restart(self):
+    def restart(self) -> None:
         Globals.app.set_next_scene(self.name)
         self.running = False
 
-    def pause(self):
+    def pause(self) -> None:
         """
         Set the flag for the scene to pause, only objects with the
         pause_process flag will process.
         """
         self._paused = True
 
-    def unpause(self):
+    def unpause(self) -> None:
         """Set the flag for the scene to run normally."""
         self._paused = False
 
-    def get_AABB_collisions(self, physics_object):
+    def set_timer(self, time: float, callback: Callable, args: tuple[any], game_time=True) -> None:
+        self._timers.append(Timer(time, callback, args, game_time))
+
+    def get_AABB_collisions(self, physics_object) -> list["GameObject"]:
         collisions = []
         for layer, flag in enumerate(physics_object.collision_layers):
             if flag == "1":
@@ -137,6 +152,8 @@ class Scene:
             return self.resource_manager.get_image(path)
         if resource_type == self.SPRITE_SHEET:
             return self.resource_manager.get_sprite_sheet(path)
+        if resource_type == self.TEXTURE:
+            return self.resource_manager.get_texture(path)
 
     def make_sprite_sheet(self, path, dimensions, offset=(0, 0)):
         return self.resource_manager.make_sprite_sheet(path, dimensions, offset)
@@ -165,6 +182,12 @@ class Scene:
         for layer, flag in enumerate(layers):
             if flag == "1":
                 self._physics_world[layer].add_object(obj)
+
+    def add_sprite(self, sprite: "Sprite"):
+        if sprite not in self._sprites:
+            self._sprites.append(sprite)
+            self._sprites.sort(key=lambda obj: obj.z, reverse=False)
+
 
     def add_group(self, name: str):
         """
@@ -199,6 +222,12 @@ class Scene:
     def remove_physics_object(self, obj):
         for layer, grid in self._physics_world.items():
             grid.remove_object(obj)
+
+    def remove_sprite(self, sprite: "Sprite"):
+        try:
+            self._sprites.remove(sprite)
+        except ValueError:
+            print(f"Sprite not found: {sprite}")
 
     def remove_group(self, name: str):
         """
@@ -265,6 +294,17 @@ class Scene:
         if not self._paused:
             self.camera.update(delta)
 
+        # Process Timers
+        for timer in self._timers[::-1]:
+            if not timer.game_time or not self._paused:
+                timer.time_left -= delta
+                if timer.time_left <= 0:
+                    # print(self._timers, "\nTimer Expired")
+                    timer.callback(*timer.args)
+                    self._timers.remove(timer)
+
+
+
         # delete objects queued for deletion
         for obj in kill_items:
             obj.kill()
@@ -303,3 +343,7 @@ class Scene:
     @property
     def height(self):
         return Globals.display.get_height()
+    
+    @property
+    def sprites(self) -> list["Sprite"]:
+        return self._sprites.copy()

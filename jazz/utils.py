@@ -6,7 +6,7 @@ from random import randint
 
 import pygame
 
-from .global_dict import SETTINGS
+from .global_dict import SETTINGS, Globals
 
 # Bringing pygame constants into jazz Namespace
 Vec2 = pygame.Vector2
@@ -64,6 +64,8 @@ def load_image(path):
     else:
         return tmp_surf.convert()
 
+def load_texture(path):
+    return pygame._sdl2.Texture.from_surface(Globals.renderer, load_image(path))
 
 def clamp(n, smallest, largest):
     return max(smallest, min(n, largest))

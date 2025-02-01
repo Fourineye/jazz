@@ -3,3 +3,4 @@ build/
 jazz.egg-info
 .idea/
 .venv
+.jini

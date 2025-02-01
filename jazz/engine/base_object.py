@@ -354,6 +354,15 @@ class GameObject:
     def x(self):
         """Returns x component of the _pos attribute."""
         return self.pos.x
+    
+    @property
+    def z(self):
+        """Returns the z index of the object"""
+        if self._parent is not None:
+            return self._parent.z
+        else:
+            return self._z
+
 
     @property
     def facing(self):
