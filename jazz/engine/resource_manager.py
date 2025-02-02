@@ -1,14 +1,19 @@
 import pygame as pg
 
-from ..utils import load_image, INTERNAL_PATH, load_texture
+from ..utils import load_image, INTERNAL_PATH, load_texture, Surface
+from ..global_dict import Globals
 
 
 class ResourceManager:
     DEFAULT_FONT = INTERNAL_PATH + "/resources/Roboto-Regular.ttf"
     
     def __init__(self):
-        self._images = {}
-        self._textures = {}
+        default = Surface((10, 10))
+        default.fill("magenta")
+        pg.draw.rect(default, "gray", (5,0,5,5))
+        pg.draw.rect(default, "gray", (0,5,5,5))
+        self._images = {"default": default}
+        self._textures = {"default":pg._sdl2.Texture.from_surface(Globals.renderer, default)}
         self._sprite_sheets = {}
         self._fonts = {}
 

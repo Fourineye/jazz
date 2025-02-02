@@ -101,7 +101,7 @@ class Scene:
         Method that can be overwritten by a child class. Is called once
         per frame and renders all game objects to the screen.
         """
-        self.camera.render_indev()
+        self.camera.render()
 
     # Utility Methods
 

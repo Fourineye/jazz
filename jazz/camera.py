@@ -31,7 +31,7 @@ class Camera:
         self.zoom = 1
         self.debug = False
         if Globals.app.experimental:
-            self.render = self.render_experimental
+            self.render = self.render_hardware
         else:
             self.render = self.render_software
 
@@ -79,7 +79,24 @@ class Camera:
         if screen_surface_list:
             Globals.display.fblits(screen_surface_list)
 
+    def render_hardware(self):
+        draw_objects = Globals.scene.sprites
         
+        if self._blanking:
+            Globals.renderer.draw_color = self._bg_color
+            Globals.renderer.clear()
+
+        for obj in draw_objects:
+            if obj.visible:
+                if obj.screen_space:
+                    obj.render(Vec2())
+                    if self.debug:
+                        obj.debug_render(Vec2())
+                else:
+                    obj.render(self.offset + self.shake)
+                    if self.debug:
+                        obj.debug_render(self.offset + self.shake)
+
 
     def update_offset(self):
         """Updates the Camera offset to the target."""

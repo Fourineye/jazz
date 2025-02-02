@@ -2,13 +2,14 @@ import pygame
 
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
-from ..utils import Vec2
+from ..utils import Vec2, Rect
 
 
 class Sprite(GameObject):
     def __init__(self, name="Sprite", **kwargs):
         super().__init__(name, **kwargs)
         self.asset = kwargs.get("asset", None)
+        self._texture: pygame._sdl2.Texture = Globals.scene.load_resource(kwargs.get("texture", "default"), 2)
         self._source = None
         self._flip_x = kwargs.get("flip_x", False)
         self._flip_y = kwargs.get("flip_y", False)
@@ -33,14 +34,39 @@ class Sprite(GameObject):
         if anchor is not None:
             self.set_anchor(*anchor)
 
+        if Globals.app.experimental:
+            self.render = self._render_hardware
+            self.debug_render = self._debug_hardware
+            self._size = Vec2(self._texture.width, self._texture.height)
+            self._set_offset()
+        else:
+            self.render = self._render_software
+            self.debug_render = self._debug_software
+
+
     def on_load(self):
         Globals.scene.add_sprite(self)
-        ...
+        
 
+    def _render_hardware(self, offset: Vec2):
+        dest = Rect(self.draw_pos + offset, self._size.elementwise() * self._scale)
+        # dest.move_ip(self.draw_pos + offset)
+        # dest.inflate_ip(*(self._size.elementwise() * self._scale))
+        self._texture.draw(None, dest, self.rotation, -(self._draw_offset.elementwise() * self._scale), self.flip_x, self.flip_y)
 
-    def render(self):
+    def _render_software(self):
         self.update_image()
         return (self.image, self.draw_pos)
+    
+    def _debug_hardware(self, offset: Vec2):
+        Globals.renderer.draw_color = (255, 0, 0)
+        screen_pos = self.pos + offset
+        Globals.renderer.draw_point(screen_pos)
+        look = screen_pos + self.facing * 10
+        Globals.renderer.draw_line(screen_pos, look)
+
+    def _debug_software(self):
+        ...
 
     def update_image(self):
         if not self._img_updated:
@@ -53,8 +79,8 @@ class Sprite(GameObject):
 
     def _set_offset(self):
         self._draw_offset = -Vec2(
-            self.image.get_width() * self._anchor[0] / 2,
-            self.image.get_height() * self._anchor[1] / 2,
+            self._texture.width * self._anchor[0] / 2,
+            self._texture.height * self._anchor[1] / 2,
             )
 
     def set_anchor(self, horizontal=None, vertical=None):
@@ -75,7 +101,7 @@ class Sprite(GameObject):
     @property
     def draw_pos(self):
         """Returns the top left of self.image when centered on self.pos"""
-        return Vec2(self.pos + self._draw_offset)
+        return Vec2(self.pos + self._draw_offset.elementwise() * self._scale)
 
     @draw_pos.setter
     def draw_pos(self, new_offset):

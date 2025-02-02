@@ -1,6 +1,8 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pygame import Window
+    from pygame._sdl2 import Renderer
     from .engine import Application, Scene, InputHandler, Keyboard, Mouse, SoundManager
     from .utils import Surface
 
@@ -12,6 +14,8 @@ class Globals:
     key: 'Keyboard' = None
     mouse: 'Mouse' = None
     display: 'Surface' = None
+    renderer: 'Renderer' = None
+    window: 'Window' = None
     sound: 'SoundManager' = None
 
 

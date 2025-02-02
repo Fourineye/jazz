@@ -56,7 +56,7 @@ class Application:
         load_ini()
         self.experimental = experimental
 
-        self._window = pygame.Window(name, (width, height), flags=flags, vsync=vsync)
+        self._window = pygame.Window(name, (width, height))
         self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
         self._display = self._window.get_surface()
         
@@ -79,6 +79,8 @@ class Application:
         Globals.input = self._input
         Globals.key = self._input.key
         Globals.mouse = self._input.mouse
+        Globals.window = self._window
+        Globals.renderer = self._renderer
         Globals.display = self._display
         Globals.sound = self._sound
 
@@ -153,6 +155,7 @@ class Application:
             # Allow for transfer of data between scenes
             scene_transfer_data = self._active_scene.on_unload()
 
+        self._window.destroy()
         pygame.quit()
 
     def stop(self):
