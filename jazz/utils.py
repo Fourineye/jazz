@@ -22,7 +22,7 @@ def load_ini(path="./.jini"):
             settings.read(ini)
         for key, value in settings.items():
             SETTINGS[key] = value
-    except:
+    except FileNotFoundError:
         save_ini()
 
 

@@ -1,6 +1,6 @@
-import pygame as pg
+import pygame
 
-from ..utils import load_image, INTERNAL_PATH, load_texture, Surface
+from ..utils import load_image, INTERNAL_PATH, load_texture, Surface, Rect
 from ..global_dict import Globals
 
 
@@ -10,10 +10,10 @@ class ResourceManager:
     def __init__(self):
         default = Surface((10, 10))
         default.fill("magenta")
-        pg.draw.rect(default, "gray", (5,0,5,5))
-        pg.draw.rect(default, "gray", (0,5,5,5))
+        pygame.draw.rect(default, "gray", (5,0,5,5))
+        pygame.draw.rect(default, "gray", (0,5,5,5))
         self._images = {"default": default}
-        self._textures = {"default":pg._sdl2.Texture.from_surface(Globals.renderer, default)}
+        self._textures = {"default":pygame._sdl2.Texture.from_surface(Globals.renderer, default)}
         self._sprite_sheets = {}
         self._fonts = {}
 
@@ -22,7 +22,7 @@ class ResourceManager:
             self._fonts[path] = {}
         font = self._fonts.get(size, None)
         if font is None:
-            font = pg.font.Font(path, size)
+            font = pygame.font.Font(path, size)
             self._fonts.setdefault(size, font)
         return font
 
@@ -49,15 +49,20 @@ class ResourceManager:
     def make_sprite_sheet(self, path, dimensions, offset=(0, 0)):
         sprite_sheet = self._sprite_sheets.get(path, None)
         if sprite_sheet is None:
-            sheet = load_image(path)
-            self._images[path] = sheet
+            if Globals.app.experimental:
+                sheet = self.get_texture(path)
+            else:
+                sheet = self.get_image(path)
             sprite_sheet = []
-            size = sheet.get_size()
+            size = sheet.get_rect().size
             x = offset[0]
             y = offset[1]
             while y < size[1] - 1:
                 while x < size[0] - 1:
-                    sprite = sheet.subsurface((x, y), dimensions)
+                    if Globals.app.experimental:
+                        sprite = pygame._sdl2.Image(sheet, Rect((x,y), dimensions))
+                    else:
+                        sprite = sheet.subsurface((x, y), dimensions)
                     sprite_sheet.append(sprite)
                     x += dimensions[0]
                 x = offset[0]

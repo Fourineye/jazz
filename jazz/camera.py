@@ -5,7 +5,7 @@ from pygame.window import Window
 from pygame._sdl2 import Renderer
 
 from .global_dict import Globals
-from .utils import Rect, Vec2, clamp
+from .utils import Rect, Vec2, clamp, Surface
 
 
 class Camera:

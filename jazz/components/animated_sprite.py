@@ -17,8 +17,9 @@ class AnimatedSprite(Sprite):
         self.animation_fps = kwargs.get("animation_fps", 30)
 
     def on_load(self):
+        super().on_load()
         if self._sheet is None:
-            self._sheet = [pygame.Surface((10, 10))]
+            self._sheet = [self._texture]
         else:
             if isinstance(self._sheet, str):
                 self._sheet = Globals.scene.make_sprite_sheet(
@@ -27,8 +28,11 @@ class AnimatedSprite(Sprite):
             else:
                 for sprite in self._sheet:
                     if isinstance(sprite, str):
-                        sprite = Globals.scene.load_resource(sprite)
-                    if not isinstance(sprite, pygame.Surface):
+                        if Globals.app.experimental:
+                            sprite = Globals.scene.load_resource(sprite, 2)
+                        else:
+                            sprite = Globals.scene.load_resource(sprite)
+                    if not isinstance(sprite, (pygame.Surface, pygame._sdl2.Texture, pygame._sdl2.Image)):
                         raise TypeError(
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
                         )
@@ -36,7 +40,7 @@ class AnimatedSprite(Sprite):
         if self.animation_frames[0] is None:
             self.animation_frames = [i for i in range(len(self._sheet))]
 
-        self.source = self._sheet[self.animation_frames[0]]
+        self.texture = self._sheet[self.animation_frames[0]]
 
     def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
         if spritesheet is not None:
@@ -49,7 +53,7 @@ class AnimatedSprite(Sprite):
                 for sprite in self._sheet:
                     if isinstance(sprite, str):
                         sprite = Globals.scene.load_resource(sprite)
-                    if not isinstance(sprite, pygame.Surface):
+                    if not isinstance(sprite, (pygame.Surface, pygame._sdl2.Texture, pygame._sdl2.Image)):
                         raise TypeError(
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
                         )
@@ -74,7 +78,7 @@ class AnimatedSprite(Sprite):
                     self._playing = False
                 else:
                     self._frame %= len(self.animation_frames)
-            self.source = self._sheet[self.animation_frames[int(self._frame)]]
+            self.texture = self._sheet[self.animation_frames[int(self._frame)]]
 
     def play(self, start_over=False):
         self._playing = True

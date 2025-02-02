@@ -84,6 +84,11 @@ class Application:
         Globals.display = self._display
         Globals.sound = self._sound
 
+        if self.experimental:
+            self._screen_refresh = self._renderer.present
+        else:
+            self._screen_refresh = self._window.flip
+
 
     def add_scene(self, scene: type[Scene]):
         """Adds a scene class reference to the game to be initilaized at
@@ -143,10 +148,7 @@ class Application:
 
                 # render game window
                 self._active_scene.render()
-                if self.experimental:
-                    self._renderer.present()
-                else:
-                    self._window.flip()
+                self._screen_refresh()
 
                 # Control fps and record delta time
                 self._delta = self._clock.tick(self.fps_max) / 1000

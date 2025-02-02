@@ -1,10 +1,9 @@
-import math
 import uuid
 
 import pygame
 
 from ..global_dict import Globals
-from ..utils import Vec2, angle_from_vec, rotated_pos, unit_from_angle
+from ..utils import Vec2, angle_from_vec, unit_from_angle
 
 config_dict = {
     "pause_process": False,
@@ -218,7 +217,7 @@ class GameObject:
         Args:
             degrees (float): The angle in degrees to rotate the object by.
         """
-        self._rotation = (self._rotation + degrees) % 360
+        self.local_rotation = self.local_rotation + degrees
 
     def add_group(self, group):
         """
