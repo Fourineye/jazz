@@ -129,7 +129,10 @@ class GameObject:
             offset = Vec2()
         pygame.draw.circle(surface, self._color, self.pos + offset, 3, 2)
         pygame.draw.aaline(
-            surface, self._color, self.pos + offset, self.pos + offset + self.facing * 5
+            surface,
+            self._color,
+            self.pos + offset,
+            self.pos + offset + self.facing * 5,
         )
 
     # Engine called methods that allow object nesting
@@ -300,7 +303,9 @@ class GameObject:
             if -0.001 < self._parent.rotation < 0.001:
                 return self._parent.pos + self._pos
             else:
-                return self._parent.pos + self._pos.rotate(self._parent.rotation)
+                return self._parent.pos + self._pos.rotate(
+                    self._parent.rotation
+                )
         else:
             return Vec2(self._pos)
 
@@ -308,7 +313,9 @@ class GameObject:
     def pos(self, pos):
         """Sets the _pos attribute"""
         if self._parent is not None:
-            self._pos = Vec2(pos - self._parent.pos).rotate(-self._parent.rotation)
+            self._pos = Vec2(pos - self._parent.pos).rotate(
+                -self._parent.rotation
+            )
         else:
             self._pos = Vec2(pos)
 
@@ -353,7 +360,7 @@ class GameObject:
     def x(self):
         """Returns x component of the _pos attribute."""
         return self.pos.x
-    
+
     @property
     def z(self):
         """Returns the z index of the object"""
@@ -361,7 +368,6 @@ class GameObject:
             return self._parent.z
         else:
             return self._z
-
 
     @property
     def facing(self):

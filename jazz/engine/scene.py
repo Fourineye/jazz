@@ -2,6 +2,7 @@
 Scene class
 
 """
+
 from typing import TYPE_CHECKING, Callable
 from dataclasses import dataclass
 
@@ -16,12 +17,13 @@ if TYPE_CHECKING:
     from .base_object import GameObject
     from ..components import Sprite
 
+
 @dataclass
 class Timer:
-    time_left : float
-    callback : Callable
-    args : tuple[any]
-    game_time : bool = True
+    time_left: float
+    callback: Callable
+    args: tuple[any]
+    game_time: bool = True
 
 
 class Scene:
@@ -124,7 +126,9 @@ class Scene:
         """Set the flag for the scene to run normally."""
         self._paused = False
 
-    def set_timer(self, time: float, callback: Callable, args: tuple[any], game_time=True) -> None:
+    def set_timer(
+        self, time: float, callback: Callable, args: tuple[any], game_time=True
+    ) -> None:
         self._timers.append(Timer(time, callback, args, game_time))
 
     def get_AABB_collisions(self, physics_object) -> list["GameObject"]:
@@ -159,7 +163,7 @@ class Scene:
         return self.resource_manager.make_sprite_sheet(path, dimensions, offset)
 
     # Object Management
-    def add_object(self, obj: 'GameObject', name=None):
+    def add_object(self, obj: "GameObject", name=None):
         """
         Add an object to the scene, give it a name, and add it to the camera.
 
@@ -187,7 +191,6 @@ class Scene:
         if sprite not in self._sprites:
             self._sprites.append(sprite)
             self._sprites.sort(key=lambda obj: obj.z, reverse=False)
-
 
     def add_group(self, name: str):
         """
@@ -303,8 +306,6 @@ class Scene:
                     timer.callback(*timer.args)
                     self._timers.remove(timer)
 
-
-
         # delete objects queued for deletion
         for obj in kill_items:
             obj.kill()
@@ -343,7 +344,7 @@ class Scene:
     @property
     def height(self):
         return Globals.display.get_height()
-    
+
     @property
     def sprites(self) -> list["Sprite"]:
         return self._sprites.copy()

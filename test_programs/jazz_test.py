@@ -46,7 +46,8 @@ class RenderTest(jazz.Scene):
                         color=random_color(),
                         pos=(randint(5, 795), randint(5, 795)),
                         scale=Vec2(
-                            randint(MIN_SIZE, MAX_SIZE), randint(MIN_SIZE, MAX_SIZE)
+                            randint(MIN_SIZE, MAX_SIZE),
+                            randint(MIN_SIZE, MAX_SIZE),
                         ),
                         rotation=randint(0, 90),
                     )
@@ -88,7 +89,7 @@ class AnimationTest(jazz.Scene):
 
 if __name__ == "__main__":
     app = jazz.Application(800, 800, experimental=True)
-    app.add_scene(AnimationTest)
-    app.add_scene(RotationTest)
     app.add_scene(RenderTest)
+    app.add_scene(RotationTest)
+    app.add_scene(AnimationTest)
     app.run()

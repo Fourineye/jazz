@@ -37,10 +37,9 @@ class Button(GameObject):
             self._hover_asset = pygame.Surface(self._size)
             self._hover_asset.fill((192, 192, 192))
 
-        self.add_child(
-            Sprite(asset=self._unpressed_asset),
-            "sprite",
-        )
+        self.sprite = Sprite()
+        self.sprite.texture = self._unpressed_asset
+        self.add_child(self.sprite)
 
     def on_load(self):
         self._rect.center = self.pos
@@ -51,9 +50,7 @@ class Button(GameObject):
             if self._rect.collidepoint(mouse_pos):
                 if Globals.mouse.click(0):
                     self.state = self.PRESSED
-                elif self.state != self.PRESSED or not Globals.mouse.held(
-                        0
-                ):
+                elif self.state != self.PRESSED or not Globals.mouse.held(0):
                     self.state = self.HOVER
             else:
                 if self.state == self.PRESSED:
@@ -64,19 +61,19 @@ class Button(GameObject):
             if self.last_state != self.state:
                 if self.state == self.UNPRESSED:
                     if self._unpressed_asset is not None:
-                        self.sprite.source = self._unpressed_asset
+                        self.sprite.texture = self._unpressed_asset
                 elif self.state == self.HOVER:
                     if self._hover_asset is not None:
-                        self.sprite.source = self._hover_asset
+                        self.sprite.texture = self._hover_asset
                     if (
-                            callable(self._callback)
-                            and self._on_release
-                            and self.last_state == self.PRESSED
+                        callable(self._callback)
+                        and self._on_release
+                        and self.last_state == self.PRESSED
                     ):
                         self._callback()
                 elif self.state == self.PRESSED:
                     if self._pressed_asset is not None:
-                        self.sprite.source = self._pressed_asset
+                        self.sprite.texture = self._pressed_asset
                     if callable(self._callback) and not self._on_release:
                         self._callback()
             self.last_state = self.state
