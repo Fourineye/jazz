@@ -32,12 +32,12 @@ class Button(Sprite):
         if self._unpressed_asset is None:
             self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(255, 255, 255))
         if self._pressed_asset is None:
-            self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(128, 128, 128))
+            self._pressed_asset = Globals.scene.resource_manager.get_color(Color(128, 128, 128))
         if self._hover_asset is None:
-            self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(192, 192, 192))
+            self._hover_asset = Globals.scene.resource_manager.get_color(Color(192, 192, 192))
 
         self._texture = self._unpressed_asset
-        
+
     def on_load(self):
         super().on_load()
         self._rect.topleft = self.draw_pos
@@ -91,3 +91,7 @@ class Button(Sprite):
             self.flip_x,
             self.flip_y,
         )
+
+    def _debug_hardware(self, offset: Vec2):
+        super()._debug_hardware(offset)
+        Globals.renderer.draw_rect(self._rect.move(offset))

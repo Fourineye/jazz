@@ -92,6 +92,7 @@ class UITest(jazz.Scene):
     name = "UI Test"
 
     def on_load(self, _):
+        # self.camera.debug = True
         self.add_object(
             jazz.Label(text="This is a test", pos=(10, 10), anchor=(0,0))
         )

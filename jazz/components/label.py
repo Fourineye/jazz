@@ -8,7 +8,9 @@ from ..utils import Vec2
 class Label(Sprite):
     def __init__(self, name="label", **kwargs):
         super().__init__(name, **kwargs)
-        self.font = kwargs.get("font", Globals.scene.get_font(size=24))
+        font_size = kwargs.get("fontsize", 24)
+
+        self.font = kwargs.get("font", Globals.scene.get_font(size=font_size))
         self.text_color = kwargs.get("text_color", (255, 255, 255))
 
         self.text_content = kwargs.get("text", " ")

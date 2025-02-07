@@ -64,12 +64,13 @@ class ResourceManager:
         return resource
 
     def get_color(self, color: Color):
-        resource = self._colors.get(color.cmy, None)
+        resource = self._colors.get(color.rgb, None)
         if resource is None:
             colorSwatch = Surface((1,1))
             colorSwatch.fill(color)
             resource = Texture.from_surface(Globals.renderer, colorSwatch)
-            self._images.setdefault(color.cmy, resource)
+            self._colors.setdefault(color.rgb, resource)
+
         return resource
 
     def make_sprite_sheet(self, id: str, dimensions: Vec2, offset=(0, 0)):
