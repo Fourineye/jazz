@@ -59,7 +59,7 @@ class Scene:
         self.resource_manager = ResourceManager()
         self._groups = {}
         self._objects = {}
-        self._sprites = []
+        self._sprites: list[Sprite] = []
         self._timers: list[Timer] = []
         self._physics_world = {
             0: PhysicsGrid(),

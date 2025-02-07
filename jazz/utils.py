@@ -12,6 +12,7 @@ from .global_dict import SETTINGS, Globals
 Vec2 = pygame.Vector2
 Rect = pygame.Rect
 Surface = pygame.Surface
+Color = pygame.Color
 INTERNAL_PATH = str(importlib.resources.files())
 
 

@@ -1,10 +1,11 @@
 import pygame
 
 from .sprite import Sprite
-from .. import GameObject, Globals
+from .. import Globals
+from ..utils import Color, Rect, Vec2
 
 
-class Button(GameObject):
+class Button(Sprite):
     STATES = ["UNPRESSED", "HOVER", "PRESSED"]
     UNPRESSED = 0
     HOVER = 1
@@ -17,8 +18,9 @@ class Button(GameObject):
         self._callback = kwargs.get("callback", None)
         self._on_release = kwargs.get("on_release", True)
 
-        self._size = kwargs.get("size", (10, 10))
+        self._size = Vec2(kwargs.get("size", (10, 10)))
         self._rect = pygame.Rect((0, 0), self._size)
+        self._hardware_offset()
 
         self._unpressed_asset = kwargs.get("unpressed", None)
         self._pressed_asset = kwargs.get("pressed", None)
@@ -28,21 +30,17 @@ class Button(GameObject):
         self.state = self.UNPRESSED
 
         if self._unpressed_asset is None:
-            self._unpressed_asset = pygame.Surface(self._size)
-            self._unpressed_asset.fill((255, 255, 255))
+            self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(255, 255, 255))
         if self._pressed_asset is None:
-            self._pressed_asset = pygame.Surface(self._size)
-            self._pressed_asset.fill((128, 128, 128))
+            self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(128, 128, 128))
         if self._hover_asset is None:
-            self._hover_asset = pygame.Surface(self._size)
-            self._hover_asset.fill((192, 192, 192))
+            self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(192, 192, 192))
 
-        self.sprite = Sprite()
-        self.sprite.texture = self._unpressed_asset
-        self.add_child(self.sprite)
-
+        self._texture = self._unpressed_asset
+        
     def on_load(self):
-        self._rect.center = self.pos
+        super().on_load()
+        self._rect.topleft = self.draw_pos
 
     def update(self, _delta):
         mouse_pos = Globals.mouse.pos
@@ -61,10 +59,10 @@ class Button(GameObject):
             if self.last_state != self.state:
                 if self.state == self.UNPRESSED:
                     if self._unpressed_asset is not None:
-                        self.sprite.texture = self._unpressed_asset
+                        self._texture = self._unpressed_asset
                 elif self.state == self.HOVER:
                     if self._hover_asset is not None:
-                        self.sprite.texture = self._hover_asset
+                        self._texture = self._hover_asset
                     if (
                         callable(self._callback)
                         and self._on_release
@@ -73,14 +71,23 @@ class Button(GameObject):
                         self._callback()
                 elif self.state == self.PRESSED:
                     if self._pressed_asset is not None:
-                        self.sprite.texture = self._pressed_asset
+                        self._texture = self._pressed_asset
                     if callable(self._callback) and not self._on_release:
                         self._callback()
             self.last_state = self.state
 
-    def _debug_draw(self, surface: pygame.Surface, offset=None):
-        super()._debug_draw(surface, offset)
-        pygame.draw.rect(surface, "red", self._rect, 1)
-
     def set_callback(self, callback):
         self._callback = callback
+
+    def _render_hardware_texture(self, offset: Vec2):
+        dest = Rect(
+            self.draw_pos + offset, self._size.elementwise() * self._scale
+        )
+        self._texture.draw(
+            None,
+            dest,
+            self.rotation,
+            -self._draw_offset,
+            self.flip_x,
+            self.flip_y,
+        )
