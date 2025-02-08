@@ -2,7 +2,8 @@ from random import randint
 
 import jazz
 from jazz import Globals, Vec2
-from jazz.utils import random_color
+from jazz.utils import random_color, Color, Rect
+from jazz._in_dev import Primatives
 
 SPRITES: int = 10000
 MIN_SIZE: int = 5
@@ -80,9 +81,10 @@ class AnimationTest(jazz.Scene):
     def on_load(self, data):
         self.add_object(
             jazz.AnimatedSprite(
-                spritesheet="test_programs/Tiny Swords (Update 010)/Factions/Knights/Troops/Archer/Archer + Bow/Archer_Blue_(NoArms).png",
-                sprite_dim=(192, 192),
+                spritesheet="test_programs/test_assets/IDLE.png",
+                sprite_dim=(96, 96),
                 pos=(400, 400),
+                scale=Vec2(5, 5)
             ),
         )
         Globals.app.set_next_scene("UI Test")
@@ -90,6 +92,12 @@ class AnimationTest(jazz.Scene):
 
 class UITest(jazz.Scene):
     name = "UI Test"
+
+    def __init__(self):
+        super().__init__()
+        self.test_rect = Rect(50, 50, 100, 100)
+        self.test_line = (Vec2( 150, 200), Vec2(175, 250))
+        self.line_width = 1
 
     def on_load(self, _):
         # self.camera.debug = True
@@ -99,6 +107,19 @@ class UITest(jazz.Scene):
         self.add_object(
             jazz.Button(pos=(10, 40), size=(60, 30), anchor=(0,0), callback=lambda:(Globals.app.set_next_scene("Animation Test"), self.stop()))
         )
+        self.set_timer(1, self.iterate_width, ())
+    
+    def iterate_width(self):
+        self.line_width += 1
+        if self.line_width > 10:
+            self.line_width = 1
+        self.set_timer(1, self.iterate_width, ())
+
+
+    def render(self):
+        super().render()
+        Primatives.rect(self.test_rect, Color("red"), self.line_width)
+        Primatives.line(*self.test_line, Color('yellow'), self.line_width)
 
 if __name__ == "__main__":
     app = jazz.Application(800, 800, experimental=True)
