@@ -1,6 +1,7 @@
 import pygame
 
 from .sprite import Sprite
+from .label import Label
 from .. import Globals
 from ..utils import Color, Rect, Vec2
 
@@ -29,6 +30,11 @@ class Button(Sprite):
         self.last_state = self.UNPRESSED
         self.state = self.UNPRESSED
 
+        self._label = kwargs.get("label", None)
+        if self._label is not None:
+            self._label = Label(text=self._label, text_color=Color("black"), fontsize=12)
+            self.add_child(self._label)
+
         if self._unpressed_asset is None:
             self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(255, 255, 255))
         if self._pressed_asset is None:
@@ -41,6 +47,7 @@ class Button(Sprite):
     def on_load(self):
         super().on_load()
         self._rect.topleft = self.draw_pos
+        self._label.pos = self._rect.center
 
     def update(self, _delta):
         mouse_pos = Globals.mouse.pos

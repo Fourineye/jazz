@@ -2,7 +2,8 @@ import pygame
 
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
-from ..utils import Vec2, Rect, Surface
+from ..utils import Vec2, Rect, Surface, Color
+from .primatives import Primatives
 
 
 class Sprite(GameObject):
@@ -69,8 +70,9 @@ class Sprite(GameObject):
         Globals.renderer.draw_color = (255, 0, 0)
         screen_pos = self.pos + offset
         Globals.renderer.draw_point(screen_pos)
+        Primatives.circle(screen_pos, 5, Color("yellow"), 3)
         look = screen_pos + self.facing * 10
-        Globals.renderer.draw_line(screen_pos, look)
+        Primatives.line(screen_pos, look, Color("red"), 3)
 
     def _debug_software(self): ...
 

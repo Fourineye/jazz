@@ -1,9 +1,7 @@
-from typing import Iterable
 from . import Surface, Vec2
 from .global_dict import Globals
 from .components import Label, Sprite
 from .user_interface import DEFAULT_FONT
-from .utils import Rect, Color
 
 
 class TextBox(Sprite):
@@ -92,33 +90,3 @@ class TextBox(Sprite):
     # def draw(self, surface, offset=None):
     #     ...
 
-class Primatives:
-    @staticmethod
-    def rect(rect: Rect, color: Color, w=1):
-        Globals.renderer.draw_color = color
-        if not isinstance(rect, Rect):
-            rect = Rect(*rect)
-        for i in range(w):
-            Globals.renderer.draw_rect(rect.inflate(-2 * i, -2 * i))
-
-    @staticmethod
-    def line(p1: Vec2, p2: Vec2, color:Color, w: int=1):
-        Globals.renderer.draw_color = color
-        if w == 1:
-            Globals.renderer.draw_line(p1, p2)
-        else:
-            for x in range(-w // 2, w //2):
-                for y in range(-w // 2, w //2):
-                    if x ** 2 + y ** 2 <= (w // 2) ** 2:
-                        Globals.renderer.draw_line(p1 + Vec2(x,y), p2 + Vec2(x, y))
-
-    @staticmethod
-    def lines(points: I
-              
-              terable[Vec2], )
-
-
-
-
-
-              
