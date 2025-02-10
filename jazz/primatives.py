@@ -1,6 +1,6 @@
 from typing import Iterable
-from ..global_dict import Globals
-from ..utils import Rect, Color, Vec2
+from .global_dict import Globals
+from .utils import Rect, Color, Vec2
 
 
 

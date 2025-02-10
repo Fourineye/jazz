@@ -65,7 +65,7 @@ class RotationTest(jazz.Scene):
         self.square = None
 
     def on_load(self, _):
-        self.camera.debug = True
+        self.toggle_debug()
         self.square = jazz.Sprite(scale=Vec2(10, 10), pos=(400, 400))
         self.add_object(self.square)
         Globals.app.set_next_scene("UI Test")
@@ -122,7 +122,6 @@ class UITest(jazz.Scene):
             self.line_width = 1
             self.closed = not self.closed
         self.set_timer(.1, self.iterate_width, ())
-
 
     def update_title(self):
         Globals.app.set_caption(f"{Globals.app.get_fps():2.2f} fps")

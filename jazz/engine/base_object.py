@@ -3,7 +3,8 @@ import uuid
 import pygame
 
 from ..global_dict import Globals
-from ..utils import Vec2, angle_from_vec, unit_from_angle
+from ..utils import Color, Vec2, angle_from_vec, unit_from_angle
+from ..primatives import Primatives
 
 config_dict = {
     "pause_process": False,
@@ -73,13 +74,18 @@ class GameObject:
             if self not in group._entities:
                 group.add(self)
 
+        if Globals.app.experimental:
+            self._render_debug = self._render_debug_hardware
+        else:
+            self._render_debug = self._render_debug_software
+
     def __repr__(self):
         children = ""
         for _, child in self._children.items():
             children += f" {child}"
         return (
             "-" * self._depth
-            + f"{self.name} at {round(self.x,2)}, {round(self.y,2)}\n"
+            + f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}\n"
             + children
         )
 
@@ -106,7 +112,7 @@ class GameObject:
             delta (float): time since last frame
         """
 
-    def _draw(self, surface: pygame.Surface, offset=None):
+    def _render_debug_software(self, offset: Vec2):
         """
         Method called in the scene render function to draw the Entity on a surface.
 
@@ -115,25 +121,27 @@ class GameObject:
             offset (Vec2, optional): Offset to add to pos for the draw
                 destination. Defaults to None.
         """
-
-    def _debug_draw(self, surface: pygame.Surface, offset=None):
-        """
-        Method called in the scene render function to draw the Entity on a surface.
-
-        Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vec2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
-        """
-        if offset is None:
-            offset = Vec2()
-        pygame.draw.circle(surface, self._color, self.pos + offset, 3, 2)
+        pygame.draw.circle(Globals.display, self._color, self.pos + offset, 3, 2)
         pygame.draw.aaline(
-            surface,
+            Globals.display,
             self._color,
             self.pos + offset,
             self.pos + offset + self.facing * 5,
         )
+
+    def _render_debug_hardware(self, offset: Vec2):
+        """
+        Method called in the scene render function to draw the Entity on a surface.
+
+        Args:
+            surface (pygame.Surface): Surface to draw the Entity on.
+            offset (Vec2, optional): Offset to add to pos for the draw
+                destination. Defaults to None.
+        """
+        screen_pos = self.pos + offset
+        look_pos = screen_pos + self.facing * 10
+        Primatives.circle(self.pos + offset, 5, Color("yellow"), 3)
+        Primatives.line(screen_pos, look_pos, Color("red"), 3)
 
     # Engine called methods that allow object nesting
     def _update(self, delta):
@@ -146,17 +154,11 @@ class GameObject:
             child._late_update(delta)
         self.late_update(delta)
 
-    def draw(self, surface: pygame.Surface, offset=None):
+    def render_debug(self, offset: Vec2):
         if self.visible:
-            self._draw(surface, offset)
+            self._render_debug(offset)
             for child in self._children.values():
-                child.draw(surface, offset)
-
-    def debug_draw(self, surface: pygame.Surface, offset=None):
-        if self.visible:
-            self._debug_draw(surface, offset)
-            for child in self._children.values():
-                child.debug_draw(surface, offset)
+                child.render_debug(offset)
 
     # Child management
     def add_child(self, obj, name=None):
@@ -303,9 +305,7 @@ class GameObject:
             if -0.001 < self._parent.rotation < 0.001:
                 return self._parent.pos + self._pos
             else:
-                return self._parent.pos + self._pos.rotate(
-                    self._parent.rotation
-                )
+                return self._parent.pos + self._pos.rotate(self._parent.rotation)
         else:
             return Vec2(self._pos)
 
@@ -313,9 +313,7 @@ class GameObject:
     def pos(self, pos):
         """Sets the _pos attribute"""
         if self._parent is not None:
-            self._pos = Vec2(pos - self._parent.pos).rotate(
-                -self._parent.rotation
-            )
+            self._pos = Vec2(pos - self._parent.pos).rotate(-self._parent.rotation)
         else:
             self._pos = Vec2(pos)
 

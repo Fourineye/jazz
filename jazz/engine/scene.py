@@ -68,6 +68,7 @@ class Scene:
             3: PhysicsGrid(),
         }
 
+        self._debug = False
         self.running = True
         self._paused = False
         Globals.sound.clear_sounds()
@@ -104,6 +105,8 @@ class Scene:
         per frame and renders all game objects to the screen.
         """
         self.camera.render()
+        if self._debug:
+            self.camera.render_debug()
 
     # Utility Methods
 
@@ -171,7 +174,7 @@ class Scene:
             name (str): The name to retrieve the object at a later point.
             obj (object): The Object to be added to the scene.
         """
-        if obj.id not in self.keys():
+        if obj.id not in self._objects.keys():
             obj._on_load()
             self._objects[obj.id] = obj
         else:
@@ -191,19 +194,6 @@ class Scene:
         if sprite not in self._sprites:
             self._sprites.append(sprite)
             self._sprites.sort(key=lambda obj: obj.z, reverse=False)
-
-    def add_group(self, name: str):
-        """
-        Add a group to the scene, as well as any items in the group.
-
-        Args:
-            name (str): The name of the group being added.
-            group (EntityGroup): The group being added.
-        """
-        if name not in self._groups:
-            self._groups[name] = Group(name=name)
-        else:
-            print("Name already exists")
 
     def remove_object(self, obj):
         """
@@ -232,19 +222,9 @@ class Scene:
         except ValueError:
             print(f"Sprite not found: {sprite}")
 
-    def remove_group(self, name: str):
-        """
-        Remove a group from the scene as well as any objects only in that group.
 
-        Args:
-            name (str): Name of the group to remove.
-        """
-        group = self._groups.pop(name, None)
-        if group is None:
-            print(f"Group not found : {name}")
-        else:
-            for obj in group:
-                obj.remove_group(group)
+    def toggle_debug(self):
+        self._debug = not self._debug
 
     # Engine Methods
     def _game_update(self, delta: float):
@@ -316,22 +296,20 @@ class Scene:
         return obj
 
     def __iter__(self):
-        return iter(self._objects)
+        return iter(self._objects.values())
 
     def __len__(self):
         return len(self._objects)
 
+    @property
     def keys(self):
         """Returns keys object of _objects attribute."""
         return self._objects.keys()
 
-    def values(self):
-        """Returns values object of _objects attribute."""
-        return self._objects.values()
-
-    def items(self):
+    @property
+    def objects(self):
         """Returns items obect of _objects attribute."""
-        return self._objects.items()
+        return self._objects.values()
 
     @property
     def camera_offset(self):

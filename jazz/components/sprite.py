@@ -3,7 +3,6 @@ import pygame
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
 from ..utils import Vec2, Rect, Surface, Color
-from .primatives import Primatives
 
 
 class Sprite(GameObject):
@@ -20,7 +19,6 @@ class Sprite(GameObject):
                 kwargs.get("texture", "default"), 2
             )
             self.render = self._render_hardware_texture
-            self.debug_render = self._debug_hardware
             self._size = Vec2(self._texture.width, self._texture.height)
             self._hardware_offset()
         else:
@@ -29,7 +27,6 @@ class Sprite(GameObject):
             )
             self.render = self._render_software
             self.image = self._texture.copy()
-            self.debug_render = self._debug_software
             self._img_updated = False
 
         anchor = kwargs.get("anchor", None)
@@ -65,16 +62,6 @@ class Sprite(GameObject):
     def _render_software(self):
         self.update_image()
         return (self.image, self.draw_pos)
-
-    def _debug_hardware(self, offset: Vec2):
-        Globals.renderer.draw_color = (255, 0, 0)
-        screen_pos = self.pos + offset
-        Globals.renderer.draw_point(screen_pos)
-        Primatives.circle(screen_pos, 5, Color("yellow"), 3)
-        look = screen_pos + self.facing * 10
-        Primatives.line(screen_pos, look, Color("red"), 3)
-
-    def _debug_software(self): ...
 
     def update_image(self):
         if not self._img_updated:

@@ -29,11 +29,12 @@ class Camera:
             Globals.display.get_height() / 2,
         )
         self.zoom = 1
-        self.debug = False
         if Globals.app.experimental:
-            self.render = self.render_hardware
+            self.render = self._render_hardware
+            self.render_debug = self._render_hardware_debug
         else:
-            self.render = self.render_software
+            self.render = self._render_software
+            self.render_debug = self._render_software_debug
 
     def update(self, _delta):
         """
@@ -53,7 +54,7 @@ class Camera:
             self.shake = Vec2()
             self.magnitude = 0
 
-    def render_software(self) -> None:
+    def _render_software(self) -> None:
         # Get Objects
         draw_objects = Globals.scene.sprites
         
@@ -79,7 +80,10 @@ class Camera:
         if screen_surface_list:
             Globals.display.fblits(screen_surface_list)
 
-    def render_hardware(self):
+    def _render_software_debug(self):
+        ...
+
+    def _render_hardware(self):
         draw_objects = Globals.scene.sprites
         
         if self._blanking:
@@ -90,13 +94,18 @@ class Camera:
             if obj.visible:
                 if obj.screen_space:
                     obj.render(Vec2())
-                    if self.debug:
-                        obj.debug_render(Vec2())
                 else:
                     obj.render(self.offset + self.shake)
-                    if self.debug:
-                        obj.debug_render(self.offset + self.shake)
 
+    def _render_hardware_debug(self):
+        draw_objects = Globals.scene.objects
+        
+        for obj in draw_objects:
+            if obj.visible:
+                if obj.screen_space:
+                    obj.render_debug(Vec2())
+                else:
+                    obj.render_debug(self.offset + self.shake)
 
     def update_offset(self):
         """Updates the Camera offset to the target."""
@@ -174,10 +183,6 @@ class Camera:
         """
         self.magnitude = magnitude
         self.shake = Vec2()
-
-    def draw_check(self, obj, debug=False):
-        draw = hasattr(obj, "debug_draw") if debug else hasattr(obj, "draw")
-        return draw and getattr(obj, "visible", True)
 
     @property
     def pos(self):
