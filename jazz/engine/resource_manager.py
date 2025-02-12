@@ -2,13 +2,21 @@ import pygame
 
 from pygame._sdl2 import Texture, Image
 from ..global_dict import Globals
-from ..utils import INTERNAL_PATH, Rect, Surface, Vec2, load_image, load_texture, Color
+from ..utils import (
+    INTERNAL_PATH,
+    Rect,
+    Surface,
+    Vec2,
+    load_image,
+    load_texture,
+    Color,
+)
 
 
 class ResourceManager:
     DEFAULT_FONT = INTERNAL_PATH + "/resources/Roboto-Regular.ttf"
 
-    def __init__(self):
+    def __init__(self) -> None:
         default = Surface((10, 10))
         default.fill("magenta")
         pygame.draw.rect(default, "gray", (5, 0, 5, 5))
@@ -17,7 +25,7 @@ class ResourceManager:
         self._textures = {
             "default": Texture.from_surface(Globals.renderer, default)
         }
-        self._colors: dict[Color, Texture] = {}
+        self._colors: dict[tuple[int, int, int], Texture] = {}
         self._sprite_sheets = {}
         self._fonts = {}
 
@@ -66,7 +74,7 @@ class ResourceManager:
     def get_color(self, color: Color):
         resource = self._colors.get(color.rgb, None)
         if resource is None:
-            colorSwatch = Surface((1,1))
+            colorSwatch = Surface((1, 1))
             colorSwatch.fill(color)
             resource = Texture.from_surface(Globals.renderer, colorSwatch)
             self._colors.setdefault(color.rgb, resource)

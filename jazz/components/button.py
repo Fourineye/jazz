@@ -3,7 +3,8 @@ import pygame
 from .sprite import Sprite
 from .label import Label
 from .. import Globals
-from ..utils import Color, Rect, Vec2
+from ..primatives import Primatives
+from ..utils import Color, Rect, Vec2, Surface
 
 
 class Button(Sprite):
@@ -32,15 +33,38 @@ class Button(Sprite):
 
         self._label = kwargs.get("label", None)
         if self._label is not None:
-            self._label = Label(text=self._label, text_color=Color("black"), fontsize=12)
+            text_size = kwargs.get("text_size", 12)
+            self._label = Label(
+                text=self._label, text_color=Color("black"), fontsize=text_size
+            )
             self.add_child(self._label)
 
         if self._unpressed_asset is None:
-            self._unpressed_asset = Globals.scene.resource_manager.get_color(Color(255, 255, 255))
+            if Globals.app.experimental:
+                self._unpressed_asset = (
+                    Globals.scene.resource_manager.get_color(
+                        Color(255, 255, 255)
+                    )
+                )
+            else:
+                self._unpressed_asset = Surface(self._size)
+                self._unpressed_asset.fill(Color(255, 255, 255))
         if self._pressed_asset is None:
-            self._pressed_asset = Globals.scene.resource_manager.get_color(Color(128, 128, 128))
+            if Globals.app.experimental:
+                self._pressed_asset = Globals.scene.resource_manager.get_color(
+                    Color(128, 128, 128)
+                )
+            else:
+                self._pressed_asset = Surface(self._size)
+                self._pressed_asset.fill(Color(128, 128, 128))
         if self._hover_asset is None:
-            self._hover_asset = Globals.scene.resource_manager.get_color(Color(192, 192, 192))
+            if Globals.app.experimental:
+                self._hover_asset = Globals.scene.resource_manager.get_color(
+                    Color(192, 192, 192)
+                )
+            else:
+                self._hover_asset = Surface(self._size)
+                self._hover_asset.fill(Color(192, 192, 192))
 
         self._texture = self._unpressed_asset
 
@@ -99,6 +123,6 @@ class Button(Sprite):
             self.flip_y,
         )
 
-    def _debug_hardware(self, offset: Vec2):
-        super()._debug_hardware(offset)
-        Globals.renderer.draw_rect(self._rect.move(offset))
+    def _render_debug(self, offset: Vec2):
+        super()._render_debug(offset)
+        Primatives.rect(self._rect.move(offset), Color("green"), 3)

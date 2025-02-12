@@ -74,11 +74,6 @@ class GameObject:
             if self not in group._entities:
                 group.add(self)
 
-        if Globals.app.experimental:
-            self._render_debug = self._render_debug_hardware
-        else:
-            self._render_debug = self._render_debug_software
-
     def __repr__(self):
         children = ""
         for _, child in self._children.items():
@@ -112,24 +107,7 @@ class GameObject:
             delta (float): time since last frame
         """
 
-    def _render_debug_software(self, offset: Vec2):
-        """
-        Method called in the scene render function to draw the Entity on a surface.
-
-        Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vec2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
-        """
-        pygame.draw.circle(Globals.display, self._color, self.pos + offset, 3, 2)
-        pygame.draw.aaline(
-            Globals.display,
-            self._color,
-            self.pos + offset,
-            self.pos + offset + self.facing * 5,
-        )
-
-    def _render_debug_hardware(self, offset: Vec2):
+    def _render_debug(self, offset: Vec2):
         """
         Method called in the scene render function to draw the Entity on a surface.
 
@@ -305,7 +283,9 @@ class GameObject:
             if -0.001 < self._parent.rotation < 0.001:
                 return self._parent.pos + self._pos
             else:
-                return self._parent.pos + self._pos.rotate(self._parent.rotation)
+                return self._parent.pos + self._pos.rotate(
+                    self._parent.rotation
+                )
         else:
             return Vec2(self._pos)
 
@@ -313,7 +293,9 @@ class GameObject:
     def pos(self, pos):
         """Sets the _pos attribute"""
         if self._parent is not None:
-            self._pos = Vec2(pos - self._parent.pos).rotate(-self._parent.rotation)
+            self._pos = Vec2(pos - self._parent.pos).rotate(
+                -self._parent.rotation
+            )
         else:
             self._pos = Vec2(pos)
 

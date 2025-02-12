@@ -31,10 +31,8 @@ class Camera:
         self.zoom = 1
         if Globals.app.experimental:
             self.render = self._render_hardware
-            self.render_debug = self._render_hardware_debug
         else:
             self.render = self._render_software
-            self.render_debug = self._render_software_debug
 
     def update(self, _delta):
         """
@@ -48,7 +46,8 @@ class Camera:
         if self.magnitude > 0.1:
             self.magnitude -= self.magnitude * self.damping
             self.shake = Vec2(
-                self.magnitude * randint(-10, 10), self.magnitude * randint(-10, 10)
+                self.magnitude * randint(-10, 10),
+                self.magnitude * randint(-10, 10),
             )
         else:
             self.shake = Vec2()
@@ -57,7 +56,7 @@ class Camera:
     def _render_software(self) -> None:
         # Get Objects
         draw_objects = Globals.scene.sprites
-        
+
         # Blank Screen
         if self._blanking:
             Globals.display.fill(self._bg_color)
@@ -80,12 +79,9 @@ class Camera:
         if screen_surface_list:
             Globals.display.fblits(screen_surface_list)
 
-    def _render_software_debug(self):
-        ...
-
     def _render_hardware(self):
         draw_objects = Globals.scene.sprites
-        
+
         if self._blanking:
             Globals.renderer.draw_color = self._bg_color
             Globals.renderer.clear()
@@ -97,9 +93,9 @@ class Camera:
                 else:
                     obj.render(self.offset + self.shake)
 
-    def _render_hardware_debug(self):
+    def render_debug(self):
         draw_objects = Globals.scene.objects
-        
+
         for obj in draw_objects:
             if obj.visible:
                 if obj.screen_space:
@@ -191,5 +187,7 @@ class Camera:
     @property
     def screen_rect(self):
         return Rect(
-            *(-self.offset), Globals.display.get_width(), Globals.display.get_height()
+            *(-self.offset),
+            Globals.display.get_width(),
+            Globals.display.get_height()
         )

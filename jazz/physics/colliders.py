@@ -1,7 +1,16 @@
 import pygame
 
 from ..engine.base_object import GameObject
-from ..utils import Rect, Vec2, direction_to, dist_to, line_circle, line_intersection
+from ..utils import (
+    Rect,
+    Vec2,
+    Color,
+    direction_to,
+    dist_to,
+    line_circle,
+    line_intersection,
+)
+from ..primatives import Primatives
 
 
 class Collider(GameObject):
@@ -42,34 +51,24 @@ class Collider(GameObject):
                 self._edges.append((0, 1))
         self.get_rect()
 
-    def _debug_draw(self, surface, offset=None):
-        if offset is None:
-            offset = Vec2()
+    def _render_debug(self, offset: Vec2):
+        super()._render_debug(offset)
         for edge in self.edges:
-            pygame.draw.aaline(
-                surface,
-                self.color,
-                edge[0] + offset,
-                edge[1] + offset,
+            Primatives.line(
+                edge[0] + offset, edge[1] + offset, Color("white"), 2
             )
-        pygame.draw.aaline(
-            surface,
-            "red",
-            self.center + offset,
-            self.center + self.facing * 5 + offset,
-        )
+
         for vert in self.vertices:
-            pygame.draw.circle(surface, "gray", vert + offset, 2, 1)
-        pygame.draw.circle(surface, "red", self.pos + offset, 2, 1)
-        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2, 1)
-        pygame.draw.rect(
-            surface,
-            "yellow",
+            Primatives.circle(vert + offset, 2, Color("white"))
+        Primatives.circle(self.pos + self._center + offset, 2, Color("grey"))
+
+        Primatives.rect(
             pygame.Rect(
                 self.rect.topleft + offset,
                 Vec2(self.size[0], self.size[1]),
             ),
-            1,
+            Color("yellow"),
+            2,
         )
 
     def project(self, axis):
@@ -86,17 +85,20 @@ class Collider(GameObject):
         return min_v, max_v
 
     def collide_circle(self, collider):
-        return dist_to(self.center, collider.center) <= self._radius + collider._radius
+        return (
+            dist_to(self.center, collider.center)
+            <= self._radius + collider._radius
+        )
 
     def collide_rect(self, collider):
         return self.rect.colliderect(collider.rect)
 
     def __collide_rect(self, collider):
         if (
-                (self.top) < (collider.bottom)
-                and (self.bottom) > (collider.top)
-                and (self.left) < (collider.right)
-                and (self.right) > (collider.left)
+            (self.top) < (collider.bottom)
+            and (self.bottom) > (collider.top)
+            and (self.left) < (collider.right)
+            and (self.right) > (collider.left)
         ):
             return True
         else:
@@ -138,7 +140,9 @@ class Collider(GameObject):
         if not isinstance(collider, Collider):
             collider = getattr(collider, "collider", None)
         if isinstance(collider, pygame.Rect):
-            collider = RectCollider(collider.center, collider.width, collider.height)
+            collider = RectCollider(
+                collider.center, collider.width, collider.height
+            )
         if collider is None:
             print("Invalid collider")
             return False
@@ -184,7 +188,9 @@ class Collider(GameObject):
 
     @property
     def vertices(self):
-        return [self.pos + vert.rotate(self.rotation) for vert in self._vertices]
+        return [
+            self.pos + vert.rotate(self.rotation) for vert in self._vertices
+        ]
 
     @property
     def edges(self):
@@ -270,18 +276,9 @@ class CircleCollider(Collider):
             min_v, max_v = max_v, min_v
         return min_v, max_v
 
-    def _debug_draw(self, surface, offset=None):
-        if offset is None:
-            offset = Vec2()
-        pygame.draw.circle(surface, self.color, self.pos + offset, self._radius, 1)
-        pygame.draw.circle(surface, "red", self.pos + offset, 3, 2)
-        pygame.draw.circle(surface, "gray", self.pos + self._center + offset, 2, 1)
-        pygame.draw.rect(
-            surface,
-            "yellow",
-            (self.left + offset.x, self.top + offset.y, self.size[0], self.size[1]),
-            1,
-        )
+    def _render_debug(self, offset):
+        super()._render_debug(offset)
+        Primatives.circle(self.pos + offset, self._radius, Color("white"), 2)
 
     def get_rect(self):
         return pygame.Rect(

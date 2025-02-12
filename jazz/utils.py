@@ -65,8 +65,10 @@ def load_image(path):
     else:
         return tmp_surf.convert()
 
+
 def load_texture(path):
     return pygame._sdl2.Texture.from_surface(Globals.renderer, load_image(path))
+
 
 def clamp(n, smallest, largest):
     return max(smallest, min(n, largest))
@@ -103,7 +105,10 @@ def dist_to(vec1, vec2):
 
 def direction_to(vec1, vec2):
     direction = vec2 - vec1
-    if direction.magnitude_squared() != 1 and direction.magnitude_squared() != 0:
+    if (
+        direction.magnitude_squared() != 1
+        and direction.magnitude_squared() != 0
+    ):
         direction.normalize_ip()
     return direction
 
@@ -141,10 +146,10 @@ def line_intersection(p_0, p_1, p_2, p_3):
         return None
 
     s = (-s_1.y * (p_0.x - p_2.x) + s_1.x * (p_0.y - p_2.y)) / (
-            -s_2.x * s_1.y + s_1.x * s_2.y
+        -s_2.x * s_1.y + s_1.x * s_2.y
     )
     t = (s_2.x * (p_0.y - p_2.y) - s_2.y * (p_0.x - p_2.x)) / (
-            -s_2.x * s_1.y + s_1.x * s_2.y
+        -s_2.x * s_1.y + s_1.x * s_2.y
     )
 
     if 0 <= s <= 1 and 0 <= t <= 1:
