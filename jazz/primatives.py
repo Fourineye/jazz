@@ -1,11 +1,23 @@
+from contextlib import contextmanager
+
 import pygame
+from pygame._sdl2 import Texture
 
 from .global_dict import Globals
 from .utils import Rect, Color, Vec2
 
 
-class Primatives:
+class Draw:
     CIRCLE = [Vec2(1, 0).rotate(i * 10) for i in range(36)]
+
+    @staticmethod
+    @contextmanager
+    def canvas(texture: Texture):
+        Globals.renderer.target = texture
+        try:
+            yield None
+        finally:
+            Globals.renderer.target = None
 
     @staticmethod
     def line(p1: Vec2, p2: Vec2, color: Color, w: int = 1):
@@ -27,9 +39,9 @@ class Primatives:
     def lines(points: list[Vec2], color, w=1, closed=False):
         if Globals.app.experimental:
             for i in range(1, len(points)):
-                Primatives.line(points[i - 1], points[i], color, w)
+                Draw.line(points[i - 1], points[i], color, w)
             if closed:
-                Primatives.line(points[-1], points[0], color, w)
+                Draw.line(points[-1], points[0], color, w)
         else:
             pygame.draw.lines(Globals.display, color, closed, points, w)
 
@@ -47,8 +59,8 @@ class Primatives:
     @staticmethod
     def circle(center: Vec2, radius: int, color: Color, w: int = 1):
         if Globals.app.experimental:
-            Primatives.lines(
-                [center + x * radius for x in Primatives.CIRCLE], color, w, True
+            Draw.lines(
+                [center + x * radius for x in Draw.CIRCLE], color, w, True
             )
         else:
             pygame.draw.circle(Globals.display, color, center, radius, w)
@@ -67,13 +79,11 @@ class Primatives:
     def fill_circle(center: Vec2, radius: int, color: Color):
         if Globals.app.experimental:
             Globals.renderer.draw_color = color
-            for i in range(len(Primatives.CIRCLE)):
+            for i in range(len(Draw.CIRCLE)):
                 Globals.renderer.fill_triangle(
                     center,
-                    center + Primatives.CIRCLE[i] * radius,
-                    center
-                    + Primatives.CIRCLE[(i + 1) % len(Primatives.CIRCLE)]
-                    * radius,
+                    center + Draw.CIRCLE[i] * radius,
+                    center + Draw.CIRCLE[(i + 1) % len(Draw.CIRCLE)] * radius,
                 )
         else:
             pygame.draw.circle(Globals.display, color, center, radius)

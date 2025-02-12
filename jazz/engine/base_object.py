@@ -4,7 +4,7 @@ import pygame
 
 from ..global_dict import Globals
 from ..utils import Color, Vec2, angle_from_vec, unit_from_angle
-from ..primatives import Primatives
+from ..primatives import Draw
 
 config_dict = {
     "pause_process": False,
@@ -118,8 +118,8 @@ class GameObject:
         """
         screen_pos = self.pos + offset
         look_pos = screen_pos + self.facing * 10
-        Primatives.circle(self.pos + offset, 5, Color("yellow"), 3)
-        Primatives.line(screen_pos, look_pos, Color("red"), 3)
+        Draw.circle(self.pos + offset, 5, Color("yellow"), 3)
+        Draw.line(screen_pos, look_pos, Color("red"), 3)
 
     # Engine called methods that allow object nesting
     def _update(self, delta):

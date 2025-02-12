@@ -1,7 +1,7 @@
 from random import randint
 
 import jazz
-from jazz import Globals, Vec2, Primatives
+from jazz import Globals, Vec2, Draw
 from jazz.utils import random_color, Color, Rect
 
 SPRITES: int = 50000
@@ -81,13 +81,16 @@ class UITest(Test):
                     Globals.app.set_next_scene("Primative Test"),
                     self.stop(),
                 ),
-                label="Primatives Test",
+                label="Draw Test",
             )
         )
         self.bar = jazz.ProgressBar(
-            50, 100, pos=(10, 10), anchor=(0, 0), size=(100, 20)
+            10, 20, pos=(10, 10), anchor=(0, 0), size=(100, 20)
         )
         self.add_object(self.bar)
+
+    def update(self, delta):
+        self.bar.update_value((self.bar.value + delta * 2) % self.bar.max_value)
 
 
 class RenderTest(Test):
@@ -216,19 +219,19 @@ class PrimativeTest(Test):
             500, 100, 100 + self.line_width * 10, 200 - self.line_width * 10
         )
         if self.closed:
-            Primatives.fill_circle(
+            Draw.fill_circle(
                 Vec2(600, 600), self.line_width * 10, Color("green")
             )
-            Primatives.fill_rect(test_rect, Color("red"))
+            Draw.fill_rect(test_rect, Color("red"))
         else:
-            Primatives.rect(test_rect, Color("red"), int(self.line_width))
-            Primatives.circle(
+            Draw.rect(test_rect, Color("red"), int(self.line_width))
+            Draw.circle(
                 Vec2(600, 600),
                 self.line_width * 10,
                 Color("green"),
                 int(self.line_width),
             )
-        Primatives.lines(
+        Draw.lines(
             self.test_lines, Color("blue"), int(self.line_width), self.closed
         )
 

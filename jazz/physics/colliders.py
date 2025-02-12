@@ -10,7 +10,7 @@ from ..utils import (
     line_circle,
     line_intersection,
 )
-from ..primatives import Primatives
+from ..primatives import Draw
 
 
 class Collider(GameObject):
@@ -54,15 +54,13 @@ class Collider(GameObject):
     def _render_debug(self, offset: Vec2):
         super()._render_debug(offset)
         for edge in self.edges:
-            Primatives.line(
-                edge[0] + offset, edge[1] + offset, Color("white"), 2
-            )
+            Draw.line(edge[0] + offset, edge[1] + offset, Color("white"), 2)
 
         for vert in self.vertices:
-            Primatives.circle(vert + offset, 2, Color("white"))
-        Primatives.circle(self.pos + self._center + offset, 2, Color("grey"))
+            Draw.circle(vert + offset, 2, Color("white"))
+        Draw.circle(self.pos + self._center + offset, 2, Color("grey"))
 
-        Primatives.rect(
+        Draw.rect(
             pygame.Rect(
                 self.rect.topleft + offset,
                 Vec2(self.size[0], self.size[1]),
@@ -278,7 +276,7 @@ class CircleCollider(Collider):
 
     def _render_debug(self, offset):
         super()._render_debug(offset)
-        Primatives.circle(self.pos + offset, self._radius, Color("white"), 2)
+        Draw.circle(self.pos + offset, self._radius, Color("white"), 2)
 
     def get_rect(self):
         return pygame.Rect(

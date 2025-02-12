@@ -3,7 +3,7 @@ import pygame
 from .sprite import Sprite
 from .label import Label
 from .. import Globals
-from ..primatives import Primatives
+from ..primatives import Draw
 from ..utils import Color, Rect, Vec2, Surface
 
 
@@ -125,4 +125,4 @@ class Button(Sprite):
 
     def _render_debug(self, offset: Vec2):
         super()._render_debug(offset)
-        Primatives.rect(self._rect.move(offset), Color("green"), 3)
+        Draw.rect(self._rect.move(offset), Color("green"), 3)

@@ -8,7 +8,7 @@ from .physics import Area, Body, Ray
 from .animation.easing import *
 from .animation.tween import Tween
 from .utils import Rect, Surface, Vec2
-from .primatives import Primatives
+from .primatives import Draw
 
 __version__ = "0.1.4"
 
