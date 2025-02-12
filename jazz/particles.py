@@ -2,20 +2,20 @@ from dataclasses import dataclass
 from random import choice, randint, uniform
 
 import pygame
-from pygame import Vector2
+from pygame._sdl2 import Texture, Image
 
-from jazz import GameObject
-
+from .engine.base_object import GameObject
 from .global_dict import Globals
-from .utils import Vec2
+from .utils import Vec2, Rect
 
 
 @dataclass
 class Particle:
     pos: Vec2
     vel: Vec2
-    img: pygame.Surface
+    img: int
     life: float
+    rot: float = 0
 
 
 class ParticleEmitter(GameObject):
@@ -24,7 +24,7 @@ class ParticleEmitter(GameObject):
     def __init__(self, active=False, rate=1, **kwargs):
         kwargs.setdefault("name", "Particle Emitter")
         super().__init__(**kwargs)
-        self._particles = []
+        self._particles: list[Particle] = []
         self._particle_graphics = kwargs.get("particle_graphics", None)
         self._particle_spawn = kwargs.get("particle_spawn", None)
         self._particle_life = kwargs.get("particle_life", 2)
@@ -35,16 +35,20 @@ class ParticleEmitter(GameObject):
         self.rate = rate
         self._emission = 0
         if self._particle_graphics is None:
-            default = pygame.Surface((10, 10))
-            default.fill((255, 255, 255))
-            self._particle_graphics = [default]
+            self._particle_graphics = ["default"]
 
     def on_load(self):
-        for i, graphic in enumerate(self._particle_graphics):
-            if not isinstance(graphic, pygame.Surface):
-                self._particle_graphics[i] = Globals.scene.load_resource(
-                    graphic
-                )
+        if Globals.app.experimental:
+            for i, graphic in enumerate(self._particle_graphics):
+                if not isinstance(graphic, (Texture, Image)):
+                    self._particle_graphics[i] = Globals.scene.load_resource(
+                        graphic, Globals.scene.TEXTURE
+                    )
+        else:
+            for i, graphic in enumerate(self._particle_graphics):
+                if not isinstance(graphic, pygame.Surface):
+                    self._particle_graphics[i] = Globals.scene.load_resource(graphic)
+        Globals.scene.add_sprite(self)
 
     def emit_particles(self, num: int):
         """
@@ -64,15 +68,17 @@ class ParticleEmitter(GameObject):
                     uniform(self._particle_spawn.left, self._particle_spawn.right),
                     uniform(self._particle_spawn.top, self._particle_spawn.bottom),
                 )
+                vel = Vec2(uniform(*choice(self._emission_speed)), 0).rotate(
+                    uniform(*choice(self._emission_angles))
+                )
             if isinstance(self._particle_spawn, (int, float)):
                 spawn_offset.update(uniform(0, self._particle_spawn), 0)
-                spawn_offset.rotate_ip(uniform(0, 360))
+                spawn_offset.rotate_ip(uniform(*choice(self._emission_angles)))
+                vel = spawn_offset.normalize() * uniform(*choice(self._emission_speed))
         particle = Particle(
             self.pos + spawn_offset,
-            Vec2(uniform(*choice(self._emission_speed)), 0).rotate(
-                uniform(*choice(self._emission_angles))
-            ),
-            self._particle_graphics[randint(0, len(self._particle_graphics) - 1)],
+            vel,
+            randint(0, len(self._particle_graphics) - 1),
             self._particle_life,
         )
         self._particles.append(particle)
@@ -97,6 +103,19 @@ class ParticleEmitter(GameObject):
                 )
             )
         surface.fblits(blits)
+
+    def render(self, offset):
+        for particle in self._particles:
+            img = self._particle_graphics[particle.img]
+            dest = Rect(
+                particle.pos + offset - Vec2(img.get_rect().size) / 2,
+                img.get_rect().size,
+            )
+            self._particle_graphics[particle.img].draw(
+                None,
+                dest,
+                particle.rot,
+            )
 
     def update(self, delta: float):
         """

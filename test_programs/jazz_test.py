@@ -3,6 +3,7 @@ from random import randint
 import jazz
 from jazz import Globals, Vec2, Draw
 from jazz.utils import random_color, Color, Rect
+from jazz.particles import ParticleEmitter
 
 SPRITES: int = 50000
 TIME: float = 1.5
@@ -46,6 +47,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Animation",
+                text_size=24
             )
         )
         self.add_object(
@@ -58,6 +60,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Debug",
+                text_size=24
             )
         )
         self.add_object(
@@ -70,6 +73,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Stress Test",
+                text_size=24
             )
         )
         self.add_object(
@@ -82,6 +86,20 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Draw Test",
+                text_size=24
+            )
+        )
+        self.add_object(
+            jazz.Button(
+                pos=(100, 340),
+                size=(200, 50),
+                anchor=(0, 0),
+                callback=lambda: (
+                    Globals.app.set_next_scene("Particle Test"),
+                    self.stop(),
+                ),
+                label="Particle Test",
+                text_size=24
             )
         )
         self.bar = jazz.ProgressBar(
@@ -236,9 +254,18 @@ class PrimativeTest(Test):
         )
 
 
+class ParticleTest(Test):
+    name = "Particle Test"
+
+    def on_load(self, _):
+        super().on_load(_)
+        Globals.app.set_next_scene("UI Test")
+        self.add_object(ParticleEmitter(True, rate=50, pos=(400, 400), particle_spawn=50, emission_angles=[(-45, 45)]))
+        self.set_timer(15, self.stop, ())
+
 if __name__ == "__main__":
     app = jazz.Application(800, 800, experimental=True)
-    scenes = [UITest, RenderTest, DebugTest, AnimationTest, PrimativeTest]
+    scenes = [UITest, RenderTest, DebugTest, AnimationTest, PrimativeTest, ParticleTest]
     for scene in scenes:
         app.add_scene(scene)
     app.run()
