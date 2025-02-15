@@ -41,17 +41,15 @@ class Button(Sprite):
 
         if self._unpressed_asset is None:
             if Globals.app.experimental:
-                self._unpressed_asset = (
-                    Globals.scene.resource_manager.get_color(
-                        Color(255, 255, 255)
-                    )
+                self._unpressed_asset = Globals.resource.get_color(
+                    Color(255, 255, 255)
                 )
             else:
                 self._unpressed_asset = Surface(self._size)
                 self._unpressed_asset.fill(Color(255, 255, 255))
         if self._pressed_asset is None:
             if Globals.app.experimental:
-                self._pressed_asset = Globals.scene.resource_manager.get_color(
+                self._pressed_asset = Globals.resource.get_color(
                     Color(128, 128, 128)
                 )
             else:
@@ -59,7 +57,7 @@ class Button(Sprite):
                 self._pressed_asset.fill(Color(128, 128, 128))
         if self._hover_asset is None:
             if Globals.app.experimental:
-                self._hover_asset = Globals.scene.resource_manager.get_color(
+                self._hover_asset = Globals.resource.get_color(
                     Color(192, 192, 192)
                 )
             else:

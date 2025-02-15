@@ -3,11 +3,13 @@ import pygame
 from .input_handler import InputHandler
 from .scene import Scene
 from .sound_manager import SoundManager
+from .resource_manager import ResourceManager
 from ..global_dict import Globals
 from ..utils import load_ini, JazzException
 
 
 class Application:
+    instance: "Application" = None
     """
     A base application that handles the basic window creation and run loop
     for a pygame application.
@@ -32,15 +34,17 @@ class Application:
     """
 
     def __init__(
-            self,
-            width: int,
-            height: int,
-            name: str = "",
-            flags=0,
-            fps_max=60,
-            vsync=False,
-            experimental=False
+        self,
+        width: int,
+        height: int,
+        name: str = "",
+        flags=0,
+        fps_max=60,
+        vsync=False,
+        experimental=False,
     ):
+        if self.instance is not None:
+            raise JazzException("Application has already been initialized.")
         """Initializes the Application object and pygame, creates the
         application window
 
@@ -59,21 +63,22 @@ class Application:
         self._window = pygame.Window(name, (width, height))
         self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
         self._display = self._window.get_surface()
-        
+
         self._clock = pygame.time.Clock()
         self._input = InputHandler()
         self._sound = SoundManager()
+        self._resource = ResourceManager(self._renderer)
 
         self._sound.load_settings()
 
-        self._scenes = {}
-        self._active_scene = None
-        self._next_scene = None
-        self._delta = 0
+        self._scenes: dict[str, Scene] = {}
+        self._active_scene: str = ""
+        self._next_scene: str = ""
+        self._delta: float = 0
 
-        self.max_frame_time = 1 / 15
-        self.running = True
-        self.fps_max = fps_max
+        self.max_frame_time: float = 1 / 15
+        self.running: bool = True
+        self.fps_max: int = fps_max
 
         Globals.app = self
         Globals.input = self._input
@@ -83,23 +88,23 @@ class Application:
         Globals.renderer = self._renderer
         Globals.display = self._display
         Globals.sound = self._sound
+        Globals.resource = self._resource
 
         if self.experimental:
             self._screen_refresh = self._renderer.present
         else:
             self._screen_refresh = self._window.flip
 
-
-    def add_scene(self, scene: type[Scene]):
+    def add_scene(self, scene: Scene):
         """Adds a scene class reference to the game to be initilaized at
         a later point. Setting the next scene if on is not already set
 
         Args:
             scene (jazz.Scene): The class to add to the application
         """
-        name = scene.name
-        self._scenes.update({name: scene})
-        if self._next_scene is None:
+        name: str = scene.name
+        self._scenes[name] = scene
+        if self._next_scene == "":
             self._next_scene = name
 
     def set_next_scene(self, name: str):

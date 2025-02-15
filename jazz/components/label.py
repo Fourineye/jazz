@@ -5,12 +5,15 @@ from .sprite import Sprite
 from ..global_dict import Globals
 from ..utils import Vec2
 
+
 class Label(Sprite):
     def __init__(self, name="label", **kwargs):
         super().__init__(name, **kwargs)
         font_size = kwargs.get("fontsize", 24)
 
-        self.font = kwargs.get("font", Globals.scene.get_font(size=font_size))
+        self.font = kwargs.get(
+            "font", Globals.resource.get_font(size=font_size)
+        )
         self.text_color = kwargs.get("text_color", (255, 255, 255))
 
         self.text_content = kwargs.get("text", " ")
@@ -43,7 +46,9 @@ class Label(Sprite):
             if not isinstance(
                 new_texture, (pygame._sdl2.Texture, pygame._sdl2.Image)
             ):
-                new_texture = pygame._sdl2.Texture.from_surface(Globals.renderer, new_texture)
+                new_texture = pygame._sdl2.Texture.from_surface(
+                    Globals.renderer, new_texture
+                )
             self._texture = new_texture
             if isinstance(self._texture, pygame._sdl2.Image):
                 self.render = self._render_hardware_image

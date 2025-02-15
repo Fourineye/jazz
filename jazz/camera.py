@@ -5,21 +5,18 @@ from pygame.window import Window
 from pygame._sdl2 import Renderer
 
 from .global_dict import Globals
-from .utils import Rect, Vec2, clamp, Surface
+from .utils import Rect, Vec2, clamp, Surface, FOLLOW_STRICT, FOLLOW_SMOOTH
 
 
 class Camera:
     """Class that handles the drawing of objects onto the display."""
-
-    STRICT = 0
-    SMOOTH = 1
 
     def __init__(self):
         self._bg_color = (0, 0, 0)
         self._blanking = True
         self.target = None
         self.bounds = None
-        self.follow_type = self.STRICT
+        self.follow_type = FOLLOW_STRICT
         self.offset = Vec2()
         self.shake = Vec2()
         self.magnitude = 0

@@ -13,10 +13,19 @@ Vec2 = pygame.Vector2
 Rect = pygame.Rect
 Surface = pygame.Surface
 Color = pygame.Color
+from pygame._sdl2 import Texture, Image
+
+# Constants
 INTERNAL_PATH = str(importlib.resources.files())
+FOLLOW_STRICT = 0
+FOLLOW_SMOOTH = 1
+SURFACE = 0
+SPRITE_SHEET = 1
+TEXTURE = 2
 
 
-class JazzException(Exception):...
+class JazzException(Exception): ...
+
 
 def load_ini(path="./.jini"):
     settings = ConfigParser()
