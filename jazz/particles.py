@@ -41,13 +41,15 @@ class ParticleEmitter(GameObject):
         if Globals.app.experimental:
             for i, graphic in enumerate(self._particle_graphics):
                 if not isinstance(graphic, (Texture, Image)):
-                    self._particle_graphics[i] = Globals.scene.load_resource(
-                        graphic, Globals.scene.TEXTURE
+                    self._particle_graphics[i] = Globals.resource.get_texture(
+                        graphic
                     )
         else:
             for i, graphic in enumerate(self._particle_graphics):
                 if not isinstance(graphic, pygame.Surface):
-                    self._particle_graphics[i] = Globals.scene.load_resource(graphic)
+                    self._particle_graphics[i] = Globals.resource.get_surface(
+                        graphic
+                    )
         Globals.scene.add_sprite(self)
 
     def emit_particles(self, num: int):
@@ -65,8 +67,12 @@ class ParticleEmitter(GameObject):
         if self._particle_spawn is not None:
             if isinstance(self._particle_spawn, pygame.Rect):
                 spawn_offset.update(
-                    uniform(self._particle_spawn.left, self._particle_spawn.right),
-                    uniform(self._particle_spawn.top, self._particle_spawn.bottom),
+                    uniform(
+                        self._particle_spawn.left, self._particle_spawn.right
+                    ),
+                    uniform(
+                        self._particle_spawn.top, self._particle_spawn.bottom
+                    ),
                 )
                 vel = Vec2(uniform(*choice(self._emission_speed)), 0).rotate(
                     uniform(*choice(self._emission_angles))
@@ -74,7 +80,9 @@ class ParticleEmitter(GameObject):
             if isinstance(self._particle_spawn, (int, float)):
                 spawn_offset.update(uniform(0, self._particle_spawn), 0)
                 spawn_offset.rotate_ip(uniform(*choice(self._emission_angles)))
-                vel = spawn_offset.normalize() * uniform(*choice(self._emission_speed))
+                vel = spawn_offset.normalize() * uniform(
+                    *choice(self._emission_speed)
+                )
         particle = Particle(
             self.pos + spawn_offset,
             vel,

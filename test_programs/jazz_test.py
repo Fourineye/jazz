@@ -47,7 +47,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Animation",
-                text_size=24
+                text_size=24,
             )
         )
         self.add_object(
@@ -60,7 +60,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Debug",
-                text_size=24
+                text_size=24,
             )
         )
         self.add_object(
@@ -73,7 +73,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Stress Test",
-                text_size=24
+                text_size=24,
             )
         )
         self.add_object(
@@ -86,7 +86,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Draw Test",
-                text_size=24
+                text_size=24,
             )
         )
         self.add_object(
@@ -99,7 +99,7 @@ class UITest(Test):
                     self.stop(),
                 ),
                 label="Particle Test",
-                text_size=24
+                text_size=24,
             )
         )
         self.bar = jazz.ProgressBar(
@@ -109,6 +109,16 @@ class UITest(Test):
 
     def update(self, delta):
         self.bar.update_value((self.bar.value + delta * 2) % self.bar.max_value)
+
+
+class TestSprite(jazz.Sprite):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.rotation_direction = randint(-1, 1)
+        self.rotation_speed = randint(15, 90)
+
+    def update(self, delta):
+        self.rotate(delta * self.rotation_direction * self.rotation_speed)
 
 
 class RenderTest(Test):
@@ -123,7 +133,7 @@ class RenderTest(Test):
         Test.on_load(self, data)
         for _ in range(self.sprite_count):
             self.add_object(
-                jazz.Sprite(
+                TestSprite(
                     color=random_color(),
                     pos=(randint(5, 795), randint(5, 795)),
                     scale=Vec2(
@@ -148,7 +158,7 @@ class RenderTest(Test):
             self.sprite_count += 1000
             for _ in range(1000):
                 self.add_object(
-                    jazz.Sprite(
+                    TestSprite(
                         color=random_color(),
                         pos=(randint(5, 795), randint(5, 795)),
                         scale=Vec2(
@@ -260,12 +270,28 @@ class ParticleTest(Test):
     def on_load(self, _):
         super().on_load(_)
         Globals.app.set_next_scene("UI Test")
-        self.add_object(ParticleEmitter(True, rate=50, pos=(400, 400), particle_spawn=50, emission_angles=[(-45, 45)]))
+        self.add_object(
+            ParticleEmitter(
+                True,
+                rate=50,
+                pos=(400, 400),
+                particle_spawn=50,
+                emission_angles=[(-45, 45)],
+            )
+        )
         self.set_timer(15, self.stop, ())
+
 
 if __name__ == "__main__":
     app = jazz.Application(800, 800, experimental=True)
-    scenes = [UITest, RenderTest, DebugTest, AnimationTest, PrimativeTest, ParticleTest]
+    scenes = [
+        UITest,
+        RenderTest,
+        DebugTest,
+        AnimationTest,
+        PrimativeTest,
+        ParticleTest,
+    ]
     for scene in scenes:
         app.add_scene(scene)
     app.run()

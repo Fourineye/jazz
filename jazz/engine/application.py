@@ -11,26 +11,8 @@ from ..utils import load_ini, JazzException
 class Application:
     instance: "Application" = None
     """
-    A base application that handles the basic window creation and run loop
+    A class that handles the basic window creation and run loop
     for a pygame application.
-
-    Attributes
-    ==========
-    display (pygame.Surface): The main display for the Application window.
-    running (bool): The flag that keeps the main loop active.
-    fps_max (int): The framerate the application will be limited to.
-
-    Methods
-    =======
-    add_scene(scene: Scene):
-        Adds a reference to a Scene class for later loading.
-    set_next_scene(name: str):
-        Sets the next scene to be loaded based on the scene name.
-    run():
-        Holds the main game loop of the application. The loop continues as
-        long as the running Attribute is True.
-    stop():
-        Sets running to False so the Application exits at the end of the current frame.
     """
 
     def __init__(
@@ -43,8 +25,6 @@ class Application:
         vsync=False,
         experimental=False,
     ):
-        if self.instance is not None:
-            raise JazzException("Application has already been initialized.")
         """Initializes the Application object and pygame, creates the
         application window
 
@@ -56,6 +36,8 @@ class Application:
             fps_max (int, optional): Sets the max fps that the window will be limited to. Defaults to 60.
             vsync (bool, optional): Controls if the window will try to use vsync. Defaults to False.
         """
+        if self.instance is not None:
+            raise JazzException("Application has already been initialized.")
 
         load_ini()
         self.experimental = experimental

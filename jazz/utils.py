@@ -5,15 +5,14 @@ from csv import reader
 from random import randint
 
 import pygame
+from pygame._sdl2 import Texture, Image
+from pygame import Rect, Surface, Color
 
 from .global_dict import SETTINGS, Globals
 
 # Bringing pygame constants into jazz Namespace
 Vec2 = pygame.Vector2
-Rect = pygame.Rect
-Surface = pygame.Surface
-Color = pygame.Color
-from pygame._sdl2 import Texture, Image
+
 
 # Constants
 INTERNAL_PATH = str(importlib.resources.files())

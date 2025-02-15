@@ -37,26 +37,7 @@ class Timer:
 
 
 class Scene:
-    """
-    Methods
-    =======
-    on_load():
-        Empty method that can be overwritten by a child class to add
-        additional attributes and will be called on loading into the
-        main game loop
-    on_unload():
-        Empty method that can be overwritten by a child class to be
-        called when the scene is unloaded from the main loop
-    on_process():
-        Empty method that can be overwritten by a child class. Is called
-        once per frame, intended hold all the game logic.
-    on_render():
-        Empty method that can be overwritten by a child class. Is called
-        once per frame, intended to hold all the rendering logic.
-    handle_event(event):
-        Empty method that can be overwritten by a child class. Is called
-        once for every event in pygame.event.get()
-    """
+    """The class that encapsulates a game scene in Jazz Engine."""
 
     name = "unnamed"
 
@@ -145,8 +126,8 @@ class Scene:
 
     def toggle_debug(self) -> None:
         """Toggles the debug state of the scene, Objects will have their
-        positions and rotations rendered, and the window's caption will
-        be set to the current fps."""
+        positions and rotations rendered
+        """
         self._debug = not self._debug
 
     def set_timer(
@@ -242,11 +223,14 @@ class Scene:
         )
 
     # Object Management
-    def add_object(self, obj: "GameObject") -> None:
+    def add_object(self, obj: "GameObject") -> "GameObject":
         """Adds an object to the scene.
 
         Args:
             obj (GameObject): The object to add to the scene.
+
+        Returns:
+            GameObject: Returns the object added for chaining
 
         Raises:
             JazzException: Raises an exception if the object is already in the
@@ -254,6 +238,7 @@ class Scene:
         if obj.id not in self._objects:
             obj._on_load()
             self._objects[obj.id] = obj
+            return obj
         else:
             raise JazzException(f"{obj.id}:{obj.name} already in the scene")
 
@@ -354,7 +339,7 @@ class Scene:
 
     # Engine Methods
     def _game_update(self, delta: float) -> None:
-        """Engine Method. Updates the scene, calls for rendering,
+        """Engine Method. Updates the scene
             and deletes objects marked for deletion.
 
         Args:
