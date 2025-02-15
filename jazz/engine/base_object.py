@@ -1,48 +1,25 @@
 import uuid
 
-import pygame
-
 from ..global_dict import Globals
-from ..utils import Color, Vec2, angle_from_vec, unit_from_angle
+from ..utils import Color, Vec2, angle_from_vec, unit_from_angle, JazzException
 from ..primatives import Draw
-
-config_dict = {
-    "pause_process": False,
-    "game_process": True,
-    "visible": True,
-    "screen_space": False,
-    "pos": (0, 0),
-    "rotation": 0,
-    "z": 0,
-    "color": (255, 255, 255),
-    "groups": (),
-}
 
 
 class GameObject:
     """Base object in jazz"""
 
     def __init__(self, name="Object", **kwargs):
-        """Base object in jazz.
+        """Base object in Jazz Engine.
 
         Args:
-            name (str, optional): sets name property. Defaults to "Object".
-            pause_process (bool, optional): Sets whether the object will run
-                the update method while the scene is paused. Defaults to False.
-            game_process (bool, optional): Sets whether the object will run the
-                update method. Defaults to True.
-            visible (bool, optional): Sets whether the object will run the draw
-                method. Defaults to True
-            screen_space (bool, optional): Sets whether the object is drawn in
-                screen space or world space. Defaults to False
-            z (int, optional): Sets the z-index of the object to determine draw order.
-            pos (tuple[float], optional): Sets the local space position of the
-                object. Defaults to (0, 0).
-            rotation (float, optional): Sets the local rotation of the object. Defaults
-                to 0.
-            color (pygame.Color, tuple[int], optional): Sets the color that the debug graphics
-                will be drawn in. Defaults to (255, 255, 255).
-            groups (list[str], optional): The list of groups to add the object to. Defaults to [].
+            name (str, optional): Name for the object. Defaults to "Object".
+            pause_process (bool, optional): Whether the object should update when the scene is paused. Defaults to False.
+            game_process (bool, optional): Whether the object should update every frame. Defaults to True.
+            visible (bool, optional): Whether the object should be rendered. Defaults to True.
+            screen_space (bool, optional): Whether the object is in screen space or world space. Defaults to False.
+            pos (Vec2, optional): The object's local position. Defaults to Vec2(0,0).
+            rotation (float, optional): The object's local rotation. Defaults to 0.
+
         """
         # Engine Attributes
         self.name = name
@@ -64,57 +41,33 @@ class GameObject:
         self._z = kwargs.get("z", 0)
 
         # Basic positional Attributes
-        self._pos = Vec2(kwargs.get("pos", (0, 0)))
+        self._pos = kwargs.get("pos", Vec2(0, 0))
         self._rotation = kwargs.get("rotation", 0)
-        self._color = kwargs.get("color", (255, 255, 255))
-
-        # Grouping
-        self.groups = kwargs.get("groups", [])
-        for group in self.groups:
-            if self not in group._entities:
-                group.add(self)
-
-    def __repr__(self):
-        children = ""
-        for _, child in self._children.items():
-            children += f" {child}"
-        return (
-            "-" * self._depth
-            + f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}\n"
-            + children
-        )
-
-    def _on_load(self):
-        self.on_load()
-        for child in self._children.values():
-            child._on_load()
-
+    
+    # Base Methods
     def on_load(self):
-        """Called after the object is added to the scene."""
+        """Base method that can be overwritten. Called when the object is added to the scene."""
 
-    def update(self, delta: float):
-        """
-        Method called once per frame to handle game logic. Called before draw.
+    def update(self, delta: float) -> None:
+        """Base method that can be overwritten. Called once per frame.
 
         Args:
             delta (float): Time in seconds since the last frame.
         """
 
-    def late_update(self, delta):
-        """Called after every object has run its' update method
+    def late_update(self, delta: float) -> None:
+        """Base method that can be overwritten. Called after every object has run its update method
 
         Args:
-            delta (float): time since last frame
+            delta (float): Time since last frame
         """
 
-    def _render_debug(self, offset: Vec2):
-        """
-        Method called in the scene render function to draw the Entity on a surface.
+    def render_debug(self, offset: Vec2) -> None:
+        """Base method that can be overwritten. Draws a circle at the object's world
+        position and a line in it's look direction.
 
         Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vec2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
+            offset (Vec2): Screen offset for drawing
         """
         screen_pos = self.pos + offset
         look_pos = screen_pos + self.facing * 10
@@ -122,71 +75,84 @@ class GameObject:
         Draw.line(screen_pos, look_pos, Color("red"), 3)
 
     # Engine called methods that allow object nesting
-    def _update(self, delta):
+    def _update(self, delta: float) -> None:
+        """Engine method that propogates the update call to it's children
+
+        Args:
+            delta (float): Time in seconds since the last frame
+        """
         for child in self._children.values():
             child._update(delta)
         self.update(delta)
 
-    def _late_update(self, delta):
+    def _late_update(self, delta: float) -> None:
+        """Engine method that propogates the late_update call to it's children
+
+        Args:
+            delta (float): Time in seconds since the last frame
+        """
         for child in self._children.values():
             child._late_update(delta)
         self.late_update(delta)
 
-    def render_debug(self, offset: Vec2):
-        if self.visible:
-            self._render_debug(offset)
-            for child in self._children.values():
-                child.render_debug(offset)
-
-    # Child management
-    def add_child(self, obj, name=None):
-        """Add a child to the object.
+    def _render_debug(self, offset: Vec2) -> None:
+        """Engine method that propogates the render_debug call to it's children.
 
         Args:
-            obj (jazz.GameObject): The object to add
-            name (str, optional): If this argument is given the parent will
-                have an attribute added of the given name. Defaults to None.
+            offset (Vec2): Screen offset for drawing
+        """
+        if self.visible:
+            self.render_debug(offset)
+            for child in self._children.values():
+                child._render_debug(offset)
+
+    def _on_load(self) -> None:
+        """Engine method that propogates the on_load call to it's children.
+        """
+        self.on_load()
+        for child in self._children.values():
+            child._on_load()
+    
+    # Child management
+    def add_child(self, obj: "GameObject") -> "GameObject":
+        """Adds an object to the child tree. 
+
+        Args:
+            obj (GameObject): Object to add
+
+        Raises:
+            JazzException: If obj is already a child
+
+        Returns:
+            GameObject: obj to allow for chaining
         """
         if obj.id not in self._children.keys():
             obj._parent = self
             obj._depth = self._depth + 1
             self._children[obj.id] = obj
+            return obj
+        else:
+            raise JazzException(f"{obj.id}:{obj.name} is already a child of {self.id}:{self.name}")
 
-        if name is not None and name not in self.__dict__.keys():
-            name = name.split(" ")[0]
-            obj.name = name
-            self.__dict__.setdefault(name, obj)
-
-    def remove_child(self, obj, kill=True):
-        """Removes a child from the object.
+    def remove_child(self, obj: "GameObject", kill=True) -> None:
+        """Removes the object from the child tree, optionally deleting it from the scene.
 
         Args:
-            obj (_type_): _description_
-            kill (bool, optional): _description_. Defaults to True.
+            obj (GameObject): Object to remove
+            kill (bool, optional): Delete from scene after removing. Defaults to True.
+
+        Raises:
+            JazzException: If obj is not a child of the calling object
         """
-        if isinstance(obj, str):
-            child = self._children.pop(obj, None)
-            if child is None:
-                child = getattr(self, obj, None)
-            if child is None:
-                print("child not found")
-            else:
-                self._children.pop(child.id)
-                delattr(self, child.name)
-                if kill:
-                    child.kill()
+        if obj.id in self._children:
+            self._children.pop(obj.id)
+            if kill:
+                obj.kill()
         else:
-            for name, child in self._children.copy().items():
-                if obj is child:
-                    obj = self._children.pop(name)
-                    if obj.name in self.__dict__:
-                        delattr(self, obj.name)
-                    if kill:
-                        obj.kill()
-                    return
+            raise JazzException(f"{obj.id}:{obj.name} not found as child of {self.id}:{self.name}")
 
     # movement methods
-    def move(self, movement):
+    def move(self, movement: Vec2) -> None:
         """Moves the object in the world.
 
         Args:
@@ -194,65 +160,39 @@ class GameObject:
         """
         self.pos += movement
 
-    def rotate(self, degrees):
-        """Rotates the object by the given amount
+    def rotate(self, degrees: float) -> None:
+        """Rotates the object by the given amount.
 
         Args:
             degrees (float): The angle in degrees to rotate the object by.
         """
         self.local_rotation = self.local_rotation + degrees
 
-    def add_group(self, group):
-        """
-        Add Group to Entity and insure that Entity is in Group.
-
-        Args:
-            group (EntityGroup): The EntityGroup to add.
-        """
-        self.groups.append(group)
-        if self not in group:
-            group.add(self)
-
-    def remove_group(self, group):
-        """
-        Remove group from Entity and insure that Entity is not in Group.
-
-        Args:
-            group (EntityGroup): The EntityGroup to remove.
-        """
-        if group not in self.groups:
-            print("group not found")
-        else:
-            self.groups.remove(group)
-            if self in group:
-                group.remove(self)
-
-    def queue_kill(self):
-        """Marks the object for deletion at the end of the frame."""
+    def queue_kill(self) -> None:
+        """Marks the object for destruction at the end of the frame."""
         self.game_process = False
         self.pause_process = False
         self.game_input = False
         self.do_kill = True
 
-    def kill(self):
-        """Destroys the object and all of its children"""
+    def kill(self) -> None:
+        """Destroy's the object and any children.
+        """
 
         Globals.scene.remove_physics_object(self)
         Globals.scene.remove_object(self)
         if self._parent is not None:
             self._parent.remove_child(self, False)
 
-        for group in self.groups[::-1]:
-            self.remove_group(group)
         for child in self._children.copy().values():
             self.remove_child(child)
 
     @property
-    def root(self):
-        """Returns the object at the top of the parent-child tree.
+    def root(self) -> "GameObject":
+        """Returns the root of the object's children tree.
 
         Returns:
-            jazz.GameObject: The object at the top of the parent-child tree.
+            GameObject: The root of the object's children tree
         """
         if self._parent is None:
             return self
@@ -260,24 +200,29 @@ class GameObject:
             return self._parent.root
 
     @property
-    def local_pos(self):
-        """The position of an object in it's local space
+    def local_pos(self) -> Vec2:
+        """Returns the object's local position.
 
         Returns:
-            jazz.Vec2: The local position of the object
+            Vec2: The object's local position
         """
         return Vec2(self._pos)
 
     @local_pos.setter
-    def local_pos(self, pos):
+    def local_pos(self, pos: Vec2) -> None:
+        """Sets the object's local position.
+
+        Args:
+            pos (Vec2): The object's new local position
+        """
         self._pos = Vec2(pos)
 
     @property
-    def pos(self):
-        """The position of an object in world space
+    def pos(self) -> Vec2:
+        """Returns the object's global position.
 
         Returns:
-            jazz.Vec2: The world position of the object
+            Vec2: THe object's global position
         """
         if self._parent is not None:
             if -0.001 < self._parent.rotation < 0.001:
@@ -290,8 +235,12 @@ class GameObject:
             return Vec2(self._pos)
 
     @pos.setter
-    def pos(self, pos):
-        """Sets the _pos attribute"""
+    def pos(self, pos: Vec2) -> None:
+        """Sets the object's global position.
+
+        Args:
+            pos (Vec2): The object's new global position
+        """
         if self._parent is not None:
             self._pos = Vec2(pos - self._parent.pos).rotate(
                 -self._parent.rotation
@@ -300,24 +249,29 @@ class GameObject:
             self._pos = Vec2(pos)
 
     @property
-    def local_rotation(self):
-        """The local rotation of the object.
+    def local_rotation(self) -> float:
+        """Returns the object's local rotation.
 
         Returns:
-            float: The local rotation of the object.
+            float: The object's local rotation
         """
         return self._rotation
 
     @local_rotation.setter
-    def local_rotation(self, angle):
+    def local_rotation(self, angle: float) -> None:
+        """Sets the object's local rotation.
+
+        Args:
+            angle (float): The object's new local rotation
+        """
         self._rotation = angle % 360
 
     @property
-    def rotation(self):
-        """The world rotation of the object.
+    def rotation(self) -> float:
+        """Returns the object's global rotation.
 
         Returns:
-            float: The world rotation of the object.
+            float: The object's global rotation
         """
         if self._parent is not None:
             return self._parent.rotation + self._rotation
@@ -325,53 +279,72 @@ class GameObject:
             return self._rotation
 
     @rotation.setter
-    def rotation(self, degrees):
+    def rotation(self, degrees: float) -> None:
+        """Sets the object's global rotation.
+
+        Args:
+            degrees (float): The object's global rotation
+        """
         if self._parent is not None:
             self._rotation = degrees - self._parent.rotation
         else:
             self._rotation = degrees
 
     @property
-    def y(self):
-        """Returns y component of the _pos attribute."""
+    def y(self) -> float:
+        """Returns the object's global y position.
+
+        Returns:
+            float: The object's global y position
+        """
         return self.pos.y
 
     @property
-    def x(self):
-        """Returns x component of the _pos attribute."""
+    def x(self) -> float:
+        """Returns the objects global x position.
+
+        Returns:
+            float: The object's global x position
+        """
         return self.pos.x
 
     @property
-    def z(self):
-        """Returns the z index of the object"""
+    def z(self) -> int:
+        """Returns the z index of the object.
+
+        Returns:
+            int: The object's z index
+        """
         if self._parent is not None:
             return self._parent.z
         else:
             return self._z
 
     @property
-    def facing(self):
-        """The unit vector facing forrward relative to the object.
+    def facing(self) -> Vec2:
+        """Returns the object's look Vector.
 
         Returns:
-            jazz.Vec2: The unit vector facing forward from the object.
+            Vec2: The object's look Vector
         """
-        if self._parent is not None:
-            return unit_from_angle(self._parent.rotation + self._rotation)
-        else:
-            return unit_from_angle(self._rotation)
+        return unit_from_angle(self.rotation)
 
     @facing.setter
-    def facing(self, new_facing):
-        angle = angle_from_vec(new_facing)
+    def facing(self, new_facing: Vec2) -> None:
+        """Sets the object's rotation to match a look Vector.
+
+        Args:
+            new_facing (Vec2): The Vector to match rotation of
+        """
+        angle: float = angle_from_vec(new_facing)
         self.rotation = angle
 
     @property
-    def visible(self):
-        """The flag to determine if the object draws.
+    def visible(self) -> bool:
+        """Returns the draw flag of the object, taking into account it's parent's draw state.
 
         Returns:
-            bool: visibility of the object.
+            bool: Draw state of the object
         """
         if self._parent is not None:
             return self._visible and self._parent.visible
@@ -379,15 +352,20 @@ class GameObject:
             return self._visible
 
     @visible.setter
-    def visible(self, visibility):
+    def visible(self, visibility: bool) -> None:
+        """Sets if the object should be drawn or not.
+
+        Args:
+            visibility (bool): Draw state of the object
+        """
         self._visible = visibility
 
     @property
-    def screen_space(self):
-        """The flag to determine if the object draws with the camera offset.
+    def screen_space(self) -> bool:
+        """Returns if the object is in screen space or world space.
 
         Returns:
-            bool: if the object ignores the camera offset.
+            bool: True if in screen space, False if in world space
         """
         if self._parent is not None:
             return self._screen_space or self._parent.screen_space
@@ -395,14 +373,34 @@ class GameObject:
             return self._screen_space
 
     @screen_space.setter
-    def screen_space(self, screen_space):
+    def screen_space(self, screen_space: bool) -> None:
+        """Sets the object to screen or world space.
+
+        Args:
+            screen_space (bool): True if object is in screen space, False if in world space
+        """
         self._screen_space = screen_space
 
     @property
-    def child_count(self):
+    def child_count(self) -> int:
+        """Returns the number of children the object has.
+
+        Returns:
+            int: The child count
+        """
         count = 0
         if self._children:
             for child in self._children.values():
                 count += 1
                 count += child.child_count
         return count
+
+    def __repr__(self):
+        children = ""
+        for _, child in self._children.items():
+            children += f" {child}"
+        return (
+            "-" * self._depth
+            + f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}\n"
+            + children
+        )

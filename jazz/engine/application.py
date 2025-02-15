@@ -4,7 +4,7 @@ from .input_handler import InputHandler
 from .scene import Scene
 from .sound_manager import SoundManager
 from ..global_dict import Globals
-from ..utils import load_ini
+from ..utils import load_ini, JazzException
 
 
 class Application:
@@ -126,7 +126,7 @@ class Application:
 
         # Check that app has scenes before running
         if self._next_scene is None:
-            raise Exception("No scenes have been added to the game")
+            raise JazzException("No scenes have been added to the game")
 
         scene_transfer_data = {}
 

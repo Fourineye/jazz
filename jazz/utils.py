@@ -16,6 +16,8 @@ Color = pygame.Color
 INTERNAL_PATH = str(importlib.resources.files())
 
 
+class JazzException(Exception):...
+
 def load_ini(path="./.jini"):
     settings = ConfigParser()
     try:
