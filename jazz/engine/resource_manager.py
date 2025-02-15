@@ -21,13 +21,13 @@ class ResourceManager:
         default.fill("magenta")
         pygame.draw.rect(default, "gray", (5, 0, 5, 5))
         pygame.draw.rect(default, "gray", (0, 5, 5, 5))
-        self._images = {"default": default}
-        self._textures = {
+        self._surfaces: dict[str, Surface] = {"default": default}
+        self._textures: dict[str, Texture | Image] = {
             "default": Texture.from_surface(Globals.renderer, default)
         }
         self._colors: dict[tuple[int, int, int], Texture] = {}
-        self._sprite_sheets = {}
-        self._fonts = {}
+        self._sprite_sheets: dict[str, list[Texture | Image | Surface]] = {}
+        self._fonts: dict[str, dict[int, pygame.Font]] = {}
 
     def get_font(self, id: str = DEFAULT_FONT, size: int = 12):
         if id not in self._fonts.keys():
@@ -53,17 +53,19 @@ class ResourceManager:
                 self._textures[id] = Texture.from_surface(
                     Globals.renderer, texture
                 )
+        return self._textures[id]
 
     def get_image(self, id: str):
-        resource = self._images.get(id, None)
+        resource = self._surfaces.get(id, None)
         if resource is None:
             resource = load_image(id)
-            self._images.setdefault(id, resource)
+            self._surfaces.setdefault(id, resource)
         return resource
 
     def add_image(self, texture: Surface, id: str):
-        if id not in self._images.keys():
-            self._textures[id] = texture
+        if id not in self._surfaces.keys():
+            self._surfaces[id] = texture
+        return self._textures[id]
 
     def get_sprite_sheet(self, id: str):
         resource = self._sprite_sheets.get(id, None)

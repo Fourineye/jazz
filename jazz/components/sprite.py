@@ -139,9 +139,15 @@ class Sprite(GameObject):
             self.update_image()
         else:
             if not isinstance(
-                new_texture, (pygame._sdl2.Texture, pygame._sdl2.Image)
+                new_texture, (pygame._sdl2.Texture, pygame._sdl2.Image, Surface)
             ):
                 new_texture = Globals.scene.load_resource(new_texture, 2)
+            if not isinstance(
+                new_texture, (pygame._sdl2.Texture, pygame._sdl2.Image)
+            ):
+                new_texture = pygame._sdl2.Texture.from_surface(
+                    Globals.renderer, new_texture
+                )
             self._texture = new_texture
             if isinstance(self._texture, pygame._sdl2.Image):
                 self.render = self._render_hardware_image
@@ -216,4 +222,6 @@ class Sprite(GameObject):
 
     @property
     def rect(self):
-        return pygame.Rect(self.draw_pos, self.image.get_size())
+        return pygame.Rect(
+            self.draw_pos, self._size.elementwise() * self._scale
+        )

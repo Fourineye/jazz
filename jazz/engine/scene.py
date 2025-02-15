@@ -162,6 +162,12 @@ class Scene:
         if resource_type == self.TEXTURE:
             return self.resource_manager.get_texture(path)
 
+    def add_resource(self, resource, name, resource_type=IMAGE):
+        if resource_type == self.IMAGE:
+            return self.resource_manager.add__image(resource, name)
+        if resource_type == self.TEXTURE:
+            return self.resource_manager.add_texture(resource, name)
+
     def make_sprite_sheet(self, path, dimensions, offset=(0, 0)):
         return self.resource_manager.make_sprite_sheet(path, dimensions, offset)
 
@@ -180,10 +186,9 @@ class Scene:
         else:
             print("obj already in scene")
 
-        if name is not None and name not in self.__dict__.keys():
-            name = name.split(" ")[0]
+        if name is not None:
             obj.name = name
-            self.__dict__.setdefault(name, obj)
+            self.__dict__[name] = obj
 
     def add_physics_object(self, obj, layers):
         for layer, flag in enumerate(layers):
@@ -221,7 +226,6 @@ class Scene:
             self._sprites.remove(sprite)
         except ValueError:
             print(f"Sprite not found: {sprite}")
-
 
     def toggle_debug(self):
         self._debug = not self._debug

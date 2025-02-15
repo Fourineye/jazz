@@ -71,7 +71,8 @@ class Button(Sprite):
     def on_load(self):
         super().on_load()
         self._rect.topleft = self.draw_pos
-        self._label.pos = self._rect.center
+        if self._label is not None:
+            self._label.pos = self._rect.center
 
     def update(self, _delta):
         mouse_pos = Globals.mouse.pos

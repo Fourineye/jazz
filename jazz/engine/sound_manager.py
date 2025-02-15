@@ -37,6 +37,9 @@ class SoundManager:
         self._music_start = int(start * 1000)
         music.play(loops, start, fade_ms)
 
+    def clear_music(self):
+        music.unload()
+
     def queue_music(self, file, loops=0):
         music.queue(file, loops=loops)
 
@@ -49,29 +52,29 @@ class SoundManager:
 
     def resume_music(self):
         music.unpause()
-        
+
     def set_music_pos(self, time: float):
         """
-            Sets the absolute position of the music playback
-            time: float Position in seconds
+        Sets the absolute position of the music playback
+        time: float Position in seconds
         """
         status = music.get_busy()
-        #music.pause()
+        # music.pause()
         if status:
             self.play_music(start=time)
         else:
             music.set_pos(time)
             self._music_start = int(time * 1000)
-        
+
     def get_music_pos(self) -> int:
         """
-            Returns the time music has been playing in ms
+        Returns the time music has been playing in ms
         """
         return self._music_start + music.get_pos()
 
     def fadeout_music(self, time):
         music.fadeout(time)
-        
+
     def get_music_playing(self) -> bool:
         return music.get_busy()
 
