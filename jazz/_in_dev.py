@@ -1,25 +1,25 @@
-from . import Surface, Vec2
 from .global_dict import Globals
 from .components import Label, Sprite
 from .user_interface import DEFAULT_FONT
+from .utils import Color, Rect, Surface, Vec2
 
 
 class TextBox(Sprite):
     def __init__(self, name="TextBox", **kwargs):
+        super().__init__(name, **kwargs)
         font = kwargs.get("font", DEFAULT_FONT)
-        text_color = kwargs.get("text_color", (255, 255, 255))
-        text = kwargs.get("text", "")
-        if not kwargs.get("asset", False):
+        text_color = kwargs.get("text_color", Color(255, 255, 255))
+        text = kwargs.get("text", " ")
+        if not kwargs.get("texture", False):
             size = kwargs.get("size", Vec2(font.size(text)) + (10, 10))
             box = Surface(size)
-            box.fill(kwargs.get("bg_color", (32, 32, 32)))
-            kwargs.setdefault("asset", box)
-        super().__init__(name, **kwargs)
+            box.fill(kwargs.get("bg_color", Color(32, 32, 32)))
+            self.texture = box
         self._text = Label(
             font=font,
             text_color=text_color,
             text=text,
-            pos=(self._draw_offset[0] + 5, self._draw_offset[1] + self.source.get_height() / 2),
+            pos=(self._draw_offset[0] + 5, self._draw_offset[1] + self._size.y / 2),
             anchor=(0, 1)
         )
         self.add_child(self._text)
@@ -29,7 +29,7 @@ class TextBox(Sprite):
             text_color=text_color,
             text="|",
             anchor=(0, 1),
-            pos=(self._draw_offset[0] + self.source.get_width(), self._draw_offset[1] + self.source.get_height() / 2),
+            pos=(self._draw_offset[0] + self._size.x, self._draw_offset[1] + self._size.y / 2),
             visible=False
         )
         self.add_child(self._cursor)
@@ -64,8 +64,8 @@ class TextBox(Sprite):
     def set_text(self, text):
         self._text.set_text(text)
         self._cursor.local_pos = (
-            self._text._draw_offset[0] + self._text.source.get_width(),
-            self._text._draw_offset[1] + self._text.source.get_height() / 2
+            self._text._draw_offset[0] + self._text.texture.get_rect().w,
+            self._text._draw_offset[1] + self._text.texture.get_rect().h / 2
         )
 
 

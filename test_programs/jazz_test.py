@@ -2,6 +2,7 @@ from random import randint
 
 import jazz
 from jazz import Globals, Vec2, Draw
+import jazz._in_dev
 from jazz.utils import random_color, Color, Rect
 from jazz.particles import ParticleEmitter
 
@@ -102,10 +103,10 @@ class UITest(Test):
                 text_size=24,
             )
         )
-        self.bar = jazz.ProgressBar(
+        self.bar = self.add_object(jazz.ProgressBar(
             10, 20, pos=(10, 10), anchor=(0, 0), size=(100, 20)
-        )
-        self.add_object(self.bar)
+        ))
+        # self.add_object(jazz._in_dev.TextBox(pos = (100, 400), anchor=(0,0), size=(200, 50)))
 
     def update(self, delta):
         self.bar.update_value((self.bar.value + delta * 2) % self.bar.max_value)
