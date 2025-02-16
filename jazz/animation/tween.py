@@ -1,7 +1,7 @@
 from typing import Any, Callable
 
 from .easing import LINEAR
-from .. import GameObject
+from ..engine.base_object import GameObject
 from ..utils import map_range
 
 

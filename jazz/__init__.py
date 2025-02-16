@@ -9,7 +9,7 @@ from .animation import *
 from .utils import Rect, Surface, Vec2, Texture, Image, Color
 from .primatives import Draw
 
-__version__ = "0.2.0"
+__version__ = "0.2.2"
 
 pygame.init()
 print(f"Thank you for using jazz {__version__}")

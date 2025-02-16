@@ -22,7 +22,7 @@ class Test(jazz.Scene):
 
     def update_title(self):
         Globals.app.set_caption(f"{Globals.app.get_fps():2.2f} fps")
-        self.set_timer(self._caption_timer, self.update_title, ())
+        self.create_timer(self._caption_timer, self.update_title, ())
 
 
 class UITest(Test):
@@ -143,7 +143,7 @@ class RenderTest(Test):
                     rotation=randint(0, 90),
                 )
             )
-        self.set_timer(TIME, self.record_fps, ())
+        self.create_timer(TIME, self.record_fps, ())
         Globals.app.set_next_scene("UI Test")
 
     def update(self, delta):
@@ -155,7 +155,7 @@ class RenderTest(Test):
         print(f"{self.sprite_count} Sprites : {Globals.app.get_fps():.1f} fps")
 
         if Globals.app.get_fps() > 30 and self.sprite_count < SPRITES:
-            self.set_timer(TIME, self.record_fps, ())
+            self.create_timer(TIME, self.record_fps, ())
             self.sprite_count += 1000
             for _ in range(1000):
                 self.add_object(
@@ -192,7 +192,7 @@ class DebugTest(Test):
         self.add_object(body)
         self.add_object(self.square)
         Globals.app.set_next_scene("UI Test")
-        self.set_timer(10, self.stop, ())
+        self.create_timer(10, self.stop, ())
 
     def update(self, delta):
         self.square.rotate(36 * delta)
@@ -212,7 +212,7 @@ class AnimationTest(Test):
             ),
         )
         Globals.app.set_next_scene("UI Test")
-        self.set_timer(5, self.stop, ())
+        self.create_timer(5, self.stop, ())
 
 
 class PrimativeTest(Test):
@@ -231,16 +231,16 @@ class PrimativeTest(Test):
 
     def on_load(self, data):
         Test.on_load(self, data)
-        self.set_timer(0.1, self.iterate_width, ())
+        self.create_timer(0.1, self.iterate_width, ())
         Globals.app.set_next_scene("UI Test")
-        self.set_timer(20, self.stop, ())
+        self.create_timer(20, self.stop, ())
 
     def iterate_width(self):
         self.line_width += 0.2
         if self.line_width > 10:
             self.line_width = 1
             self.closed = not self.closed
-        self.set_timer(0.1, self.iterate_width, ())
+        self.create_timer(0.1, self.iterate_width, ())
 
     def render(self):
         super().render()
@@ -280,7 +280,7 @@ class ParticleTest(Test):
                 emission_angles=[(-45, 45)],
             )
         )
-        self.set_timer(15, self.stop, ())
+        self.create_timer(15, self.stop, ())
 
 
 if __name__ == "__main__":
