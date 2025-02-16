@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from ..camera import Camera
 from ..global_dict import Globals
 from ..physics import Ray, PhysicsGrid
+from ..animation import Timer
 from ..utils import (
     dist_to,
     direction_to,
@@ -26,14 +27,6 @@ if TYPE_CHECKING:
     from .base_object import GameObject
     from ..physics._physics_object import PhysicsObject
     from ..components import Sprite
-
-
-@dataclass
-class Timer:
-    time_left: float
-    callback: Callable
-    args: tuple[Any]
-    pause_process: bool = True
 
 
 class Scene:
@@ -130,12 +123,13 @@ class Scene:
         """
         self._debug = not self._debug
 
-    def set_timer(
+    def create_timer(
         self,
         time: float,
         callback: Callable,
         args: tuple[Any],
         pause_process=False,
+        one_shot = True
     ) -> None:
         """Creates a timer that will call the provided callback function
         when it expires.
@@ -148,7 +142,7 @@ class Scene:
             pause_process (bool, optional): Whether the timer should count
                 down when the scene is paused. Defaults to False.
         """
-        self._timers.append(Timer(time, callback, args, pause_process))
+        self.add_object(Timer(time, callback, args, pause_process, one_shot))
 
     def get_layer_collisions(self, collider, layer=0):
         return self._physics_world[layer].get_AABB_collisions(collider)
@@ -264,13 +258,11 @@ class Scene:
             self._sprites.append(sprite)
             self._sprites.sort(key=lambda obj: obj.z, reverse=False)
 
-    def remove_object(self, obj: "GameObject", kill=True) -> None:
-        """Removes an object from the scene, deleting it if necessary.
+    def remove_object(self, obj: "GameObject") -> None:
+        """Removes an object from the scene.
 
         Args:
             obj (GameObject): The object to remove.
-            kill (bool, optional): True if the object should be deleted.
-                Defaults to True.
 
         Raises:
             JazzException: Raises an exception if the object is not
@@ -278,8 +270,6 @@ class Scene:
         """
         if obj.id in self._objects:
             self._objects.pop(obj.id)
-            if kill:
-                obj.kill()
         else:
             raise JazzException(f"{obj.id}:{obj.name} is not in the scene.")
 
@@ -385,14 +375,6 @@ class Scene:
         # update camera
         if not self._paused:
             self.camera.update(delta)
-
-        # Process Timers
-        for timer in self._timers[::-1]:
-            if not self._paused or timer.pause_process:
-                timer.time_left -= delta
-                if timer.time_left <= 0:
-                    timer.callback(*timer.args)
-                    self._timers.remove(timer)
 
         # delete objects queued for deletion
         for obj in kill_items:
