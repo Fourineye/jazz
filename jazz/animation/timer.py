@@ -6,7 +6,12 @@ from ..global_dict import Globals
 
 class Timer:
     def __init__(
-        self, time_left: float, callback: Callable, args=tuple(), pause_process=False, one_shot=True
+        self,
+        time_left: float,
+        callback: Callable,
+        args=tuple(),
+        pause_process=False,
+        one_shot=True,
     ):
         self.id = str(uuid.uuid1())
         self.time = time_left
@@ -18,10 +23,9 @@ class Timer:
         self.one_shot = one_shot
         self.do_kill = False
 
-    def _on_load(self):
-        ...
+    def _on_load(self): ...
 
-    def _update(self, delta:float) -> None:
+    def _update(self, delta: float) -> None:
         self.time_left -= delta
         if self.time_left <= 0:
             self.callback(*self.args)
