@@ -1,3 +1,5 @@
+from typing import Any, Callable
+
 from .easing import LINEAR
 from .. import GameObject
 from ..utils import map_range
@@ -6,7 +8,25 @@ from ..utils import map_range
 class Tween(GameObject):
     """Tween for animation"""
 
-    def __init__(self, target_object, target_property, target_value, time, **kwargs):
+    def __init__(
+        self,
+        target_object: GameObject,
+        target_property: str,
+        target_value: Any,
+        time: float,
+        **kwargs,
+    ):
+        """A an object that moves a property between two numeric values using a given easing function.
+
+        Args:
+            target_object (GameObject): The object whose property is being tweened
+            target_property (str): The string representation of the property being changed
+            target_value (Any): The value to tween to.
+            time (float): The time in seconds for the tween to take
+            easing (Callable, optional): The easing function to use, takes in a number between 0 - 1 and returns a float. Default is LINEAR
+            on_end (Callable, optional): A function that will be called when the tween is complete. Default is None
+            play (bool, optional): If this is true the tween will start when it is created. Default is False
+        """
         kwargs.setdefault("name", "Tween")
         super().__init__(**kwargs)
         self.target_object = target_object
@@ -16,20 +36,19 @@ class Tween(GameObject):
         self.target_value = target_value
         self.a_time = time
         self.time = 0
-        self.easing = kwargs.get("easing", LINEAR)
+        self.easing: Callable[[float], float] = kwargs.get("easing", LINEAR)
         self.loop = kwargs.get("loop", False)
         self.playing = False
-        self.on_end = kwargs.get("on_end", None)
-        if kwargs.get("playing", False):
+        self.on_end: Callable[[]] = kwargs.get("on_end", None)
+        if kwargs.get("play", False):
             self.play()
 
-    def update(self, delta: float):
-        """
-        Method that is automatically called on the engine game_process method.
+    def update(self, delta: float) -> None:
+        """Method that updates the tween and applys the easing to the target
+            object and property.
 
         Args:
-            delta (float): The amount of time that has passed since the last
-                           frame in seconds.
+            delta (float): Time in seconds since the last frame
         """
         if not self.playing:
             return
@@ -56,13 +75,12 @@ class Tween(GameObject):
                 self.on_end()
         self.time += delta
 
-    def play(self, from_beginning=True):
+    def play(self, from_beginning: bool = True) -> None:
         """Starts the tween animation
 
         Args:
-            from_beginning (bool, optional): An optional argument that
-                determines if the tween starts over from the beginning.
-                Defaults to True.
+            from_beginning (bool, optional): Determines if the tween starts
+                over from the beginning. Defaults to True.
         """
         self.playing = True
         self._initial_value = getattr(self.target_object, self.target_property)
@@ -70,6 +88,6 @@ class Tween(GameObject):
         if from_beginning:
             self.time = 0
 
-    def stop(self):
+    def stop(self) -> None:
         """Stops the tween animation"""
         self.playing = False
