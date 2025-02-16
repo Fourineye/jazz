@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
-from jazz import __version__
+#from jazz import __version__
 
 setup(
     name="jazz",
-    version=__version__,
+    version="0.2.2",
     description="A pygame wrapper that provides tools to quickly build games.",
     url="https://github.com/Fourineye/jazz",
     author="Paul Smith",
