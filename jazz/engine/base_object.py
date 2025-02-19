@@ -41,9 +41,9 @@ class GameObject:
         self._z = kwargs.get("z", 0)
 
         # Basic positional Attributes
-        self._pos = kwargs.get("pos", Vec2(0, 0))
+        self._pos = Vec2(kwargs.get("pos", (0, 0)))
         self._rotation = kwargs.get("rotation", 0)
-    
+
     # Base Methods
     def on_load(self):
         """Base method that can be overwritten. Called when the object is added to the scene."""
@@ -107,15 +107,14 @@ class GameObject:
                 child._render_debug(offset)
 
     def _on_load(self) -> None:
-        """Engine method that propogates the on_load call to it's children.
-        """
+        """Engine method that propogates the on_load call to it's children."""
         self.on_load()
         for child in self._children.values():
             child._on_load()
-    
+
     # Child management
     def add_child(self, obj: "GameObject") -> "GameObject":
-        """Adds an object to the child tree. 
+        """Adds an object to the child tree.
 
         Args:
             obj (GameObject): Object to add
@@ -132,7 +131,9 @@ class GameObject:
             self._children[obj.id] = obj
             return obj
         else:
-            raise JazzException(f"{obj.id}:{obj.name} is already a child of {self.id}:{self.name}")
+            raise JazzException(
+                f"{obj.id}:{obj.name} is already a child of {self.id}:{self.name}"
+            )
 
     def remove_child(self, obj: "GameObject", kill=True) -> None:
         """Removes the object from the child tree, optionally deleting it from the scene.
@@ -149,7 +150,9 @@ class GameObject:
             if kill:
                 obj.kill()
         else:
-            raise JazzException(f"{obj.id}:{obj.name} not found as child of {self.id}:{self.name}")
+            raise JazzException(
+                f"{obj.id}:{obj.name} not found as child of {self.id}:{self.name}"
+            )
 
     # movement methods
     def move(self, movement: Vec2) -> None:
@@ -176,8 +179,7 @@ class GameObject:
         self.do_kill = True
 
     def kill(self) -> None:
-        """Destroy's the object and any children.
-        """
+        """Destroy's the object and any children."""
 
         Globals.scene.remove_physics_object(self)
         Globals.scene.remove_object(self)

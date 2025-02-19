@@ -48,26 +48,24 @@ class RenderTest(Test):
 
     def update(self, delta):
         # Globals.app.set_caption(f"{Globals.app.get_fps():.1f} fps")
-        if Globals.key.press("space"):
-            self.stop()
+        self.sprite_count += 5
+        for _ in range(5):
+            self.add_object(
+                TestSprite(
+                    color=random_color(),
+                    pos=(randint(5, 795), randint(5, 795)),
+                    scale=Vec2(
+                        randint(MIN_SIZE, MAX_SIZE),
+                        randint(MIN_SIZE, MAX_SIZE),
+                    ),
+                    rotation=randint(0, 90),
+                )
+            )
 
     def record_fps(self):
         print(f"{self.sprite_count} Sprites : {Globals.app.get_fps():.1f} fps")
 
         if Globals.app.get_fps() > 30 and self.sprite_count < SPRITES:
             self.create_timer(TIME, self.record_fps, ())
-            self.sprite_count += 1000
-            for _ in range(1000):
-                self.add_object(
-                    TestSprite(
-                        color=random_color(),
-                        pos=(randint(5, 795), randint(5, 795)),
-                        scale=Vec2(
-                            randint(MIN_SIZE, MAX_SIZE),
-                            randint(MIN_SIZE, MAX_SIZE),
-                        ),
-                        rotation=randint(0, 90),
-                    )
-                )
         else:
             self.stop()

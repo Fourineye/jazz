@@ -3,7 +3,7 @@ from test_debug import DebugTest
 from test_draw import DrawTest
 from test_particles import ParticleTest
 from test_render import RenderTest
-from ui_test import UITest
+from test_ui import UITest
 
 from jazz import Application
 

@@ -82,9 +82,10 @@ class ParticleEmitter(GameObject):
             if isinstance(self._particle_spawn, (int, float)):
                 spawn_offset.update(uniform(0, self._particle_spawn), 0)
                 spawn_offset.rotate_ip(uniform(*choice(self._emission_angles)))
-                vel = spawn_offset.normalize() * uniform(
-                    *choice(self._emission_speed)
-                )
+                vel = (
+                    spawn_offset.normalize()
+                    * uniform(*choice(self._emission_speed))
+                ).rotate(self.rotation)
         particle = Particle(
             self.pos + spawn_offset.rotate(self.rotation),
             vel,

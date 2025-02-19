@@ -197,3 +197,6 @@ class Application:
             float: Application fps as a float.
         """
         return self._clock.get_fps()
+
+    def get_scenes(self):
+        return self._scenes.keys()
