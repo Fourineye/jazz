@@ -1,5 +1,16 @@
-import jazz
-from jazz import Globals, EASINGS, Tween, Sprite, Surface, Draw, Vec2, Color
+from base_test import Test
+
+from jazz import (
+    EASINGS,
+    Color,
+    Draw,
+    Label,
+    Sprite,
+    Surface,
+    Tween,
+    Vec2,
+    Globals,
+)
 
 
 def ball_sprite():
@@ -7,42 +18,46 @@ def ball_sprite():
     ball.fill((255, 0, 255))
     ball.set_colorkey((255, 0, 255))
     with Draw.canvas(ball):
-        Draw.circle(Vec2(8, 8), 8, Color(0, 0, 128))
+        Draw.fill_circle(Vec2(8, 8), 8, Color(0, 0, 128))
     return ball
 
 
 def background_sprite():
-    bg = pygame.Surface((640, 480))
+    bg = Surface((800, 800))
     bg.fill((64, 64, 64))
-    for i in range(19):
-        pygame.draw.line(
-            bg, (128, 128, 200), (80, 50 + 20 * i), (320, 50 + 20 * i), 3
-        )
-    pygame.draw.line(bg, (128, 128, 128), (100, 50), (100, 410), 3)
-    pygame.draw.line(bg, (128, 128, 128), (300, 50), (300, 410), 3)
+    with Draw.canvas(bg):
+        for i in range(19):
+            Draw.line(
+                Vec2(80, 50 + 20 * i),
+                Vec2(320, 50 + 20 * i),
+                Color(128, 128, 200),
+                3,
+            )
+        Draw.line(Vec2(100, 50), Vec2(100, 410), Color(128, 128, 128), 3)
+        Draw.line(Vec2(300, 50), Vec2(300, 410), Color(128, 128, 128), 3)
     return bg
 
 
-class Main(jazz.Scene):
+class TweenTest(Test):
+    name = "Tweens"
+
     def __init__(self):
         super().__init__()
         self.bg = None
 
     def on_load(self, data):
+        Test.on_load(self, data)
+        Globals.app.set_next_scene("UI Test")
         self.tweens = []
         self.points = []
         self.pause_timer = 2
         background = background_sprite()
-        self.bg = self.add_object(jazz.Sprite(z=-1))
+        self.bg = self.add_object(Sprite(z=-1))
         self.bg.texture = background
         self.bg.set_anchor(0, 0)
 
-        self.add_object(
-            jazz.Label(text="0.0", pos=(100, 35), scale=(0.75, 0.75))
-        )
-        self.add_object(
-            jazz.Label(text="1.0", pos=(300, 35), scale=(0.75, 0.75))
-        )
+        self.add_object(Label(text="0.0", pos=(100, 35), scale=(0.75, 0.75)))
+        self.add_object(Label(text="1.0", pos=(300, 35), scale=(0.75, 0.75)))
 
         # build ball sprite
         ball = ball_sprite()
@@ -56,14 +71,14 @@ class Main(jazz.Scene):
             tween = Tween(
                 disp,
                 "pos",
-                jazz.Vec2(300, 50 + 20 * i),
+                Vec2(300, 50 + 20 * i),
                 2,
                 easing=EASINGS[i],
                 loop=False,
             )
             self.add_object(tween)
             self.tweens.append(tween)
-            label = jazz.Label(
+            label = Label(
                 text=EASINGS[i].__name__,
                 pos=(350, 50 + 20 * i),
                 scale=(0.75, 0.75),

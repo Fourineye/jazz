@@ -14,9 +14,6 @@ class UITest(Test):
     def on_load(self, data):
         Test.on_load(self, data)
         # self.toggle_debug()
-        self.add_object(
-            jazz.Label(text="Test Scenes", pos=(400, 50), anchor=(1, 0))
-        )
 
         def set_next(scene):
             def a():
@@ -25,9 +22,11 @@ class UITest(Test):
 
             return a
 
-        pos = Vec2(400, 100)
+        self.add_object(
+            jazz.Label(text="Test Scenes", pos=(400, 100), anchor=(1, 0))
+        )
+        pos = Vec2(400, 150)
         for scene in Globals.app.get_scenes():
-            print(scene)
             if scene == self.name:
                 continue
             self.add_object(
@@ -43,7 +42,7 @@ class UITest(Test):
             pos += Vec2(0, 60)
 
         self.bar = self.add_object(
-            jazz.ProgressBar(10, 20, pos=pos, anchor=(1, 0), size=(200, 25))
+            jazz.ProgressBar(0, 20, pos=pos, anchor=(1, 0), size=(200, 25))
         )
 
     def update(self, delta):
