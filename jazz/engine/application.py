@@ -1,3 +1,5 @@
+from typing import Type
+
 import pygame
 
 from .input_handler import InputHandler
@@ -6,6 +8,7 @@ from .sound_manager import SoundManager
 from .resource_manager import ResourceManager
 from ..global_dict import Globals
 from ..utils import load_ini, JazzException
+from ..primatives import Draw
 
 
 class Application:
@@ -40,7 +43,7 @@ class Application:
             raise JazzException("Application has already been initialized.")
 
         load_ini()
-        self.experimental = experimental
+        self.experimental: bool = experimental
 
         self._window = pygame.Window(name, (width, height))
         self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
@@ -53,7 +56,7 @@ class Application:
 
         self._sound.load_settings()
 
-        self._scenes: dict[str, Scene] = {}
+        self._scenes: dict[str, Type[Scene]] = {}
         self._active_scene: str = ""
         self._next_scene: str = ""
         self._delta: float = 0
@@ -72,12 +75,14 @@ class Application:
         Globals.sound = self._sound
         Globals.resource = self._resource
 
+        Draw.init()
+
         if self.experimental:
             self._screen_refresh = self._renderer.present
         else:
             self._screen_refresh = self._window.flip
 
-    def add_scene(self, scene: Scene):
+    def add_scene(self, scene: Type[Scene]):
         """Adds a scene class reference to the game to be initilaized at
         a later point. Setting the next scene if on is not already set
 

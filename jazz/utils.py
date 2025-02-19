@@ -5,8 +5,8 @@ from csv import reader
 from random import randint
 
 import pygame
-from pygame._sdl2 import Texture, Image
-from pygame import Rect, Surface, Color
+from pygame import Color, Rect, Surface
+from pygame._sdl2 import Image, Texture
 
 from .global_dict import SETTINGS, Globals
 
@@ -81,7 +81,9 @@ def load_image(path):
 
 
 def load_texture(path):
-    return pygame._sdl2.Texture.from_surface(Globals.renderer, load_image(path))
+    return pygame._sdl2.Texture.from_surface(
+        Globals.renderer, load_image(path)
+    )
 
 
 def clamp(n, smallest, largest):

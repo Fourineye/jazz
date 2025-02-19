@@ -74,8 +74,10 @@ class ParticleEmitter(GameObject):
                         self._particle_spawn.top, self._particle_spawn.bottom
                     ),
                 )
-                vel = Vec2(uniform(*choice(self._emission_speed)), 0).rotate(
-                    uniform(*choice(self._emission_angles))
+                vel = (
+                    Vec2(uniform(*choice(self._emission_speed)), 0)
+                    .rotate(uniform(*choice(self._emission_angles)))
+                    .rotate(self.rotation)
                 )
             if isinstance(self._particle_spawn, (int, float)):
                 spawn_offset.update(uniform(0, self._particle_spawn), 0)
@@ -84,7 +86,7 @@ class ParticleEmitter(GameObject):
                     *choice(self._emission_speed)
                 )
         particle = Particle(
-            self.pos + spawn_offset,
+            self.pos + spawn_offset.rotate(self.rotation),
             vel,
             randint(0, len(self._particle_graphics) - 1),
             self._particle_life,

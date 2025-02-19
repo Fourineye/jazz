@@ -94,7 +94,7 @@ class Camera:
         draw_objects = Globals.scene.objects
 
         for obj in draw_objects:
-            if obj.visible:
+            if getattr(obj, "visible", False):
                 if obj.screen_space:
                     obj.render_debug(Vec2())
                 else:
@@ -186,5 +186,5 @@ class Camera:
         return Rect(
             *(-self.offset),
             Globals.display.get_width(),
-            Globals.display.get_height()
+            Globals.display.get_height(),
         )
