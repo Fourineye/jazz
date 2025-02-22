@@ -51,8 +51,8 @@ class Collider(GameObject):
                 self._edges.append((0, 1))
         self.get_rect()
 
-    def _render_debug(self, offset: Vec2):
-        super()._render_debug(offset)
+    def render_debug(self, offset: Vec2):
+        super().render_debug(offset)
         for edge in self.edges:
             Draw.line(edge[0] + offset, edge[1] + offset, Color("white"), 2)
 
@@ -274,8 +274,8 @@ class CircleCollider(Collider):
             min_v, max_v = max_v, min_v
         return min_v, max_v
 
-    def _render_debug(self, offset):
-        super()._render_debug(offset)
+    def render_debug(self, offset):
+        super().render_debug(offset)
         Draw.circle(self.pos + offset, self._radius, Color("white"), 2)
 
     def get_rect(self):

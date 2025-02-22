@@ -96,9 +96,9 @@ class Camera:
         for obj in draw_objects:
             if getattr(obj, "visible", False):
                 if obj.screen_space:
-                    obj.render_debug(Vec2())
+                    obj._render_debug(Vec2())
                 else:
-                    obj.render_debug(self.offset + self.shake)
+                    obj._render_debug(self.offset + self.shake)
 
     def update_offset(self):
         """Updates the Camera offset to the target."""
