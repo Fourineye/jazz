@@ -43,7 +43,6 @@ class Application:
             raise JazzException("Application has already been initialized.")
 
         load_ini()
-        self.experimental: bool = experimental
 
         self._window = pygame.Window(name, (width, height))
         self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
@@ -76,11 +75,6 @@ class Application:
         Globals.resource = self._resource
 
         Draw.init()
-
-        if self.experimental:
-            self._screen_refresh = self._renderer.present
-        else:
-            self._screen_refresh = self._window.flip
 
     def add_scene(self, scene: Type[Scene]):
         """Adds a scene class reference to the game to be initilaized at
@@ -140,7 +134,7 @@ class Application:
 
                 # render game window
                 self._active_scene.render()
-                self._screen_refresh()
+                self._renderer.present()
 
                 # Control fps and record delta time
                 self._delta = self._clock.tick(self.fps_max) / 1000

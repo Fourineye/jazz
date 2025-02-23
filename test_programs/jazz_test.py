@@ -9,7 +9,7 @@ from test_tweens import TweenTest
 from jazz import Application
 
 if __name__ == "__main__":
-    app = Application(800, 800, experimental=True)
+    app = Application(800, 800)
     scenes = [
         UITest,
         RenderTest,

@@ -2,77 +2,47 @@ import pygame
 
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
-from ..utils import Vec2, Rect, Surface, Color
+from ..utils import Vec2, Rect, Surface, Texture, Image
 
 
 class Sprite(GameObject):
-    def __init__(self, name="Sprite", **kwargs):
+    def __init__(self, name: str = "Sprite", **kwargs):
         super().__init__(name, **kwargs)
-        self._flip_x = kwargs.get("flip_x", False)
-        self._flip_y = kwargs.get("flip_y", False)
-        self._scale = Vec2(kwargs.get("scale", Vec2(1, 1)))
-        self._alpha = kwargs.get("alpha", 255)
-        self._anchor = [1, 1]
+        self._flip_x: bool = kwargs.get("flip_x", False)
+        self._flip_y: bool = kwargs.get("flip_y", False)
+        self._scale: Vec2 = Vec2(kwargs.get("scale", Vec2(1, 1)))
+        self._alpha: int = kwargs.get("alpha", 255)
+        self._anchor: list[int] = [1, 1]
 
-        if Globals.app.experimental:
-            self._texture: pygame._sdl2.Texture = Globals.scene.load_resource(
-                kwargs.get("texture", "default"), 2
-            )
-            self.render = self._render_hardware_texture
-            self._size = Vec2(self._texture.width, self._texture.height)
-            self._hardware_offset()
-        else:
-            self._texture: Surface = Globals.scene.load_resource(
-                kwargs.get("texture", "default")
-            )
-            self.render = self._render_software
-            self.image = self._texture.copy()
-            self._img_updated = False
+        self._texture: Texture | Image = None
+        self.texture = kwargs.get("texture", "default")
 
-        anchor = kwargs.get("anchor", None)
+        anchor: list[int] | None = kwargs.get("anchor", None)
         if anchor is not None:
             self.set_anchor(*anchor)
 
     def on_load(self):
         Globals.scene.add_sprite(self)
 
-    def _render_hardware_texture(self, offset: Vec2):
+    def render(self, offset: Vec2):
         dest = Rect(
             self.draw_pos + offset, self._size.elementwise() * self._scale
         )
-        self._texture.draw(
-            None,
-            dest,
-            self.rotation,
-            -self._draw_offset,
-            self.flip_x,
-            self.flip_y,
-        )
-
-    def _render_hardware_image(self, offset: Vec2):
-        dest = Rect(
-            self.draw_pos + offset, self._size.elementwise() * self._scale
-        )
-        self._texture.flip_x = self.flip_x
-        self._texture.flip_y = self.flip_y
-        self._texture.angle = -self.rotation
-        self._texture.alpha = self._alpha
-        self._texture.draw(None, dest)
-
-    def _render_software(self):
-        self.update_image()
-        return (self.image, self.draw_pos)
-
-    def update_image(self):
-        if not self._img_updated:
-            self.image = pygame.transform.flip(
-                self.texture, self.flip_x, self.flip_y
+        if isinstance(self._texture, Texture):
+            self._texture.draw(
+                None,
+                dest,
+                self.rotation,
+                -self._draw_offset,
+                self.flip_x,
+                self.flip_y,
             )
-            self.image = pygame.transform.scale_by(self.image, self.scale)
-            self.image = pygame.transform.rotate(self.image, -self.rotation)
-            self.image.set_alpha(self.alpha)
-            self._software_offset()
-            self._img_updated = True
+        else:
+            self._texture.flip_x = self.flip_x
+            self._texture.flip_y = self.flip_y
+            self._texture.angle = -self.rotation
+            self._texture.alpha = self._alpha
+            self._texture.draw(None, dest)
 
     def _hardware_offset(self):
         self._draw_offset = -(
@@ -81,12 +51,6 @@ class Sprite(GameObject):
                 self._size.y * self._anchor[1] / 2,
             ).elementwise()
             * self._scale
-        )
-
-    def _software_offset(self):
-        self._draw_offset = -Vec2(
-            self.image.get_width() * self._anchor[0] / 2,
-            self.image.get_height() * self._anchor[1] / 2,
         )
 
     def set_anchor(self, horizontal=None, vertical=None):
@@ -102,18 +66,11 @@ class Sprite(GameObject):
             self._anchor[0] = 1
         elif horizontal in ["right", 2]:
             self._anchor[0] = 2
-        if Globals.app.experimental:
-            self._hardware_offset()
-        else:
-            self._software_offset()
+        self._hardware_offset()
 
     def kill(self):
         super().kill()
         Globals.scene.remove_sprite(self)
-
-    # def rotate(self, degrees):
-    #     super().rotate(degrees)
-    #     self._img_updated = False
 
     @property
     def draw_pos(self):
@@ -130,32 +87,19 @@ class Sprite(GameObject):
         return self._texture
 
     @texture.setter
-    def texture(self, new_texture):
-        if not Globals.app.experimental:
-            if not isinstance(new_texture, pygame.Surface):
-                new_texture = Globals.scene.load_resource(new_texture)
-            self._texture = new_texture
-            self._img_updated = False
-            self.update_image()
+    def texture(self, new_texture: str | Texture | Image | Surface):
+        if not isinstance(new_texture, (Texture, Image, Surface)):
+            new_texture = Globals.resource.get_texture(new_texture)
+        if not isinstance(new_texture, (Texture, Image)):
+            new_texture = Globals.resource.add_texture(new_texture, self.name)
+
+        self._texture = new_texture
+
+        if isinstance(self._texture, Image):
+            self._size = Vec2(self._texture.get_rect().size)
         else:
-            if not isinstance(
-                new_texture, (pygame._sdl2.Texture, pygame._sdl2.Image, Surface)
-            ):
-                new_texture = Globals.scene.load_resource(new_texture, 2)
-            if not isinstance(
-                new_texture, (pygame._sdl2.Texture, pygame._sdl2.Image)
-            ):
-                new_texture = pygame._sdl2.Texture.from_surface(
-                    Globals.renderer, new_texture
-                )
-            self._texture = new_texture
-            if isinstance(self._texture, pygame._sdl2.Image):
-                self.render = self._render_hardware_image
-                self._size = Vec2(self._texture.get_rect().size)
-            else:
-                self.render = self._render_hardware_texture
-                self._size = Vec2(self._texture.width, self._texture.height)
-            self._hardware_offset()
+            self._size = Vec2(self._texture.width, self._texture.height)
+        self._hardware_offset()
 
     @property
     def flip_x(self):

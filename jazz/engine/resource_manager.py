@@ -10,6 +10,7 @@ from ..utils import (
     load_image,
     load_texture,
     Color,
+    JazzException,
 )
 
 
@@ -26,7 +27,7 @@ class ResourceManager:
             "default": Texture.from_surface(renderer, default)
         }
         self._colors: dict[tuple[int, int, int], Texture] = {}
-        self._sprite_sheets: dict[str, list[Texture | Image | Surface]] = {}
+        self._sprite_sheets: dict[str, list[Image]] = {}
         self._fonts: dict[str, dict[int, pygame.Font]] = {}
 
     def clear(self) -> None:
@@ -54,16 +55,18 @@ class ResourceManager:
             self._fonts.setdefault(size, font)
         return font
 
-    def get_texture(self, id: str):
+    def get_texture(self, id: str) -> Texture | Image:
         resource = self._textures.get(id, None)
         if resource is None:
             resource = load_texture(id)
             self._textures.setdefault(id, resource)
         return resource
 
-    def add_texture(self, texture: Surface | Texture, id: str):
+    def add_texture(
+        self, texture: Surface | Texture | Image, id: str
+    ) -> Texture | Image:
         if id not in self._textures.keys():
-            if isinstance(texture, Texture):
+            if isinstance(texture, (Texture, Image)):
                 self._textures[id] = texture
             else:
                 self._textures[id] = Texture.from_surface(
@@ -83,10 +86,10 @@ class ResourceManager:
             self._surfaces[id] = texture
         return self._textures[id]
 
-    def get_sprite_sheet(self, id: str):
+    def get_sprite_sheet(self, id: str) -> list[Image]:
         resource = self._sprite_sheets.get(id, None)
         if resource is None:
-            raise (Exception(f"{id} is not a valid sprite sheet"))
+            raise (JazzException(f"{id} is not a valid sprite sheet"))
         return resource
 
     def get_color(self, color: Color):
@@ -99,23 +102,19 @@ class ResourceManager:
 
         return resource
 
-    def make_sprite_sheet(self, id: str, dimensions: Vec2, offset=(0, 0)):
+    def make_sprite_sheet(
+        self, id: str, dimensions: Vec2, offset=(0, 0)
+    ) -> list[Image]:
         sprite_sheet = self._sprite_sheets.get(id, None)
         if sprite_sheet is None:
-            if Globals.app.experimental:
-                sheet = self.get_texture(id)
-            else:
-                sheet = self.get_image(id)
+            sheet = self.get_texture(id)
             sprite_sheet = []
             size = sheet.get_rect().size
             x = offset[0]
             y = offset[1]
             while y < size[1] - 1:
                 while x < size[0] - 1:
-                    if Globals.app.experimental:
-                        sprite = Image(sheet, Rect((x, y), dimensions))
-                    else:
-                        sprite = sheet.subsurface((x, y), dimensions)
+                    sprite = Image(sheet, Rect((x, y), dimensions))
                     sprite_sheet.append(sprite)
                     x += dimensions[0]
                 x = offset[0]

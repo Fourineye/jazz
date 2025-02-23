@@ -26,10 +26,6 @@ class Camera:
             Globals.display.get_height() / 2,
         )
         self.zoom = 1
-        if Globals.app.experimental:
-            self.render = self._render_hardware
-        else:
-            self.render = self._render_software
 
     def update(self, _delta):
         """
@@ -50,33 +46,7 @@ class Camera:
             self.shake = Vec2()
             self.magnitude = 0
 
-    def _render_software(self) -> None:
-        # Get Objects
-        draw_objects = Globals.scene.sprites
-
-        # Blank Screen
-        if self._blanking:
-            Globals.display.fill(self._bg_color)
-
-        # Build Surface list
-        world_surface_list: list[tuple["Surface", Vec2]] = []
-        screen_surface_list: list[tuple["Surface", Vec2]] = []
-        for obj in draw_objects:
-            if obj.visible:
-                if obj.screen_space:
-                    screen_surface_list.append(obj.render())
-                else:
-                    surface, pos = obj.render()
-                    pos += self.offset + self.shake
-                    world_surface_list.append((surface, pos))
-
-        if world_surface_list:
-            Globals.display.fblits(world_surface_list)
-
-        if screen_surface_list:
-            Globals.display.fblits(screen_surface_list)
-
-    def _render_hardware(self):
+    def render(self):
         draw_objects = Globals.scene.sprites
 
         if self._blanking:
