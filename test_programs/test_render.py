@@ -44,7 +44,6 @@ class RenderTest(Test):
                 )
             )
         self.create_timer(TIME, self.record_fps, ())
-        Globals.app.set_next_scene("UI Test")
 
     def update(self, delta):
         # Globals.app.set_caption(f"{Globals.app.get_fps():.1f} fps")

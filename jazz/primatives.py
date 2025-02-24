@@ -15,7 +15,7 @@ class Draw:
     @staticmethod
     def init():
         Draw.target_surface = Globals.display
-        Draw.hardware_draw = Globals.app.experimental
+        Draw.hardware_draw = True
 
     @staticmethod
     @contextmanager
@@ -26,7 +26,6 @@ class Draw:
             try:
                 yield None
             finally:
-                Draw.hardware_draw = Globals.app.experimental
                 Globals.renderer.target = None
         else:
             Draw.hardware_draw = False
@@ -35,7 +34,7 @@ class Draw:
                 yield None
             finally:
                 Draw.target_surface = Globals.display
-                Draw.hardware_draw = Globals.app.experimental
+                Draw.hardware_draw = True
 
     @staticmethod
     def line(p1: Vec2, p2: Vec2, color: Color, w: int = 1):

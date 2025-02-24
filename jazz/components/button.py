@@ -21,7 +21,7 @@ class Button(Sprite):
         self._on_release = kwargs.get("on_release", True)
 
         self._size = Vec2(kwargs.get("size", (10, 10)))
-        self._rect = pygame.Rect((0, 0), self._size)
+        self._rect = Rect((0, 0), self._size)
         self._hardware_offset()
 
         self._unpressed_asset = kwargs.get("unpressed", None)
@@ -40,29 +40,17 @@ class Button(Sprite):
             self.add_child(self._label)
 
         if self._unpressed_asset is None:
-            if Globals.app.experimental:
-                self._unpressed_asset = Globals.resource.get_color(
-                    Color(255, 255, 255)
-                )
-            else:
-                self._unpressed_asset = Surface(self._size)
-                self._unpressed_asset.fill(Color(255, 255, 255))
+            self._unpressed_asset = Globals.resource.get_color(
+                Color(255, 255, 255)
+            )
         if self._pressed_asset is None:
-            if Globals.app.experimental:
-                self._pressed_asset = Globals.resource.get_color(
-                    Color(128, 128, 128)
-                )
-            else:
-                self._pressed_asset = Surface(self._size)
-                self._pressed_asset.fill(Color(128, 128, 128))
+            self._pressed_asset = Globals.resource.get_color(
+                Color(128, 128, 128)
+            )
         if self._hover_asset is None:
-            if Globals.app.experimental:
-                self._hover_asset = Globals.resource.get_color(
-                    Color(192, 192, 192)
-                )
-            else:
-                self._hover_asset = Surface(self._size)
-                self._hover_asset.fill(Color(192, 192, 192))
+            self._hover_asset = Globals.resource.get_color(
+                Color(192, 192, 192)
+            )
 
         self._texture = self._unpressed_asset
 
@@ -109,19 +97,6 @@ class Button(Sprite):
     def set_callback(self, callback):
         self._callback = callback
 
-    def _render_hardware_texture(self, offset: Vec2):
-        dest = Rect(
-            self.draw_pos + offset, self._size.elementwise() * self._scale
-        )
-        self._texture.draw(
-            None,
-            dest,
-            self.rotation,
-            -self._draw_offset,
-            self.flip_x,
-            self.flip_y,
-        )
-
-    def _render_debug(self, offset: Vec2):
-        super()._render_debug(offset)
+    def render_debug(self, offset: Vec2):
+        super().render_debug(offset)
         Draw.rect(self._rect.move(offset), Color("green"), 3)

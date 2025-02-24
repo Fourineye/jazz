@@ -80,10 +80,8 @@ def load_image(path):
         return tmp_surf.convert()
 
 
-def load_texture(path):
-    return pygame._sdl2.Texture.from_surface(
-        Globals.renderer, load_image(path)
-    )
+def load_texture(path) -> Texture:
+    return Texture.from_surface(Globals.renderer, load_image(path))
 
 
 def clamp(n, smallest, largest):

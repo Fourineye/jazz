@@ -3,7 +3,7 @@ Scene class
 
 """
 
-from typing import TYPE_CHECKING, Callable, Any, Iterable
+from typing import TYPE_CHECKING, Callable, Any, Iterable, Type
 from dataclasses import dataclass
 
 from ..camera import Camera
@@ -34,10 +34,9 @@ class Scene:
 
     name = "unnamed"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.camera = Camera()
-        self._groups = {}
-        self._objects = {}
+        self._objects: dict[str, "GameObject"] = {}
         self._sprites: list[Sprite] = []
         self._timers: list[Timer] = []
         self._physics_world = {
@@ -50,6 +49,7 @@ class Scene:
         self._debug = False
         self.running = True
         self._paused = False
+        Globals.resource.clear()
         Globals.sound.clear_sounds()
 
     def on_load(self, data: dict[Any, Any]) -> None:
@@ -68,7 +68,6 @@ class Scene:
         Returns:
             dict[Any, Any]: Any data that needs to be passed to the next scene.
         """
-        Globals.resource.clear()
         return {}
 
     def update(self, delta: float) -> None:
@@ -129,7 +128,7 @@ class Scene:
         callback: Callable,
         args: tuple[Any],
         pause_process=False,
-        one_shot = True
+        one_shot=True,
     ) -> None:
         """Creates a timer that will call the provided callback function
         when it expires.
@@ -147,77 +146,8 @@ class Scene:
     def get_layer_collisions(self, collider, layer=0):
         return self._physics_world[layer].get_AABB_collisions(collider)
 
-    def get_font(self, id: str, size: int):
-        return Globals.resource.get_font(id, size)
-
-    def load_resource(
-        self, path: str, resource_type: int = SURFACE
-    ) -> Surface | Texture:
-        """Compatability function. Returns a Surface, Spritesheet, or Texture
-            from the ResourceManager.
-
-        Args:
-            path (str): Path to the resource to load
-            resource_type (int, optional): Flag that determines the
-                format to return the resource in. Defaults to SURFACE.
-
-        Returns:
-            Surface | Texture: The resource that was requested
-        """
-        if resource_type == SURFACE:
-            return Globals.resource.get_surface(path)
-        if resource_type == SPRITE_SHEET:
-            return Globals.resource.get_sprite_sheet(path)
-        if resource_type == TEXTURE:
-            return Globals.resource.get_texture(path)
-        raise JazzException("Incorrect resource type given")
-
-    def add_resource(
-        self, resource: Texture | Surface, name, resource_type=SURFACE
-    ) -> Texture | Surface:
-        """Compatability function. Adds a resource to the resource manager
-        with the given name. Returns the resource to allow chaining.
-
-        Args:
-            resource (Texture | Surface): The resource to add.
-            name (str): The name to add the resource under.
-            resource_type (int, optional): The resource type.
-                Defaults to SURFACE.
-
-        Returns:
-            Texture | Surface: The added resource
-        """
-        if resource_type == SURFACE:
-            return Globals.resource.add_surface(resource, name)
-        if resource_type == TEXTURE:
-            return Globals.resource.add_texture(resource, name)
-        raise JazzException("Incorrect resource type given")
-
-    def make_sprite_sheet(
-        self,
-        path: str,
-        dimensions: Vec2 | tuple[int, int],
-        offset: Vec2 | tuple[int, int] = Vec2(0, 0),
-    ) -> list[Image | Surface]:
-        """Compatability method. Passes the given parameters to the
-        resource manager and creates a SpriteSheet
-
-        Args:
-            path (str): The path to the resource
-            dimensions (Vec2 | tuple[int, int]): The dimensions of each
-                individual sprite
-            offset (Vec2 | tuple[int, int], optional): The offset at which
-                to start making sprites from the image. Defaults to (0, 0).
-
-        Returns:
-            list[Image | Surface]: A list of sprites
-        """
-        return Globals.resource.make_sprite_sheet(
-            path, Vec2(dimensions), offset
-        )
-
     # Object Management
-    def add_object(self, obj: "GameObject") -> "GameObject":
+    def add_object(self, obj: "Type[GameObject]") -> "GameObject":
         """Adds an object to the scene.
 
         Args:
@@ -322,7 +252,6 @@ class Scene:
         layers="0001",
         blacklist: list["PhysicsObject"] = None,
     ):
-
         ray_cast = Ray(pos=start, length=dist_to(start, end), layers=layers)
         ray_cast.facing = direction_to(start, end)
         return ray_cast.cast(blacklist)

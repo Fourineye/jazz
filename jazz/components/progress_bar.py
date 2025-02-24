@@ -19,47 +19,9 @@ class ProgressBar(Sprite):
         self.line_color = kwargs.get("line_color", (50, 50, 50))
         self.radius = kwargs.get("radius", 0)
         self.line_width = kwargs.get("line_width", 3)
-        if Globals.app.experimental:
-            self.update_bar = self._update_bar_hardware
-        else:
-            self.update_bar = self._update_bar_software
         self.update_bar()
 
-    def _update_bar_software(self):
-        # Draw the background color
-        self.source = pygame.Surface(self.size)
-        pygame.draw.rect(
-            self.texture,
-            self.bg_color,
-            self.texture.get_rect(),
-            border_radius=self.radius,
-        )
-        # Draw the bar fill
-        if self.value > 0:
-            fill_height = self.texture.get_height() - self.line_width * 2
-            fill_width = map_range(
-                self.value,
-                0,
-                self.max_value,
-                0,
-                self.texture.get_width() - self.line_width * 2,
-            )
-            fill_rect = pygame.Rect(
-                self.line_width, self.line_width, fill_width, fill_height
-            )
-            pygame.draw.rect(self.texture, self.color, fill_rect)
-        # Draw the border
-        if self.line_width > 0:
-            pygame.draw.rect(
-                self.texture,
-                self.line_color,
-                self.texture.get_rect(),
-                self.line_width,
-                border_radius=self.radius,
-            )
-        self._img_updated = False
-
-    def _update_bar_hardware(self):
+    def update_bar(self):
         self.texture = Texture(Globals.renderer, self.size, target=True)
         texture_rect = self.texture.get_rect()
         with Draw.canvas(self.texture):

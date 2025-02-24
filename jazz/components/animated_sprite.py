@@ -1,61 +1,89 @@
-import pygame
-
-from .sprite import Sprite
 from ..global_dict import Globals
+from ..utils import Image, JazzException, Surface, Texture, Vec2
+from .sprite import Sprite
 
 
 class AnimatedSprite(Sprite):
-    def __init__(self, name="animated sprite", **kwargs):
+    def __init__(self, name: str = "animated sprite", **kwargs):
         super().__init__(**kwargs)
-        self.animation_frames = kwargs.get("animation_frames", [None])
-        self._sheet = kwargs.get("spritesheet", None)
-        self._sprite_dim = kwargs.get("sprite_dim", (0, 0))
-        self._sprite_offset = kwargs.get("sprite_offset", (0, 0))
-        self._playing = kwargs.get("playing", True)
-        self._one_shot = kwargs.get("oneshot", False)
-        self._frame = 0
-        self.animation_fps = kwargs.get("animation_fps", 30)
+        self.animation_frames: list[int] = kwargs.get("animation_frames", [-1])
+        self._sheet: list[Image | Texture] = kwargs.get("spritesheet", None)
+        self._sprite_dim: Vec2 = Vec2(kwargs.get("sprite_dim", (0, 0)))
+        self._sprite_offset: Vec2 = Vec2(kwargs.get("sprite_offset", (0, 0)))
+        self._playing: bool = kwargs.get("playing", True)
+        self._one_shot: bool = kwargs.get("oneshot", False)
+        self._frame: float = 0
+        self.animation_fps: int = kwargs.get("animation_fps", 30)
 
-    def on_load(self):
-        super().on_load()
         if self._sheet is None:
             self._sheet = [self._texture]
         else:
             if isinstance(self._sheet, str):
-                self._sheet = Globals.scene.make_sprite_sheet(
+                self._sheet = Globals.resource.make_sprite_sheet(
                     self._sheet, self._sprite_dim, self._sprite_offset
                 )
             else:
-                for sprite in self._sheet:
+                for i, sprite in enumerate(self._sheet):
                     if isinstance(sprite, str):
-                        if Globals.app.experimental:
-                            sprite = Globals.scene.load_resource(sprite, 2)
-                        else:
-                            sprite = Globals.scene.load_resource(sprite)
-                    if not isinstance(sprite, (pygame.Surface, pygame._sdl2.Texture, pygame._sdl2.Image)):
+                        self._sheet[i] = Globals.resource.get_texture(sprite)
+                    if isinstance(sprite, Surface):
+                        self._sheet[i] = Globals.resource.add_texture(
+                            sprite, f"{self.id}:{i}", True
+                        )
+                    if not isinstance(
+                        sprite,
+                        (
+                            Texture,
+                            Image,
+                        ),
+                    ):
                         raise TypeError(
-                            "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
+                            "'spritesheet' must be one of the following:"
+                            "\n-Valid path\n-list containing surfaces"
+                            " or valid paths"
                         )
 
-        if self.animation_frames[0] is None:
+        if self.animation_frames[0] == -1:
             self.animation_frames = [i for i in range(len(self._sheet))]
 
         self.texture = self._sheet[self.animation_frames[0]]
 
-    def update_animation(self, spritesheet=None, animation_frames=None, fps=None):
+    def update_animation(
+        self,
+        spritesheet: str | list[str | Texture | Image] | None = None,
+        animation_frames: list[int] | None = None,
+        fps: int | None = None,
+    ):
         if spritesheet is not None:
             if isinstance(spritesheet, str):
-                self._sheet = Globals.scene.make_sprite_sheet(
-                    spritesheet, self._sprite_dim, self._sprite_offset
-                )
+                try:
+                    self._sheet = Globals.resource.get_sprite_sheet(
+                        spritesheet
+                    )
+                except JazzException:
+                    self._sheet = Globals.resource.make_sprite_sheet(
+                        spritesheet, self._sprite_dim, self._sprite_offset
+                    )
             else:
                 self._sheet = spritesheet
-                for sprite in self._sheet:
+                for i, sprite in enumerate(spritesheet):
                     if isinstance(sprite, str):
-                        sprite = Globals.scene.load_resource(sprite)
-                    if not isinstance(sprite, (pygame.Surface, pygame._sdl2.Texture, pygame._sdl2.Image)):
+                        self._sheet[i] = Globals.resource.get_texture(sprite)
+                    if isinstance(sprite, Surface):
+                        self._sheet[i] = Globals.resource.add_texture(
+                            sprite, f"{self.id}:{i}", True
+                        )
+                    if not isinstance(
+                        sprite,
+                        (
+                            Texture,
+                            Image,
+                        ),
+                    ):
                         raise TypeError(
-                            "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
+                            "'spritesheet' must be one of the following:"
+                            "\n-Valid path\n-list containing surfaces"
+                            " or valid paths"
                         )
 
         if animation_frames is not None:

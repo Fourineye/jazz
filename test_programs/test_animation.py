@@ -16,5 +16,4 @@ class AnimationTest(Test):
                 scale=Vec2(5, 5),
             ),
         )
-        Globals.app.set_next_scene("UI Test")
         self.create_timer(5, self.stop, ())

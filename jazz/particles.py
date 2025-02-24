@@ -21,7 +21,7 @@ class Particle:
 class ParticleEmitter(GameObject):
     """An object that handles particles"""
 
-    def __init__(self, active=False, rate=1, **kwargs):
+    def __init__(self, active: bool = False, rate: int = 1, **kwargs):
         kwargs.setdefault("name", "Particle Emitter")
         super().__init__(**kwargs)
         self._particles: list[Particle] = []
@@ -33,23 +33,16 @@ class ParticleEmitter(GameObject):
         self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
         self.active = active
         self.rate = rate
-        self._emission = 0
+        self._emission: float = 0
         if self._particle_graphics is None:
             self._particle_graphics = ["default"]
 
     def on_load(self):
-        if Globals.app.experimental:
-            for i, graphic in enumerate(self._particle_graphics):
-                if not isinstance(graphic, (Texture, Image)):
-                    self._particle_graphics[i] = Globals.resource.get_texture(
-                        graphic
-                    )
-        else:
-            for i, graphic in enumerate(self._particle_graphics):
-                if not isinstance(graphic, pygame.Surface):
-                    self._particle_graphics[i] = Globals.resource.get_surface(
-                        graphic
-                    )
+        for i, graphic in enumerate(self._particle_graphics):
+            if not isinstance(graphic, (Texture, Image)):
+                self._particle_graphics[i] = Globals.resource.get_texture(
+                    graphic
+                )
         Globals.scene.add_sprite(self)
 
     def emit_particles(self, num: int):
@@ -94,27 +87,6 @@ class ParticleEmitter(GameObject):
         )
         self._particles.append(particle)
 
-    def draw(self, surface, offset=None):
-        """
-        Called once per frame, draws all particles currently in the object.
-
-        Args:
-            surface (pygame.Surface): Surface to draw the Entity on.
-            offset (Vector2, optional): Offset to add to pos for the draw
-                destination. Defaults to None.
-        """
-        if offset is None:
-            offset = Vec2()
-        blits = []
-        for particle in self._particles:
-            blits.append(
-                (
-                    particle.img,
-                    particle.pos + offset - Vec2(particle.img.get_size()) / 2,
-                )
-            )
-        surface.fblits(blits)
-
     def render(self, offset):
         for particle in self._particles:
             img = self._particle_graphics[particle.img]
@@ -130,7 +102,8 @@ class ParticleEmitter(GameObject):
 
     def update(self, delta: float):
         """
-        Called once per frame, updates all Particle objects currently in the object.
+        Called once per frame, updates all Particle objects currently
+            in the object.
 
         Args:
             delta (float): Time in seconds since last frame.
