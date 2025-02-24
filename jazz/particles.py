@@ -21,7 +21,7 @@ class Particle:
 class ParticleEmitter(GameObject):
     """An object that handles particles"""
 
-    def __init__(self, active=False, rate=1, **kwargs):
+    def __init__(self, active: bool = False, rate: int = 1, **kwargs):
         kwargs.setdefault("name", "Particle Emitter")
         super().__init__(**kwargs)
         self._particles: list[Particle] = []
@@ -33,7 +33,7 @@ class ParticleEmitter(GameObject):
         self._emission_speed = kwargs.get("emission_speed", [(10, 100)])
         self.active = active
         self.rate = rate
-        self._emission = 0
+        self._emission: float = 0
         if self._particle_graphics is None:
             self._particle_graphics = ["default"]
 

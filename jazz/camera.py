@@ -1,11 +1,22 @@
+from typing import Type, TYPE_CHECKING
+
 from random import randint
 
 import pygame
-from pygame.window import Window
-from pygame._sdl2 import Renderer
 
 from .global_dict import Globals
-from .utils import Rect, Vec2, clamp, Surface, FOLLOW_STRICT, FOLLOW_SMOOTH
+from .utils import (
+    Rect,
+    Vec2,
+    Color,
+    clamp,
+    FOLLOW_STRICT,
+    FOLLOW_SMOOTH,
+    JazzException,
+)
+
+if TYPE_CHECKING:
+    from .engine import GameObject
 
 
 class Camera:
@@ -27,7 +38,7 @@ class Camera:
         )
         self.zoom = 1
 
-    def update(self, _delta):
+    def update(self, _delta: float) -> None:
         """
         Called every frame to update the offset and shake values
 
@@ -46,7 +57,8 @@ class Camera:
             self.shake = Vec2()
             self.magnitude = 0
 
-    def render(self):
+    def render(self) -> None:
+        """Renders visible objects to the screen."""
         draw_objects = Globals.scene.sprites
 
         if self._blanking:
@@ -60,7 +72,8 @@ class Camera:
                 else:
                     obj.render(self.offset + self.shake)
 
-    def render_debug(self):
+    def render_debug(self) -> None:
+        """Renders debug information about visible objects."""
         draw_objects = Globals.scene.objects
 
         for obj in draw_objects:
@@ -70,7 +83,7 @@ class Camera:
                 else:
                     obj._render_debug(self.offset + self.shake)
 
-    def update_offset(self):
+    def update_offset(self) -> None:
         """Updates the Camera offset to the target."""
         if self.target is None:
             return
@@ -81,10 +94,10 @@ class Camera:
         else:
             target_x, target_y = self.target.pos
 
-        if self.follow_type == self.STRICT:
+        if self.follow_type == FOLLOW_STRICT:
             offset_x = self.display_center[0] - target_x
             offset_y = self.display_center[1] - target_y
-        elif self.follow_type == self.SMOOTH:
+        elif self.follow_type == FOLLOW_SMOOTH:
             offset_x += (self.display_center[0] - target_x - offset_x) / 5
             offset_y += (self.display_center[1] - target_y - offset_y) / 5
 
@@ -102,42 +115,49 @@ class Camera:
 
         self.offset.update(offset_x, offset_y)
 
-    def set_offset(self, position=(0, 0)):
+    def set_offset(self, position=(0, 0)) -> None:
         """Sets the camera offset to a specified value
 
         Args:
-            position (tuple, optional): New offset to set the Camera to. Defaults to (0, 0).
+            position (tuple, optional): New offset to set the Camera to.
+                Defaults to (0, 0).
         """
         offset_x = self.display_center[0] - position[0]
         offset_y = self.display_center[1] - position[1]
         self.offset.update(offset_x, offset_y)
 
-    def set_target(self, target):
+    def set_target(self, target: Type["GameObject"]) -> None:
         """
         Sets the target of the Camera, which it will follow.
 
         Args:
-            target (Entity, Vec2): The target to follow.
+            target (GameObject, Vec2): The target to follow.
         """
-        if isinstance(target, Vec2):
-            self.target = target
-        elif isinstance(target, object):
+        if isinstance(target, object):
             self.target = target
         else:
-            print("Target must either be a Vec2 or an Entity")
+            raise JazzException("Camera can only be set to follow an object")
 
-    def set_bounds(self, bounds):
+    def set_bounds(self, bounds: Rect | tuple[int, int, int, int]) -> None:
+        """This method sets the world coordinantes bounds of the camera.
+
+        Args:
+            bounds (Rect | tuple[int, int, int, int]): The Rectangle that the
+                camera will stay inside of.
+        """
         if len(bounds) != 4:
-            print("Bounds must be pygame rect or a iterable with length 4")
+            raise JazzException(
+                "Bounds must be pygame rect or a iterable with length 4"
+            )
         if isinstance(bounds, pygame.Rect):
             self.bounds = bounds
         else:
-            self.bounds = pygame.Rect(*bounds)
+            self.bounds = Rect(*bounds)
 
-    def set_bg_color(self, color):
-        self._bg_color = color
+    def set_bg_color(self, color: Color | tuple[int, int, int] | str) -> None:
+        self._bg_color = Color(color)
 
-    def add_shake(self, magnitude):
+    def add_shake(self, magnitude) -> None:
         """
         Adds magnitude to the Camera shake.
 
@@ -148,13 +168,14 @@ class Camera:
         self.shake = Vec2()
 
     @property
-    def pos(self):
+    def pos(self) -> Vec2:
         return self.display_center - self.offset
 
     @property
-    def screen_rect(self):
+    def screen_rect(self) -> Rect:
         return Rect(
-            *(-self.offset),
+            self.offset.x,
+            self.offset.y,
             Globals.display.get_width(),
             Globals.display.get_height(),
         )

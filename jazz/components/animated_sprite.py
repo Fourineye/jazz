@@ -1,9 +1,5 @@
-from typing import Any
-
-import pygame
-
 from ..global_dict import Globals
-from ..utils import Image, Surface, Texture, Vec2, JazzException
+from ..utils import Image, JazzException, Surface, Texture, Vec2
 from .sprite import Sprite
 
 
@@ -27,19 +23,24 @@ class AnimatedSprite(Sprite):
                     self._sheet, self._sprite_dim, self._sprite_offset
                 )
             else:
-                for sprite in self._sheet:
+                for i, sprite in enumerate(self._sheet):
                     if isinstance(sprite, str):
-                        sprite = Globals.resource.get_texture(sprite)
+                        self._sheet[i] = Globals.resource.get_texture(sprite)
+                    if isinstance(sprite, Surface):
+                        self._sheet[i] = Globals.resource.add_texture(
+                            sprite, f"{self.id}:{i}", True
+                        )
                     if not isinstance(
                         sprite,
                         (
-                            Surface,
                             Texture,
                             Image,
                         ),
                     ):
                         raise TypeError(
-                            "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
+                            "'spritesheet' must be one of the following:"
+                            "\n-Valid path\n-list containing surfaces"
+                            " or valid paths"
                         )
 
         if self.animation_frames[0] == -1:
@@ -65,12 +66,12 @@ class AnimatedSprite(Sprite):
                     )
             else:
                 self._sheet = spritesheet
-                for i, sprite in enumerate(self._sheet):
+                for i, sprite in enumerate(spritesheet):
                     if isinstance(sprite, str):
                         self._sheet[i] = Globals.resource.get_texture(sprite)
                     if isinstance(sprite, Surface):
                         self._sheet[i] = Globals.resource.add_texture(
-                            sprite, f"{self.id}:{i}"
+                            sprite, f"{self.id}:{i}", True
                         )
                     if not isinstance(
                         sprite,
@@ -80,7 +81,9 @@ class AnimatedSprite(Sprite):
                         ),
                     ):
                         raise TypeError(
-                            "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
+                            "'spritesheet' must be one of the following:"
+                            "\n-Valid path\n-list containing surfaces"
+                            " or valid paths"
                         )
 
         if animation_frames is not None:

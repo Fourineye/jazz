@@ -31,7 +31,7 @@ class ResourceManager:
             "default": Texture.from_surface(renderer, _default())
         }
         self._colors: dict[tuple[int, int, int], Texture] = {}
-        self._sprite_sheets: dict[str, list[Image]] = {}
+        self._sprite_sheets: dict[str, list[Image | Texture]] = {}
         self._fonts: dict[str, dict[int, pygame.Font]] = {}
 
     def clear(self) -> None:
@@ -86,7 +86,7 @@ class ResourceManager:
             self._surfaces[id] = texture
         return self._textures[id]
 
-    def get_sprite_sheet(self, id: str) -> list[Image]:
+    def get_sprite_sheet(self, id: str) -> list[Image | Texture]:
         resource = self._sprite_sheets.get(id, None)
         if resource is None:
             raise (JazzException(f"{id} is not a valid sprite sheet"))
@@ -104,7 +104,7 @@ class ResourceManager:
 
     def make_sprite_sheet(
         self, id: str, dimensions: Vec2, offset=(0, 0)
-    ) -> list[Image]:
+    ) -> list[Image | Texture]:
         sprite_sheet = self._sprite_sheets.get(id, None)
         if sprite_sheet is None:
             sheet = self.get_texture(id)

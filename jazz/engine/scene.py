@@ -34,10 +34,9 @@ class Scene:
 
     name = "unnamed"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.camera = Camera()
-        self._groups = {}
-        self._objects = {}
+        self._objects: dict[str, "GameObject"] = {}
         self._sprites: list[Sprite] = []
         self._timers: list[Timer] = []
         self._physics_world = {
@@ -50,6 +49,7 @@ class Scene:
         self._debug = False
         self.running = True
         self._paused = False
+        Globals.resource.clear()
         Globals.sound.clear_sounds()
 
     def on_load(self, data: dict[Any, Any]) -> None:
@@ -68,7 +68,6 @@ class Scene:
         Returns:
             dict[Any, Any]: Any data that needs to be passed to the next scene.
         """
-        Globals.resource.clear()
         return {}
 
     def update(self, delta: float) -> None:
