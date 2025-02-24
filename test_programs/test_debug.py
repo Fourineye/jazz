@@ -21,7 +21,6 @@ class DebugTest(Test):
         body.add_collider(COLLIDER_CIRCLE, radius=50)
         self.add_object(body)
         self.add_object(self.square)
-        Globals.app.set_next_scene("UI Test")
         self.create_timer(10, self.stop, ())
 
     def update(self, delta):

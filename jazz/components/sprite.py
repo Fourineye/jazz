@@ -91,7 +91,9 @@ class Sprite(GameObject):
         if not isinstance(new_texture, (Texture, Image, Surface)):
             new_texture = Globals.resource.get_texture(new_texture)
         if not isinstance(new_texture, (Texture, Image)):
-            new_texture = Globals.resource.add_texture(new_texture, self.name)
+            new_texture = Globals.resource.add_texture(
+                new_texture, self.id, True
+            )
 
         self._texture = new_texture
 

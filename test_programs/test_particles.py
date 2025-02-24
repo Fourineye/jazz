@@ -13,7 +13,6 @@ class ParticleTest(Test):
 
     def on_load(self, _):
         super().on_load(_)
-        Globals.app.set_next_scene("UI Test")
         self.emitter = self.add_object(
             ParticleEmitter(
                 True,

@@ -23,7 +23,7 @@ class AnimatedSprite(Sprite):
             self._sheet = [self._texture]
         else:
             if isinstance(self._sheet, str):
-                self._sheet = Globals.scene.make_sprite_sheet(
+                self._sheet = Globals.resource.make_sprite_sheet(
                     self._sheet, self._sprite_dim, self._sprite_offset
                 )
             else:
@@ -42,7 +42,7 @@ class AnimatedSprite(Sprite):
                             "'spritesheet' must be one of the following:\n-Valid path\n-list containing surfaces or valid paths"
                         )
 
-        if self.animation_frames[0] is None:
+        if self.animation_frames[0] == -1:
             self.animation_frames = [i for i in range(len(self._sheet))]
 
         self.texture = self._sheet[self.animation_frames[0]]

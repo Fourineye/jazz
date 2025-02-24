@@ -14,17 +14,21 @@ from ..utils import (
 )
 
 
+def _default() -> Surface:
+    default = Surface((10, 10))
+    default.fill("magenta")
+    pygame.draw.rect(default, "gray", (5, 0, 5, 5))
+    pygame.draw.rect(default, "gray", (0, 5, 5, 5))
+    return default
+
+
 class ResourceManager:
     DEFAULT_FONT = INTERNAL_PATH + "/resources/Roboto-Regular.ttf"
 
     def __init__(self, renderer: Renderer):
-        default = Surface((10, 10))
-        default.fill("magenta")
-        pygame.draw.rect(default, "gray", (5, 0, 5, 5))
-        pygame.draw.rect(default, "gray", (0, 5, 5, 5))
-        self._surfaces: dict[str, Surface] = {"default": default}
+        self._surfaces: dict[str, Surface] = {"default": _default()}
         self._textures: dict[str, Texture | Image] = {
-            "default": Texture.from_surface(renderer, default)
+            "default": Texture.from_surface(renderer, _default())
         }
         self._colors: dict[tuple[int, int, int], Texture] = {}
         self._sprite_sheets: dict[str, list[Image]] = {}
@@ -34,13 +38,9 @@ class ResourceManager:
         """Destroys any loaded images, fonts, and spritesheets."""
         self._surfaces.clear()
         self._textures.clear()
-        default = Surface((10, 10))
-        default.fill("magenta")
-        pygame.draw.rect(default, "gray", (5, 0, 5, 5))
-        pygame.draw.rect(default, "gray", (0, 5, 5, 5))
-        self._surfaces = {"default": default}
+        self._surfaces = {"default": _default()}
         self._textures = {
-            "default": Texture.from_surface(Globals.renderer, default)
+            "default": Texture.from_surface(Globals.renderer, _default())
         }
         self._colors.clear()
         self._sprite_sheets.clear()
@@ -49,10 +49,10 @@ class ResourceManager:
     def get_font(self, id: str = DEFAULT_FONT, size: int = 12):
         if id not in self._fonts.keys():
             self._fonts[id] = {}
-        font = self._fonts.get(size, None)
+        font = self._fonts[id].get(size, None)
         if font is None:
             font = pygame.font.Font(id, size)
-            self._fonts.setdefault(size, font)
+            self._fonts[id].setdefault(size, font)
         return font
 
     def get_texture(self, id: str) -> Texture | Image:
@@ -63,9 +63,9 @@ class ResourceManager:
         return resource
 
     def add_texture(
-        self, texture: Surface | Texture | Image, id: str
+        self, texture: Surface | Texture | Image, id: str, force: bool = False
     ) -> Texture | Image:
-        if id not in self._textures.keys():
+        if force or id not in self._textures.keys():
             if isinstance(texture, (Texture, Image)):
                 self._textures[id] = texture
             else:

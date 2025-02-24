@@ -20,7 +20,6 @@ class DrawTest(Test):
     def on_load(self, data):
         Test.on_load(self, data)
         self.create_timer(0.1, self.iterate_width, ())
-        Globals.app.set_next_scene("UI Test")
         self.create_timer(20, self.stop, ())
 
     def iterate_width(self):

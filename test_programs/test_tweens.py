@@ -47,7 +47,6 @@ class TweenTest(Test):
 
     def on_load(self, data):
         Test.on_load(self, data)
-        Globals.app.set_next_scene("UI Test")
         self.tweens = []
         self.points = []
         self.pause_timer = 2
