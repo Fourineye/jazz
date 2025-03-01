@@ -194,14 +194,9 @@ class Scene:
         Args:
             obj (GameObject): The object to remove.
 
-        Raises:
-            JazzException: Raises an exception if the object is not
-                in the scene.
         """
         if obj.id in self._objects:
             self._objects.pop(obj.id)
-        else:
-            raise JazzException(f"{obj.id}:{obj.name} is not in the scene.")
 
     def remove_physics_object(self, obj: "PhysicsObject") -> None:
         """Removes the object from the scene's physics layers
@@ -224,7 +219,8 @@ class Scene:
         try:
             self._sprites.remove(sprite)
         except ValueError:
-            raise JazzException(f"Sprite not found: {sprite.id}:{sprite.name}")
+            # raise JazzException(f"Sprite not found: {sprite.id}:{sprite.name}")
+            pass
 
     def get_AABB_collisions(
         self, physics_object: "PhysicsObject"

@@ -147,6 +147,7 @@ class GameObject:
         """
         if obj.id in self._children:
             self._children.pop(obj.id)
+            obj._parent = None
             if kill:
                 obj.kill()
         else:
