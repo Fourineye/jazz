@@ -60,7 +60,7 @@ class Button(Sprite):
         if self._label is not None:
             self._label.pos = self._rect.center
 
-    def update(self, _delta):
+    def _implementation_fixed(self, _delta):
         mouse_pos = Globals.mouse.pos
         if self.visible:
             if self._rect.collidepoint(mouse_pos):

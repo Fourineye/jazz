@@ -43,7 +43,7 @@ class Tween(GameObject):
         if kwargs.get("play", False):
             self.play()
 
-    def update(self, delta: float) -> None:
+    def _implementation_update(self, delta: float) -> None:
         """Method that updates the tween and applys the easing to the target
             object and property.
 

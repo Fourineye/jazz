@@ -4,7 +4,6 @@ Scene class
 """
 
 from typing import TYPE_CHECKING, Callable, Any, Iterable, Type
-from dataclasses import dataclass
 
 from ..camera import Camera
 from ..global_dict import Globals
@@ -13,12 +12,6 @@ from ..animation import Timer
 from ..utils import (
     dist_to,
     direction_to,
-    SPRITE_SHEET,
-    SURFACE,
-    TEXTURE,
-    Surface,
-    Texture,
-    Image,
     JazzException,
     Vec2,
 )
@@ -76,14 +69,6 @@ class Scene:
 
         Args:
             delta (float): Time in seconds since the last frame.
-        """
-
-    def late_update(self, delta: float) -> None:
-        """Base method that can be overwritten. Called after every
-        object has run its update method.
-
-        Args:
-            delta (float): Time since last frame
         """
 
     def fixed_update(self, delta: float) -> None:
@@ -304,21 +289,6 @@ class Scene:
 
         # call scene process hook
         self.update(delta)
-
-        # late update
-        for obj in objects:
-            if getattr(obj, "do_kill", False):
-                self._to_kill.add(obj)
-                continue
-            if hasattr(obj, "_engine_late_update"):
-                if obj.game_process:
-                    if self._paused:
-                        if obj.pause_process:
-                            obj._engine_late_update(delta)
-                    else:
-                        obj._engine_late_update(delta)
-
-        self.late_update(delta)
 
         # update camera
         if not self._paused:

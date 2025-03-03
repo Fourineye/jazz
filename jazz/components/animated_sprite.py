@@ -97,7 +97,7 @@ class AnimatedSprite(Sprite):
         if fps is not None:
             self.set_fps(fps)
 
-    def update(self, delta):
+    def _implementation_fixed(self, delta):
         if self._playing:
             self._frame = self._frame + delta * self.animation_fps
             if self._frame >= len(self.animation_frames):

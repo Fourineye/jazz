@@ -62,13 +62,6 @@ class GameObject:
             delta (float): Time in seconds since the last frame.
         """
 
-    def late_update(self, delta: float) -> None:
-        """Base method that can be overwritten. Called after every object has run its update method
-
-        Args:
-            delta (float): Time since last frame
-        """
-
     def render_debug(self, offset: Vec2) -> None:
         """Base method that can be overwritten. Draws a circle at the object's world
         position and a line in it's look direction.
@@ -90,8 +83,16 @@ class GameObject:
         """
         for child in self._children.values():
             child._engine_fixed(delta)
+        self._implementation_fixed(delta)
         self.fixed_update(delta)
-        
+    
+    def _implementation_fixed(self, delta:float) -> None:
+        """Engine method for implementation of subclasses
+
+        Args:
+            delta (float): A constant 1 / 60 delta
+        """
+
     def _engine_update(self, delta: float) -> None:
         """Engine method that propogates the update call to it's children
 
@@ -100,17 +101,15 @@ class GameObject:
         """
         for child in self._children.values():
             child._engine_update(delta)
+        self._implementation_update(delta)
         self.update(delta)
 
-    def _engine_late_update(self, delta: float) -> None:
-        """Engine method that propogates the late_update call to it's children
+    def _implementation_update(self, delta: float) -> None:
+        """Engine method for implementation of subclasses.
 
         Args:
             delta (float): Time in seconds since the last frame
         """
-        for child in self._children.values():
-            child._engine_late_update(delta)
-        self.late_update(delta)
 
     def _render_debug(self, offset: Vec2) -> None:
         """Engine method that propogates the render_debug call to it's children.

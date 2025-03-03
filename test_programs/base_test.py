@@ -10,7 +10,7 @@ class Test(Scene):
         self.update_title()
         Globals.app.set_next_scene(data.get("menu", self.name))
 
-    def late_update(self, _):
+    def fixed_update(self, _):
         if Globals.key.press("space"):
             self.stop()
 

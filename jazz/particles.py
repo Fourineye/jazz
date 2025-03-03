@@ -100,7 +100,7 @@ class ParticleEmitter(GameObject):
                 particle.rot,
             )
 
-    def update(self, delta: float):
+    def _implementation_fixed(self, delta: float):
         """
         Called once per frame, updates all Particle objects currently
             in the object.

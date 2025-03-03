@@ -13,7 +13,7 @@ class Area(PhysicsObject):
         self.entered = []
         self._active = kwargs.get("active", True)
 
-    def update(self, _delta):
+    def fixed_update(self, _delta):
         if self._active:
             self.entered = self.get_entered()
 

@@ -136,10 +136,8 @@ class Application:
                 self._quit_check()
 
                 # call hook functions
-                self._input.update()
-                self._active_scene._engine_update(self._delta)
-
                 if scene_time >= next_fixed:
+                    self._input.update()
                     self._active_scene._engine_fixed(1/60)
                     next_fixed = scene_time + 1 / 60
 
@@ -150,6 +148,7 @@ class Application:
                     next_render = scene_time + render_time
                     self._clock.tick()
 
+                self._active_scene._engine_update(self._delta)
                 # Control fps and record delta time
                 self._delta = scene_time - last_frame
                 self._delta = min(self._delta, self.max_frame_time)
