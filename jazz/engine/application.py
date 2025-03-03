@@ -1,5 +1,5 @@
 from typing import Type
-
+from time import time
 import pygame
 
 from .input_handler import InputHandler
@@ -122,23 +122,38 @@ class Application:
             self._active_scene = self._load_scene(self._next_scene)
             Globals.scene = self._active_scene
             self._active_scene.on_load(scene_transfer_data)
+            scene_init_time = time()
+            render_time = 1 / self.fps_max
+            next_render = 0.0
+            next_fixed = 0.0
+            last_frame = 0.0
+
 
             # Main scene loop
             while self._active_scene.running:
+                scene_time = time() - scene_init_time
                 # Handle window events
                 self._quit_check()
 
                 # call hook functions
                 self._input.update()
-                self._active_scene._game_update(self._delta)
+                self._active_scene._engine_update(self._delta)
+
+                if scene_time >= next_fixed:
+                    self._active_scene._engine_fixed(1/60)
+                    next_fixed = scene_time + 1 / 60
 
                 # render game window
-                self._active_scene.render()
-                self._renderer.present()
+                if scene_time >= next_render:
+                    self._active_scene.render()
+                    self._renderer.present()
+                    next_render = scene_time + render_time
+                    self._clock.tick()
 
                 # Control fps and record delta time
-                self._delta = self._clock.tick(self.fps_max) / 1000
+                self._delta = scene_time - last_frame
                 self._delta = min(self._delta, self.max_frame_time)
+                last_frame = scene_time
 
             # Allow for transfer of data between scenes
             scene_transfer_data = self._active_scene.on_unload()

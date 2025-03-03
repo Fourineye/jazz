@@ -45,7 +45,7 @@ class RenderTest(Test):
             )
         self.create_timer(TIME, self.record_fps, ())
 
-    def update(self, delta):
+    def fixed_update(self, delta):
         # Globals.app.set_caption(f"{Globals.app.get_fps():.1f} fps")
         self.sprite_count += 5
         for _ in range(5):

@@ -48,6 +48,13 @@ class GameObject:
     def on_load(self):
         """Base method that can be overwritten. Called when the object is added to the scene."""
 
+    def fixed_update(self, delta: float) -> None:
+        """Base method that can be overwritten. Called 60 times per second
+
+        Args:
+            delta (float): a fixed delta of 1 / 60
+        """
+
     def update(self, delta: float) -> None:
         """Base method that can be overwritten. Called once per frame.
 
@@ -75,24 +82,34 @@ class GameObject:
         Draw.line(screen_pos, look_pos, Color("red"), 3)
 
     # Engine called methods that allow object nesting
-    def _update(self, delta: float) -> None:
+    def _engine_fixed(self, delta: float) -> None:
+        """Engine method that propogates the fixed update call to it's children
+
+        Args:
+            delta (float): A constant 1 / 60 delta
+        """
+        for child in self._children.values():
+            child._engine_fixed(delta)
+        self.fixed_update(delta)
+        
+    def _engine_update(self, delta: float) -> None:
         """Engine method that propogates the update call to it's children
 
         Args:
             delta (float): Time in seconds since the last frame
         """
         for child in self._children.values():
-            child._update(delta)
+            child._engine_update(delta)
         self.update(delta)
 
-    def _late_update(self, delta: float) -> None:
+    def _engine_late_update(self, delta: float) -> None:
         """Engine method that propogates the late_update call to it's children
 
         Args:
             delta (float): Time in seconds since the last frame
         """
         for child in self._children.values():
-            child._late_update(delta)
+            child._engine_late_update(delta)
         self.late_update(delta)
 
     def _render_debug(self, offset: Vec2) -> None:

@@ -25,7 +25,7 @@ class Timer:
 
     def _on_load(self): ...
 
-    def _update(self, delta: float) -> None:
+    def _engine_update(self, delta: float) -> None:
         self.time_left -= delta
         if self.time_left <= 0:
             self.callback(*self.args)

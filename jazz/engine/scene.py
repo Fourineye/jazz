@@ -37,6 +37,7 @@ class Scene:
     def __init__(self) -> None:
         self.camera = Camera()
         self._objects: dict[str, "GameObject"] = {}
+        self._to_kill: set[Type["GameObject"]] = set()
         self._sprites: list[Sprite] = []
         self._timers: list[Timer] = []
         self._physics_world = {
@@ -83,6 +84,13 @@ class Scene:
 
         Args:
             delta (float): Time since last frame
+        """
+
+    def fixed_update(self, delta: float) -> None:
+        """Base method that can be overwritten. Called every fixed update
+
+        Args:
+            delta (float): A constant 1/60 delta
         """
 
     def render(self) -> None:
@@ -253,31 +261,46 @@ class Scene:
         return ray_cast.cast(blacklist)
 
     # Engine Methods
-    def _game_update(self, delta: float) -> None:
+    def _engine_fixed(self, delta: float) -> None:
+        for grid in self._physics_world.values():
+            grid.build_grid()
+
+        objects = list(self._objects.values())
+
+        for obj in objects:
+            if getattr(obj, "do_kill", False):
+                self._to_kill.add(obj)
+                continue
+            if hasattr(obj, "_engine_fixed"):
+                if obj.game_process:
+                    if self._paused:
+                        if obj.pause_process:
+                            obj._engine_fixed(delta)
+                    else:
+                        obj._engine_fixed(delta)
+        
+        self.fixed_update(delta)
+
+    def _engine_update(self, delta: float) -> None:
         """Engine Method. Updates the scene
             and deletes objects marked for deletion.
 
         Args:
             delta (float): Time in seconds since the last frame.
         """
-
-        for grid in self._physics_world.values():
-            grid.build_grid()
-
-        kill_items = set()
         objects = list(self._objects.values())
 
         for obj in objects:
             if getattr(obj, "do_kill", False):
-                kill_items.add(obj)
+                self._to_kill.add(obj)
                 continue
-            if hasattr(obj, "_update"):
+            if hasattr(obj, "_engine_update"):
                 if obj.game_process:
                     if self._paused:
                         if obj.pause_process:
-                            obj._update(delta)
+                            obj._engine_update(delta)
                     else:
-                        obj._update(delta)
+                        obj._engine_update(delta)
 
         # call scene process hook
         self.update(delta)
@@ -285,15 +308,15 @@ class Scene:
         # late update
         for obj in objects:
             if getattr(obj, "do_kill", False):
-                kill_items.add(obj)
+                self._to_kill.add(obj)
                 continue
-            if hasattr(obj, "_late_update"):
+            if hasattr(obj, "_engine_late_update"):
                 if obj.game_process:
                     if self._paused:
                         if obj.pause_process:
-                            obj._late_update(delta)
+                            obj._engine_late_update(delta)
                     else:
-                        obj._late_update(delta)
+                        obj._engine_late_update(delta)
 
         self.late_update(delta)
 
@@ -302,8 +325,9 @@ class Scene:
             self.camera.update(delta)
 
         # delete objects queued for deletion
-        for obj in kill_items:
+        for obj in self._to_kill:
             obj.kill()
+        self._to_kill.clear()
 
     # Properties and builtins
     def __getitem__(self, key):
