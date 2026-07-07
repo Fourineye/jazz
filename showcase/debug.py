@@ -1,4 +1,4 @@
-from base_test import Test
+from base import Test
 
 from jazz import Body, Globals, Sprite, Vec2, COLLIDER_RECT, COLLIDER_CIRCLE
 

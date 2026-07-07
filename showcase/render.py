@@ -1,6 +1,6 @@
 from random import randint
 
-from base_test import Test
+from base import Test
 
 from jazz import Globals, Sprite, Vec2
 from jazz.utils import random_color

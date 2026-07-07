@@ -1,4 +1,4 @@
-from base_test import Test
+from base import Test
 
 from jazz import (
     EASINGS,

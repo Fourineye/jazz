@@ -1,4 +1,4 @@
-from base_test import Test
+from base import Test
 
 import jazz
 from jazz import Globals, Vec2

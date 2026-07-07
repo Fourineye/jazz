@@ -4,9 +4,9 @@ from random import choice, randint, uniform
 import pygame
 from pygame._sdl2 import Texture, Image
 
-from .engine.base_object import GameObject
-from .global_dict import Globals
-from .utils import Vec2, Rect
+from ..engine.base_object import GameObject
+from ..global_dict import Globals
+from ..utils import Vec2, Rect
 
 
 @dataclass

@@ -1,7 +1,7 @@
-from .global_dict import Globals
-from .components import Label, Sprite
-from .user_interface import DEFAULT_FONT
-from .utils import Color, Rect, Surface, Vec2
+from ..global_dict import Globals
+from ..components import Label, Sprite
+from ..user_interface import DEFAULT_FONT
+from ..utils import Color, Rect, Surface, Vec2
 
 
 class TextBox(Sprite):

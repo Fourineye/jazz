@@ -4,3 +4,4 @@ jazz.egg-info
 .idea/
 .venv
 .jini
+.agents

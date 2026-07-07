@@ -1,4 +1,5 @@
-from base_test import Test
+import os
+from base import Test
 
 from jazz import AnimatedSprite, Globals, Vec2
 
@@ -10,7 +11,7 @@ class AnimationTest(Test):
         Test.on_load(self, data)
         self.add_object(
             AnimatedSprite(
-                spritesheet="./test_assets/IDLE.png",
+                spritesheet=os.path.join(os.path.dirname(__file__), "assets", "IDLE.png"),
                 sprite_dim=(96, 96),
                 pos=(400, 400),
                 scale=Vec2(5, 5),

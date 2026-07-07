@@ -4,7 +4,7 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 
 ---
 
-## 🚀 Completed Tasks
+## Completed Tasks
 
 - [x] **Refactor Spatial Grid Construction (`jazz/physics/physics.py`)**
   *Implemented a persistent spatial hash grid with fast-path bounds checks and incremental cell updates to eliminate per-frame reconstruction overhead.*
@@ -15,9 +15,9 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 
 ---
 
-## 🔥 Top Priority Tasks (Next Up)
+## Top Priority Tasks (Next Up)
 
-- [ ] **Implement Object Pool for Particles (`jazz/particles.py`)**
+- [ ] **Implement Object Pool for Particles (`jazz/_in_dev/particles.py`)**
   - **Problem**: Frequent allocation and garbage collection of `Particle` dataclasses triggers engine stutter.
   - **Proposed Solution**: Pre-allocate a particle array pool and recycle dead particles.
 - [ ] **Consolidate and Unify UI Systems (`jazz/user_interface.py` vs `jazz/components/*`)**
@@ -29,7 +29,7 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 
 ---
 
-## 🛠️ Module-by-Module Improvements
+## Module-by-Module Improvements
 
 ### Core Module
 

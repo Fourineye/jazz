@@ -1,10 +1,10 @@
-from test_animation import AnimationTest
-from test_debug import DebugTest
-from test_draw import DrawTest
-from test_particles import ParticleTest
-from test_render import RenderTest
-from test_ui import UITest
-from test_tweens import TweenTest
+from animation import AnimationTest
+from debug import DebugTest
+from draw import DrawTest
+from particles import ParticleTest
+from render import RenderTest
+from ui import UITest
+from tweens import TweenTest
 
 from jazz import Application, Globals, Label, Button, Vec2, Scene
 

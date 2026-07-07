@@ -1,8 +1,8 @@
-from base_test import Test
+from base import Test
 
 import jazz
 from jazz import Globals, Vec2, Color, Draw, Texture
-from jazz.particles import ParticleEmitter, Particle
+from jazz._in_dev.particles import ParticleEmitter, Particle
 
 
 def blow_smoke(x: int) -> Texture:
