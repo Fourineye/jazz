@@ -15,7 +15,7 @@ Vec2 = pygame.Vector2
 
 
 # Constants
-INTERNAL_PATH = str(importlib.resources.files())
+INTERNAL_PATH = str(importlib.resources.files("jazz"))
 FOLLOW_STRICT = 0
 FOLLOW_SMOOTH = 1
 COLLIDER_RECT = 0

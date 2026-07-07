@@ -142,28 +142,7 @@ class Sprite(GameObject):
         else:
             raise Exception("Invalid alpha value")
 
-    @property
-    def local_rotation(self):
-        return self._rotation
-
-    @local_rotation.setter
-    def local_rotation(self, angle):
-        self._rotation = angle % 360
-        self._img_updated = False
-
-    @property
-    def rotation(self):
-        if self._parent is not None:
-            return self._parent.rotation + self._rotation
-        else:
-            return self._rotation
-
-    @rotation.setter
-    def rotation(self, degrees):
-        if self._parent is not None:
-            self._rotation = degrees - self._parent.rotation
-        else:
-            self._rotation = degrees
+    def on_transform_change(self):
         self._img_updated = False
 
     @property

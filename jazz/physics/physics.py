@@ -3,6 +3,8 @@ class PhysicsGrid:
         self._objects = []
         self._grid_size = 50
         self.grid = {}
+        self._object_bounds = {}
+        self._object_cells = {}
 
     def __repr__(self):
         return f"\nGrid: {self._objects}"
@@ -10,25 +12,41 @@ class PhysicsGrid:
     def set_bounds(self, x_min, y_min, x_max, y_max):
         self._bounds = (x_min, y_min, x_max, y_max)
 
-    def add_to_grid(self, physics_object):
-        rect = physics_object.collider.get_rect()
-        g_top = int(rect.top // self._grid_size)
-        g_bottom = int(rect.bottom // self._grid_size)
-        g_left = int(rect.left // self._grid_size)
-        g_right = int(rect.right // self._grid_size)
+    def add_to_grid(self, physics_object, bounds=None, cells=None):
+        if bounds is None or cells is None:
+            rect = physics_object.collider.get_rect()
+            g_top = int(rect.top // self._grid_size)
+            g_bottom = int(rect.bottom // self._grid_size)
+            g_left = int(rect.left // self._grid_size)
+            g_right = int(rect.right // self._grid_size)
+            bounds = (g_left, g_right, g_top, g_bottom)
+            cells = {
+                f"{g_left + x}.{g_top + y}"
+                for x in range(g_right - g_left + 1)
+                for y in range(g_bottom - g_top + 1)
+            }
 
-        for x in range(g_right - g_left + 1):
-            for y in range(g_bottom - g_top + 1):
-                grid_x = g_left + x
-                grid_y = g_top + y
+        old_cells = self._object_cells.get(physics_object, set())
 
-                hash_key = f"{grid_x}.{grid_y}"
+        # Remove from old cells that are not in new cells
+        for cell_key in old_cells - cells:
+            cell = self.grid.get(cell_key)
+            if cell is not None:
+                if physics_object in cell:
+                    cell.remove(physics_object)
+                if not cell:
+                    self.grid.pop(cell_key, None)
 
-                cell = self.grid.get(hash_key, None)
-                if cell is None:
-                    self.grid.setdefault(hash_key, [physics_object])
-                else:
-                    self.grid[hash_key].append(physics_object)
+        # Add to new cells that were not in old cells
+        for cell_key in cells - old_cells:
+            cell = self.grid.get(cell_key)
+            if cell is None:
+                self.grid[cell_key] = [physics_object]
+            else:
+                cell.append(physics_object)
+
+        self._object_bounds[physics_object] = bounds
+        self._object_cells[physics_object] = cells
 
     def add_object(self, physics_object):
         if physics_object not in self._objects:
@@ -37,11 +55,37 @@ class PhysicsGrid:
     def remove_object(self, physics_object):
         if physics_object in self._objects:
             self._objects.remove(physics_object)
+        self._object_bounds.pop(physics_object, None)
+        old_cells = self._object_cells.pop(physics_object, None)
+        if old_cells is not None:
+            for cell_key in old_cells:
+                cell = self.grid.get(cell_key)
+                if cell is not None:
+                    if physics_object in cell:
+                        cell.remove(physics_object)
+                    if not cell:
+                        self.grid.pop(cell_key, None)
 
     def build_grid(self):
-        self.grid = {}
         for physics_object in self._objects:
-            self.add_to_grid(physics_object)
+            rect = physics_object.collider.get_rect()
+            g_top = int(rect.top // self._grid_size)
+            g_bottom = int(rect.bottom // self._grid_size)
+            g_left = int(rect.left // self._grid_size)
+            g_right = int(rect.right // self._grid_size)
+
+            new_bounds = (g_left, g_right, g_top, g_bottom)
+            old_bounds = self._object_bounds.get(physics_object)
+
+            if old_bounds == new_bounds:
+                continue
+
+            new_cells = {
+                f"{g_left + x}.{g_top + y}"
+                for x in range(g_right - g_left + 1)
+                for y in range(g_bottom - g_top + 1)
+            }
+            self.add_to_grid(physics_object, bounds=new_bounds, cells=new_cells)
 
     def get_grid_cell(self, x, y):
         return self.grid.get(f"{int(x)}.{int(y)}", [])

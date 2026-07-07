@@ -43,6 +43,9 @@ class GameObject:
         # Basic positional Attributes
         self._pos = Vec2(kwargs.get("pos", (0, 0)))
         self._rotation = kwargs.get("rotation", 0)
+        self._dirty = True
+        self._cached_pos = Vec2()
+        self._cached_rotation = 0.0
 
     # Base Methods
     def on_load(self):
@@ -129,6 +132,7 @@ class GameObject:
             obj._parent = self
             obj._depth = self._depth + 1
             self._children[obj.id] = obj
+            obj._set_dirty()
             return obj
         else:
             raise JazzException(
@@ -148,6 +152,7 @@ class GameObject:
         if obj.id in self._children:
             self._children.pop(obj.id)
             obj._parent = None
+            obj._set_dirty()
             if kill:
                 obj.kill()
         else:
@@ -202,6 +207,31 @@ class GameObject:
         else:
             return self._parent.root
 
+    def on_transform_change(self) -> None:
+        """Overwritable hook. Called when local_pos, pos, local_rotation, or rotation changes."""
+
+    def _set_dirty(self) -> None:
+        self.on_transform_change()
+        if not self._dirty:
+            self._dirty = True
+            for child in self._children.values():
+                child._set_dirty()
+
+    def _update_transform(self) -> None:
+        if self._dirty:
+            if self._parent is not None:
+                parent_pos = self._parent.pos
+                parent_rot = self._parent.rotation
+                self._cached_rotation = (parent_rot + self._rotation) % 360
+                if -0.001 < parent_rot < 0.001:
+                    self._cached_pos = parent_pos + self._pos
+                else:
+                    self._cached_pos = parent_pos + self._pos.rotate(parent_rot)
+            else:
+                self._cached_rotation = self._rotation
+                self._cached_pos = Vec2(self._pos)
+            self._dirty = False
+
     @property
     def local_pos(self) -> Vec2:
         """Returns the object's local position.
@@ -219,6 +249,7 @@ class GameObject:
             pos (Vec2): The object's new local position
         """
         self._pos = Vec2(pos)
+        self._set_dirty()
 
     @property
     def pos(self) -> Vec2:
@@ -227,15 +258,8 @@ class GameObject:
         Returns:
             Vec2: THe object's global position
         """
-        if self._parent is not None:
-            if -0.001 < self._parent.rotation < 0.001:
-                return self._parent.pos + self._pos
-            else:
-                return self._parent.pos + self._pos.rotate(
-                    self._parent.rotation
-                )
-        else:
-            return Vec2(self._pos)
+        self._update_transform()
+        return Vec2(self._cached_pos)
 
     @pos.setter
     def pos(self, pos: Vec2) -> None:
@@ -250,6 +274,7 @@ class GameObject:
             )
         else:
             self._pos = Vec2(pos)
+        self._set_dirty()
 
     @property
     def local_rotation(self) -> float:
@@ -268,6 +293,7 @@ class GameObject:
             angle (float): The object's new local rotation
         """
         self._rotation = angle % 360
+        self._set_dirty()
 
     @property
     def rotation(self) -> float:
@@ -276,10 +302,8 @@ class GameObject:
         Returns:
             float: The object's global rotation
         """
-        if self._parent is not None:
-            return self._parent.rotation + self._rotation
-        else:
-            return self._rotation
+        self._update_transform()
+        return self._cached_rotation
 
     @rotation.setter
     def rotation(self, degrees: float) -> None:
@@ -289,9 +313,10 @@ class GameObject:
             degrees (float): The object's global rotation
         """
         if self._parent is not None:
-            self._rotation = degrees - self._parent.rotation
+            self._rotation = (degrees - self._parent.rotation) % 360
         else:
-            self._rotation = degrees
+            self._rotation = degrees % 360
+        self._set_dirty()
 
     @property
     def y(self) -> float:
