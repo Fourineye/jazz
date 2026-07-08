@@ -12,7 +12,6 @@ class InputHandler:
     def __init__(self):
         self.mouse = Mouse()
         self.key = Keyboard()
-        self.text = ""
         self.user_events = []
         self.event_handler = None
 
@@ -20,24 +19,16 @@ class InputHandler:
         if callable(method):
             self.event_handler = method
 
-    def start_text_input(self):
-        pygame.key.start_text_input()
-
-    def stop_text_input(self):
-        pygame.key.stop_text_input()
 
     def update(self):
         """Called every frame to update user input."""
         self.user_events = []
         self.mouse.update()
         self.key.update()
-        self.text = ""
+        
 
         for event in pygame.event.get(pygame.USEREVENT):
             self.user_events.append(event)
-
-        for event in pygame.event.get(pygame.TEXTINPUT):
-            self.text = event.text
 
         for event in pygame.event.get():
             if self.event_handler is not None:
@@ -146,16 +137,43 @@ class Mouse:
 class Keyboard:
     """Wrapper for keyboard inputs."""
 
+    ALLOWED_TEXT_INPUT_KEYS = {
+        "backspace",
+        "enter",
+        "num enter",
+        "escape",
+        "tab",
+        "left",
+        "right",
+        "up",
+        "down",
+        "del",
+    }
+
     def __init__(self):
         self._just_pressed = {}
         self._pressed = [False] * 200
         self._just_released = {}
         self._mods = 0
+        self.text = ""
+        self._text_input = False
+
+    def start_text_input(self):
+        pygame.key.start_text_input()
+        self._text_input = True
+
+    def stop_text_input(self):
+        pygame.key.stop_text_input()
+        self._text_input = False
 
     def update(self):
         """Called every frame to update keyboard inputs."""
         self._just_pressed = {}
         self._just_released = {}
+        self.text = ""
+
+        for event in pygame.event.get(pygame.TEXTINPUT):
+            self.text = event.text
 
         for event in pygame.event.get(pygame.KEYDOWN):
             key = Keyboard.KEYS.get(event.key, False)
@@ -172,7 +190,9 @@ class Keyboard:
         if isinstance(key, int):
             if key in Keyboard.KEYS:
                 key = Keyboard.KEYS[key]
-        return self._just_pressed.get(key, False)
+        if not self._text_input or key in self.ALLOWED_TEXT_INPUT_KEYS:
+            return self._just_pressed.get(key, False)
+        return False
 
     def mod(self, key):
         if self._mods & self.MODS.get(key, 0):
@@ -183,13 +203,17 @@ class Keyboard:
         if isinstance(key, int):
             if key in Keyboard.KEYS:
                 key = Keyboard.KEYS[key]
-        return self._just_released.get(key, False)
+        if not self._text_input or key in self.ALLOWED_TEXT_INPUT_KEYS:
+            return self._just_released.get(key, False)
+        return False
 
     def held(self, key):
         if isinstance(key, str):
-            key = key_from_value(Keyboard.KEYS, key)
-            if key:
-                return self._pressed[key]
+            key_code = key_from_value(Keyboard.KEYS, key)
+            if key_code:
+                if not self._text_input or key in self.ALLOWED_TEXT_INPUT_KEYS:
+                    return self._pressed[key_code]
+                return False
             else:
                 return False
         else:

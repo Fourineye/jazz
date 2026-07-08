@@ -68,9 +68,9 @@ class TextBox(Sprite):
             self._blink = 0.0
             self._cursor.visible = val
             if val:
-                Globals.input.start_text_input()
+                Globals.key.start_text_input()
             else:
-                Globals.input.stop_text_input()
+                Globals.key.stop_text_input()
 
     def update(self, delta: float):
         if self.active:
@@ -80,8 +80,8 @@ class TextBox(Sprite):
                 self._cursor.visible = not self._cursor.visible
 
             # Handle text input
-            if Globals.input.text:
-                self.set_text(self._text.text_content + Globals.input.text)
+            if Globals.key.text:
+                self.set_text(self._text.text_content + Globals.key.text)
                 self._blink = 0.0
                 self._cursor.visible = True
 

@@ -11,9 +11,19 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 - [x] **Cache Global Transforms (`jazz/engine/base_object.py`)**
   *Implemented a pull-based caching system for `pos` and `rotation` with recursive dirty flag propagation down the scene graph, eliminating recursive parent queries.*
 - [x] **Establish a Unit Testing Framework**
-  *Added `test_programs/test_physics_grid.py` and `test_programs/test_transforms.py` to assert correctness of grid mappings and coordinate transforms in headless environments.*
+  *Added `unit_tests/test_physics_grid.py` and `unit_tests/test_transforms.py` to assert correctness of grid mappings and coordinate transforms in headless environments.*
 - [x] **Consolidate and Unify UI Systems (`jazz/user_interface.py` vs `jazz/components/*`)**
   *Deprecated `user_interface.py` and migrated components (including `TextBox` and containers `VBox`, `HBox`, `UIContainer`) into `components/` using the event-driven entity-component architecture.*
+- [x] **Optimize Separating Axis Theorem (SAT) Collisions (`jazz/physics/colliders.py`)**
+  *Pre-calculated and cached normal vectors, updating them only when the parent object's rotation changes.*
+- [x] **Active Area Collision Check (`jazz/physics/area.py`)**
+  *Only check collisions against objects whose bounding boxes have moved in the current frame.*
+- [x] **Collision Resolution Phase (`jazz/physics/body.py`)**
+  *Calculate penetrations first and apply corrections simultaneously to avoid multi-body tunneling.*
+- [x] **Squared-Distance Raycasts (`jazz/physics/ray.py`)**
+  *Use `magnitude_squared()` to compare distances instead of `dist_to` (which calls slow square-root routines).*
+- [x] **Integer Mask Layers (`jazz/physics/_physics_object.py`)**
+  *Convert mask layers (e.g. `"0001"`) into integers to perform instantaneous bitwise AND `&` comparisons.*
 
 ---
 
@@ -22,9 +32,6 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 - [ ] **Implement Object Pool for Particles (`jazz/_in_dev/particles.py`)**
   - **Problem**: Frequent allocation and garbage collection of `Particle` dataclasses triggers engine stutter.
   - **Proposed Solution**: Pre-allocate a particle array pool and recycle dead particles.
-- [x] **Optimize Separating Axis Theorem (SAT) Collisions (`jazz/physics/colliders.py`)**
-  - **Problem**: Re-calculating collider axes and normals on every collision check is computationally expensive.
-  - **Proposed Solution**: Pre-calculate and cache normal vectors, updating them only when the parent object's rotation changes.
 
 ---
 
@@ -78,14 +85,7 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 
 ### Physics Module
 
-- [x] **Active Area Collision Check (`jazz/physics/area.py`)**
-  - Only check collisions against objects whose bounding boxes have moved in the current frame.
-- [x] **Collision Resolution Phase (`jazz/physics/body.py`)**
-  - Calculate penetrations first and apply corrections simultaneously to avoid multi-body tunneling.
-- [x] **Squared-Distance Raycasts (`jazz/physics/ray.py`)**
-  - Use `magnitude_squared()` to compare distances instead of `dist_to` (which calls slow square-root routines).
-- [x] **Integer Mask Layers (`jazz/physics/_physics_object.py`)**
-  - Convert mask layers (e.g. `"0001"`) into integers to perform instantaneous bitwise AND `&` comparisons.
+*All tasks completed.*
 
 ---
 

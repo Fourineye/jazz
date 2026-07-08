@@ -17,16 +17,26 @@ class Label(Sprite):
         self.text_color = kwargs.get("text_color", (255, 255, 255))
 
         self.text_content = kwargs.get("text", " ")
-        self.texture = self.font.render(
-            self.text_content, True, self.text_color
-        )
+        if self.text_content:
+            self.texture = self.font.render(
+                self.text_content, True, self.text_color
+            )
+        else:
+            self.texture = self.font.render(" ", True, self.text_color)
+            self._size = Vec2(0, self._size.y)
+            self._hardware_offset()
 
     def set_text(self, text):
         if not isinstance(text, str):
             text = str(text)
         if self.text_content != text:
             self.text_content = text
-            self.texture = self.font.render(text, True, self.text_color)
+            if text:
+                self.texture = self.font.render(text, True, self.text_color)
+            else:
+                self.texture = self.font.render(" ", True, self.text_color)
+                self._size = Vec2(0, self._size.y)
+                self._hardware_offset()
 
     def append_text(self, text):
         self.text_content += text
