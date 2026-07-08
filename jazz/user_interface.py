@@ -1,4 +1,12 @@
+import warnings
 import pygame as pg
+
+warnings.warn(
+    "jazz/user_interface.py is deprecated and will be removed in a future release. "
+    "Please migrate to the components in jazz.components.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 from .engine.base_object import GameObject
 from .utils import color_mult, map_range

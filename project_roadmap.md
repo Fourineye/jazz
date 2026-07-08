@@ -12,6 +12,8 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
   *Implemented a pull-based caching system for `pos` and `rotation` with recursive dirty flag propagation down the scene graph, eliminating recursive parent queries.*
 - [x] **Establish a Unit Testing Framework**
   *Added `test_programs/test_physics_grid.py` and `test_programs/test_transforms.py` to assert correctness of grid mappings and coordinate transforms in headless environments.*
+- [x] **Consolidate and Unify UI Systems (`jazz/user_interface.py` vs `jazz/components/*`)**
+  *Deprecated `user_interface.py` and migrated components (including `TextBox` and containers `VBox`, `HBox`, `UIContainer`) into `components/` using the event-driven entity-component architecture.*
 
 ---
 
@@ -20,9 +22,6 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 - [ ] **Implement Object Pool for Particles (`jazz/_in_dev/particles.py`)**
   - **Problem**: Frequent allocation and garbage collection of `Particle` dataclasses triggers engine stutter.
   - **Proposed Solution**: Pre-allocate a particle array pool and recycle dead particles.
-- [ ] **Consolidate and Unify UI Systems (`jazz/user_interface.py` vs `jazz/components/*`)**
-  - **Problem**: Monolithic UI code in `user_interface.py` competes with the entity-component architecture in `components/`.
-  - **Proposed Solution**: Deprecate `user_interface.py` and migrate components (like `InputBox`) into `components/` while hook events.
 - [ ] **Optimize Separating Axis Theorem (SAT) Collisions (`jazz/physics/colliders.py`)**
   - **Problem**: Re-calculating collider axes and normals on every collision check is computationally expensive.
   - **Proposed Solution**: Pre-calculate and cache normal vectors, updating them only when the parent object's rotation changes.

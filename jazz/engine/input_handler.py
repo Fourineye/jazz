@@ -20,6 +20,12 @@ class InputHandler:
         if callable(method):
             self.event_handler = method
 
+    def start_text_input(self):
+        pygame.key.start_text_input()
+
+    def stop_text_input(self):
+        pygame.key.stop_text_input()
+
     def update(self):
         """Called every frame to update user input."""
         self.user_events = []
