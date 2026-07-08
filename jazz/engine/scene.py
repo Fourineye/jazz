@@ -174,8 +174,11 @@ class Scene:
             obj (PhysicsObject): The object to add to the scene
             layers (_type_): _description_
         """
-        for layer, flag in enumerate(layers):
-            if flag == "1":
+        if isinstance(layers, str):
+            layers = int(layers, 2)
+        num_layers = len(self._physics_world)
+        for layer in range(num_layers):
+            if (layers & (1 << (num_layers - 1 - layer))) != 0:
                 self._physics_world[layer].add_object(obj)
 
     def add_sprite(self, sprite: "Sprite") -> None:
@@ -234,8 +237,12 @@ class Scene:
             list[GameObject]: The list of objects that collide
         """
         collisions = []
-        for layer, flag in enumerate(physics_object.collision_layers):
-            if flag == "1":
+        layers = physics_object.collision_layers
+        if isinstance(layers, str):
+            layers = int(layers, 2)
+        num_layers = len(self._physics_world)
+        for layer in range(num_layers):
+            if (layers & (1 << (num_layers - 1 - layer))) != 0:
                 collisions += self._physics_world[layer].get_AABB_collisions(
                     physics_object
                 )
@@ -304,6 +311,16 @@ class Scene:
         # delete objects queued for deletion
         for obj in kill_items:
             obj.kill()
+
+        # Clear moved flags at the end of the frame
+        def clear_moved_flags(o):
+            if hasattr(o, "_moved_this_frame"):
+                o._moved_this_frame = False
+            for child in getattr(o, "_children", {}).values():
+                clear_moved_flags(child)
+
+        for obj in self._objects.values():
+            clear_moved_flags(obj)
 
     # Properties and builtins
     def __getitem__(self, key):

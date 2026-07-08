@@ -5,3 +5,5 @@ jazz.egg-info
 .venv
 .jini
 .agents
+.mypy_cache/
+*.code-workspace

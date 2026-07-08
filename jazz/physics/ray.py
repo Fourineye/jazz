@@ -41,7 +41,7 @@ class Ray(PhysicsObject):
                 if point is not None:
                     precise_collisions.append((collider, point))
         precise_collisions.sort(
-            key=lambda collision: dist_to(self.pos, collision[1])
+            key=lambda collision: (collision[1] - self.pos).magnitude_squared()
         )
         return precise_collisions
 
@@ -65,17 +65,17 @@ class Ray(PhysicsObject):
                     precise_collisions.append((collider, point))
         if precise_collisions:
             precise_collisions.sort(
-                key=lambda collision: dist_to(self.pos, collision[1])
+                key=lambda collision: (collision[1] - self.pos).magnitude_squared()
             )
             closest_collision = (None, Vec2(self.collider.vertices[1]))
+            closest_dist_sq = self.length ** 2
             for obj, point in precise_collisions:
                 test = obj.root != self.root
                 if test:
-                    if self.length ** 2 >= dist_to(self.pos, point) >= 0:
-                        if dist_to(self.pos, point) < dist_to(
-                                self.pos, closest_collision[1]
-                        ):
-                            closest_collision = (obj, point)
+                    dist_sq = (point - self.pos).magnitude_squared()
+                    if closest_dist_sq >= dist_sq >= 0:
+                        closest_collision = (obj, point)
+                        closest_dist_sq = dist_sq
             return closest_collision
         return None, None
 

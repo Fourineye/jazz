@@ -12,6 +12,7 @@ class Area(PhysicsObject):
         self.target_group = kwargs.get("target_group", None)
         self.entered = []
         self._active = kwargs.get("active", True)
+        self._entered_cache = {}
 
     def update(self, _delta):
         if self._active:
@@ -21,7 +22,7 @@ class Area(PhysicsObject):
         entered = []
         collisions = Globals.scene.get_AABB_collisions(self)
         if collisions:
-            collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
+            collisions.sort(key=lambda obj: (obj.pos - self.pos).magnitude_squared())
             for obj in collisions:
                 test = True
                 if self.target_group is not None:
@@ -29,7 +30,16 @@ class Area(PhysicsObject):
 
                 test = test and obj.root != self.root
                 if test:
-                    depth, _ = self.collider.collide_sat(obj.collider)
-                    if depth != 0:
+                    if not self._moved_this_frame and not getattr(obj, "_moved_this_frame", True) and obj in self._entered_cache:
+                        is_colliding = self._entered_cache[obj]
+                    else:
+                        depth, _ = self.collider.collide_sat(obj.collider)
+                        is_colliding = (depth != 0)
+                        self._entered_cache[obj] = is_colliding
+
+                    if is_colliding:
                         entered.append(obj)
+            self._entered_cache = {obj: val for obj, val in self._entered_cache.items() if obj in collisions}
+        else:
+            self._entered_cache.clear()
         return entered

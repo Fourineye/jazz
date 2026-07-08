@@ -22,7 +22,7 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 - [ ] **Implement Object Pool for Particles (`jazz/_in_dev/particles.py`)**
   - **Problem**: Frequent allocation and garbage collection of `Particle` dataclasses triggers engine stutter.
   - **Proposed Solution**: Pre-allocate a particle array pool and recycle dead particles.
-- [ ] **Optimize Separating Axis Theorem (SAT) Collisions (`jazz/physics/colliders.py`)**
+- [x] **Optimize Separating Axis Theorem (SAT) Collisions (`jazz/physics/colliders.py`)**
   - **Problem**: Re-calculating collider axes and normals on every collision check is computationally expensive.
   - **Proposed Solution**: Pre-calculate and cache normal vectors, updating them only when the parent object's rotation changes.
 
@@ -78,13 +78,13 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
 
 ### Physics Module
 
-- [ ] **Active Area Collision Check (`jazz/physics/area.py`)**
+- [x] **Active Area Collision Check (`jazz/physics/area.py`)**
   - Only check collisions against objects whose bounding boxes have moved in the current frame.
-- [ ] **Collision Resolution Phase (`jazz/physics/body.py`)**
+- [x] **Collision Resolution Phase (`jazz/physics/body.py`)**
   - Calculate penetrations first and apply corrections simultaneously to avoid multi-body tunneling.
-- [ ] **Squared-Distance Raycasts (`jazz/physics/ray.py`)**
+- [x] **Squared-Distance Raycasts (`jazz/physics/ray.py`)**
   - Use `magnitude_squared()` to compare distances instead of `dist_to` (which calls slow square-root routines).
-- [ ] **Integer Mask Layers (`jazz/physics/_physics_object.py`)**
+- [x] **Integer Mask Layers (`jazz/physics/_physics_object.py`)**
   - Convert mask layers (e.g. `"0001"`) into integers to perform instantaneous bitwise AND `&` comparisons.
 
 ---

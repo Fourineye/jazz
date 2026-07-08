@@ -34,6 +34,17 @@ class Collider(GameObject):
         self._center = Vec2()
         self._rot_cache = 1000000
 
+        self._vertices_dirty = True
+        self._cached_vertices = []
+        self._cached_edges = []
+        self._cached_normals = []
+
+    def on_transform_change(self):
+        self._vertices_dirty = True
+        if self._parent is not None:
+            if hasattr(self._parent, "_moved_this_frame"):
+                self._parent._moved_this_frame = True
+
         self._size = len(self._vertices)
         if self._size > 1:
             for i, vert in enumerate(self._vertices):
@@ -84,8 +95,8 @@ class Collider(GameObject):
 
     def collide_circle(self, collider):
         return (
-            dist_to(self.center, collider.center)
-            <= self._radius + collider._radius
+            (collider.center - self.center).magnitude_squared()
+            <= (self._radius + collider._radius) ** 2
         )
 
     def collide_rect(self, collider):
@@ -186,29 +197,38 @@ class Collider(GameObject):
 
     @property
     def vertices(self):
-        return [
-            self.pos + vert.rotate(self.rotation) for vert in self._vertices
-        ]
+        if self._vertices_dirty:
+            self._cached_vertices = [
+                self.pos + vert.rotate(self.rotation) for vert in self._vertices
+            ]
+            self._cached_edges = None
+            self._cached_normals = None
+            self._vertices_dirty = False
+        return self._cached_vertices
 
     @property
     def edges(self):
-        vertices = self.vertices
-        return [(vertices[edge[0]], vertices[edge[1]]) for edge in self._edges]
+        verts = self.vertices
+        if self._cached_edges is None:
+            self._cached_edges = [(verts[edge[0]], verts[edge[1]]) for edge in self._edges]
+        return self._cached_edges
 
     @property
     def normals(self):
-        normals = []
-        edges = self.edges
-        for edge in edges:
-            new = True
-            new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
-            for normal in normals:
-                if abs(new_normal.dot(normal)) == 1:
-                    new = False
-                    break
-            if new:
-                normals.append(Vec2(edge[1] - edge[0]).normalize().rotate(90))
-        return normals
+        _ = self.edges
+        if self._cached_normals is None:
+            normals = []
+            for edge in self._cached_edges:
+                new = True
+                new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
+                for normal in normals:
+                    if abs(new_normal.dot(normal)) == 1:
+                        new = False
+                        break
+                if new:
+                    normals.append(new_normal)
+            self._cached_normals = normals
+        return self._cached_normals
 
     @property
     def top(self):
@@ -301,6 +321,7 @@ class PolyCollider(Collider):
                 vert = Vec2(vert) - self._center
                 self._vertices[i] = vert
             self._center = Vec2()
+            self._vertices_dirty = True
 
 
 class RayCollider(Collider):
@@ -319,6 +340,7 @@ class RayCollider(Collider):
     def length(self, length):
         self._length = length
         self._vertices[1] = Vec2(length, 0)
+        self._vertices_dirty = True
 
     def collide_ray(self, collider):
         if isinstance(collider, CircleCollider):
@@ -338,12 +360,13 @@ class RayCollider(Collider):
                 if point is not None:
                     collisions.append(point)
             if collisions:
-                closest_dist = self.length * 2
+                closest_dist_sq = (self.length * 2) ** 2
                 closest_collision = Vec2()
                 for point in collisions:
-                    if dist_to(self.pos, point) < closest_dist:
+                    dist_sq = (point - self.pos).magnitude_squared()
+                    if dist_sq < closest_dist_sq:
                         closest_collision = point
-                        closest_dist = dist_to(self.pos, point)
+                        closest_dist_sq = dist_sq
                 return closest_collision
         return None
 

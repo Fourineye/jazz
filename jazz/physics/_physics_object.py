@@ -8,9 +8,25 @@ class PhysicsObject(GameObject):
     def __init__(self, **kwargs):
         kwargs.setdefault("name", "PhysicsObject")
         super().__init__(**kwargs)
-        self._layers = kwargs.get("layers", "0001")
-        self.collision_layers = kwargs.get("collision_layers", "0001")
+        
+        layers_val = kwargs.get("layers", "0001")
+        if isinstance(layers_val, str):
+            self._layers = int(layers_val, 2)
+        else:
+            self._layers = layers_val
+            
+        coll_layers_val = kwargs.get("collision_layers", "0001")
+        if isinstance(coll_layers_val, str):
+            self.collision_layers = int(coll_layers_val, 2)
+        else:
+            self.collision_layers = coll_layers_val
+            
         self.collider: Collider | None = None
+        self._moved_this_frame = True
+
+    def on_transform_change(self):
+        super().on_transform_change()
+        self._moved_this_frame = True
 
     def on_load(self):
         if self.collider is None:

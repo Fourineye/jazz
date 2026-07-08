@@ -23,16 +23,30 @@ class Body(PhysicsObject):
         precise_collisions = []
 
         if collisions:
-            collisions.sort(key=lambda obj: dist_to(self.pos, obj.pos))
+            collisions.sort(key=lambda obj: (obj.pos - self.pos).magnitude_squared())
+            penetrations = []
             for obj in collisions:
                 depth, normal = self.collider.collide_sat(obj.collider)
                 if depth != 0:
+                    penetrations.append((obj, depth, normal))
                     precise_collisions.append((obj, (depth, normal)))
-                    if not self.static and not obj.static:
-                        self.move(-normal * (depth + 1) / 2)
-                        obj.move_and_collide(normal * (depth + 1) / 2)
-                    elif self.static and not obj.static:
-                        obj.move_and_collide(normal * (depth + 1))
-                    elif obj.static:
-                        self.move(-normal * (depth + 1))
+
+            if penetrations:
+                self_correction = Vec2(0, 0)
+                for obj, depth, normal in penetrations:
+                    if not self.static:
+                        if not obj.static:
+                            self_correction += -normal * (depth + 1) / 2
+                        else:
+                            self_correction += -normal * (depth + 1)
+
+                if not self.static and self_correction != Vec2(0, 0):
+                    self.move(self_correction)
+
+                for obj, depth, normal in penetrations:
+                    if not obj.static:
+                        if not self.static:
+                            obj.move_and_collide(normal * (depth + 1) / 2)
+                        else:
+                            obj.move_and_collide(normal * (depth + 1))
         return precise_collisions
