@@ -5,6 +5,7 @@ from particles import ParticleTest
 from render import RenderTest
 from ui import UITest
 from tweens import TweenTest
+from physics_test import PhysicsTest
 
 from jazz import Application, Globals, Label, Button, Vec2, Scene
 
@@ -16,6 +17,7 @@ SCENES = [
     DrawTest,
     ParticleTest,
     TweenTest,
+    PhysicsTest,
 ]
 
 

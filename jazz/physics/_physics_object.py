@@ -47,22 +47,23 @@ class PhysicsObject(GameObject):
             raise (JazzException("Physics Object does not have collider"))
         Globals.scene.add_physics_object(self, self._layers)
 
-    def add_collider(self, type: int, **kwargs) -> None:
-        """Adds a collider to the object
+    def add_collider(self, type: int | str, **kwargs) -> None:
+        """Adds a collider to the object.
 
         Args:
-            type (int): Collider type, one of the constants COLLIDER_RECT, COLLIDER_POLY, COLLIDER_CIRCLE, COLLIDER_RAY
+            type (int | str): Collider type name ("Rect", "Circle", "Polygon", "Poly", "Ray") or integer constant.
+            **kwargs: Custom arguments to initialize the specific collider (e.g. w, h, radius, vertices, length).
 
         Raises:
-            JazzException: Raises an exception if an invalid type is given
+            JazzException: Raises an exception if an invalid type is given.
         """
-        if type == COLLIDER_RECT:
+        if type == COLLIDER_RECT or type == "Rect":
             self.collider = RectCollider(**kwargs)
-        elif type == COLLIDER_CIRCLE:
+        elif type == COLLIDER_CIRCLE or type == "Circle":
             self.collider = CircleCollider(**kwargs)
-        elif type == COLLIDER_POLY:
+        elif type == COLLIDER_POLY or type in ("Polygon", "Poly"):
             self.collider = PolyCollider(**kwargs)
-        elif type == COLLIDER_RAY:
+        elif type == COLLIDER_RAY or type == "Ray":
             self.collider = RayCollider(**kwargs)
         else:
             raise JazzException("Invalid collider type")

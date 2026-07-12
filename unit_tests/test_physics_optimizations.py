@@ -127,5 +127,91 @@ class TestPhysicsOptimizations(unittest.TestCase):
         self.assertIn(body, entered3)
         self.assertEqual(sat_calls, 1)
 
+    def test_edges_no_accumulation(self):
+        # Create a collider
+        collider = RectCollider(10, 10, pos=(0, 0))
+        
+        # Populate edges and center
+        collider.on_transform_change()
+        
+        # Verify initial size of local edges
+        self.assertEqual(len(collider._edges), 4)
+        
+        # Dirty the collider multiple times by rotating
+        for i in range(100):
+            collider.rotation = i
+            collider.on_transform_change()
+            
+        # The number of local edges must remain exactly 4 (no duplicates accumulated!)
+        self.assertEqual(len(collider._edges), 4)
+
+    def test_circle_collider_radius(self):
+        from jazz.physics.colliders import CircleCollider
+        collider = CircleCollider(radius=15, pos=(0, 0))
+        self.assertEqual(collider._radius, 15)
+        
+        # Trigger transform change
+        collider.on_transform_change()
+        self.assertEqual(collider._radius, 15)
+
+    def test_recursive_collisions(self):
+        # Create two overlapping dynamic bodies
+        body1 = Body(pos=(400, 400))
+        body1.add_collider(0, w=100, h=100) # RectCollider
+        body2 = Body(pos=(410, 400))
+        body2.add_collider(0, w=100, h=100) # RectCollider
+        
+        Globals.scene.add_object(body1)
+        Globals.scene.add_object(body2)
+        body1.on_load()
+        body2.on_load()
+        
+        # Initialize grid
+        for grid in Globals.scene._physics_world.values():
+            grid.build_grid()
+            
+        # Verify that calling move_and_collide resolves without RecursionError
+        try:
+            body1.move_and_collide(Vec2(5, 0))
+        except RecursionError:
+            self.fail("move_and_collide raised RecursionError on overlapping bodies")
+
+    def test_dynamic_body_settling(self):
+        from jazz._in_dev._in_dev import DynamicBody
+        from jazz import COLLIDER_RECT
+        
+        Globals.scene.gravity_enabled = True
+        Globals.scene.gravity_accel = 500.0
+        
+        # Create floor (static)
+        floor = Body(static=True, pos=(400, 500))
+        floor.add_collider(COLLIDER_RECT, w=800, h=20)
+        Globals.scene.add_object(floor)
+        floor.on_load()
+        
+        # Create dynamic body
+        body = DynamicBody(pos=(400, 483), velocity=Vec2(0, 0))
+        body.add_collider(COLLIDER_RECT, w=20, h=20)
+        Globals.scene.add_object(body)
+        body.on_load()
+        
+        # Rebuild grid
+        for grid in Globals.scene._physics_world.values():
+            grid.build_grid()
+            
+        # Update body once - it should collide and settle
+        body.update(0.016)
+        self.assertTrue(body.on_ground)
+        self.assertEqual(body.velocity.y, 0)
+        
+        # Update body a second time - it should remain settled on the ground
+        body.update(0.016)
+        self.assertTrue(body.on_ground)
+        self.assertEqual(body.velocity.y, 0)
+        
+        # Wake up check
+        body.move_and_collide(Vec2(0, -5))
+        self.assertFalse(body.on_ground)
+
 if __name__ == "__main__":
     unittest.main()

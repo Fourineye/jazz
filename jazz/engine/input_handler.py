@@ -46,12 +46,12 @@ class Mouse:
     """Wrapper for mouse inputs."""
 
     LEFT = 0
-    RIGHT = 1
-    MIDDLE = 2
+    MIDDLE = 1
+    RIGHT = 2
     BUTTONS = [
         "left",
-        "right",
         "middle",
+        "right",
     ]
 
     def __init__(self) -> None:

@@ -3,6 +3,7 @@ from ..utils import Vec2, dist_to
 from ._physics_object import PhysicsObject
 
 
+
 class Body(PhysicsObject):
     """Rigid body physical component that handles rigid collisions and positional corrections."""
 
@@ -16,15 +17,22 @@ class Body(PhysicsObject):
         super().__init__(**kwargs)
         self.static = kwargs.get("static", False)
 
-    def move_and_collide(self, direction: Vec2) -> list[tuple[PhysicsObject, tuple[float, Vec2]]]:
-        """
-        A function to move the Entity and check for collisions, stopping if one is found.
+    def move_and_collide(self, direction: Vec2, _visited: set[str] | None = None) -> list[tuple[PhysicsObject, tuple[float, Vec2]]]:
+        """Moves the physical body along a direction vector, detects overlaps, resolves penetrations, and handles propagation.
 
         Args:
-            direction (Vec2): The vector to move along.
-            collision_group (EntityGroup, optional): An optional group to check collisions against,
-                if left blank it will default to the Entity's collision_groups. Defaults to None.
+            direction (Vec2): The displacement vector for this frame.
+            _visited (set[str], optional): Set of object IDs already processed in the current recursive chain to prevent infinite loops. Defaults to None.
+
+        Returns:
+            list[tuple[PhysicsObject, tuple[float, Vec2]]]: List of collision tuples containing the hit object and (depth, normal).
         """
+        if _visited is None:
+            _visited = set()
+        if self.id in _visited:
+            return []
+        _visited.add(self.id)
+
         self.pos = self.pos + direction
         collisions = Globals.scene.get_AABB_collisions(self)
         precise_collisions = []
@@ -53,7 +61,9 @@ class Body(PhysicsObject):
                 for obj, depth, normal in penetrations:
                     if not obj.static:
                         if not self.static:
-                            obj.move_and_collide(normal * (depth + 1) / 2)
+                            obj.move_and_collide(normal * (depth + 1) / 2, _visited)
                         else:
-                            obj.move_and_collide(normal * (depth + 1))
+                            obj.move_and_collide(normal * (depth + 1), _visited)
         return precise_collisions
+
+

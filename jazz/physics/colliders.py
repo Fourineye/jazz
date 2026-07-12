@@ -45,28 +45,31 @@ class Collider(GameObject):
         self._cached_edges = []
         self._cached_normals = []
 
-    def on_transform_change(self):
-        """Recalculates local bounds, radius, and edges when local/parent transforms change."""
+    def on_transform_change(self) -> None:
+        """Updates internal dirty flags, recalculates world bounding box, and computes local shape properties if not already cached."""
         self._vertices_dirty = True
         if self._parent is not None:
             if hasattr(self._parent, "_moved_this_frame"):
                 self._parent._moved_this_frame = True
 
-        self._size = len(self._vertices)
-        if self._size > 1:
-            for i, vert in enumerate(self._vertices):
-                vert = Vec2(vert)
-                self._center += vert
-                self._vertices[i] = vert
-                self._radius = max(self._radius, vert.magnitude())
-            self._center /= self._size
-            if self._size > 2:
-                for i in range(self._size):
-                    j = (i + 1) % self._size
-                    self._edges.append((i, j))
-            else:
+        if not self._edges:
+            self._size = len(self._vertices)
+            if self._size > 1:
                 self._center = Vec2()
-                self._edges.append((0, 1))
+                self._radius = 0
+                for i, vert in enumerate(self._vertices):
+                    vert = Vec2(vert)
+                    self._center += vert
+                    self._vertices[i] = vert
+                    self._radius = max(self._radius, vert.magnitude())
+                self._center /= self._size
+                if self._size > 2:
+                    for i in range(self._size):
+                        j = (i + 1) % self._size
+                        self._edges.append((i, j))
+                else:
+                    self._center = Vec2()
+                    self._edges.append((0, 1))
         self.get_rect()
 
     def render_debug(self, offset: Vec2):
