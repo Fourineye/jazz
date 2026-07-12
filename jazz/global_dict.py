@@ -16,6 +16,21 @@ if TYPE_CHECKING:
 
 
 class Globals:
+    """Static namespace containing global engine systems and references.
+
+    Attributes:
+        app (Application): Reference to the running Application instance.
+        scene (Scene): Reference to the active Scene instance.
+        input (InputHandler): Global input handler dispatching pygame events.
+        key (Keyboard): Handles keyboard input polling and state tracking.
+        mouse (Mouse): Handles mouse cursor position and button polling.
+        display (Surface): The main Pygame display surface.
+        renderer (Renderer): The SDL2 hardware-accelerated renderer.
+        window (Window): The window wrapper for Pygame.
+        sound (SoundManager): Manages channel volume and music/sound loading.
+        resource (ResourceManager): Manages texture, surface, and font assets.
+    """
+
     app: "Application" = None
     scene: "Scene" = None
     input: "InputHandler" = None

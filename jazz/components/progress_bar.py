@@ -8,7 +8,21 @@ from ..primatives import Draw
 
 
 class ProgressBar(Sprite):
-    def __init__(self, value, max_value, **kwargs):
+    """UI Component representing a progress or health bar using target texture drawing."""
+
+    def __init__(self, value: float | int, max_value: float | int, **kwargs) -> None:
+        """Initializes the ProgressBar component.
+
+        Args:
+            value (float | int): Current numeric value.
+            max_value (float | int): Maximum numeric value.
+            size (Vec2, optional): Dimensions of the progress bar. Defaults to Vec2(200, 50).
+            bg_color (tuple | Color, optional): Background fill color. Defaults to gray.
+            color (tuple | Color, optional): Active progress bar fill color. Defaults to blue.
+            line_color (tuple | Color, optional): Outline border color. Defaults to dark gray.
+            radius (int, optional): Unused placeholder for corner rounding radius. Defaults to 0.
+            line_width (int, optional): Width of outline border in pixels. Defaults to 3.
+        """
         kwargs.setdefault("name", "Progress Bar")
         super().__init__(**kwargs)
         self.size = kwargs.get("size", Vec2(200, 50))
@@ -21,7 +35,8 @@ class ProgressBar(Sprite):
         self.line_width = kwargs.get("line_width", 3)
         self.update_bar()
 
-    def update_bar(self):
+    def update_bar(self) -> None:
+        """Re-renders the progress bar texture based on current values and colors."""
         self.texture = Texture(Globals.renderer, self.size, target=True)
         texture_rect = self.texture.get_rect()
         with Draw.canvas(self.texture):
@@ -42,10 +57,20 @@ class ProgressBar(Sprite):
             if self.line_width > 0:
                 Draw.rect(texture_rect, self.line_color, self.line_width)
 
-    def update_value(self, value):
+    def update_value(self, value: float | int) -> None:
+        """Updates the current progress value and re-renders the bar.
+
+        Args:
+            value (float | int): New current progress value.
+        """
         self.value = value
         self.update_bar()
 
-    def update_max_value(self, max_value):
+    def update_max_value(self, max_value: float | int) -> None:
+        """Updates the maximum limit value and re-renders the bar.
+
+        Args:
+            max_value (float | int): New maximum limit value.
+        """
         self.max_value = max_value
         self.update_bar()

@@ -3,7 +3,7 @@ Scene class
 
 """
 
-from typing import TYPE_CHECKING, Callable, Any, Iterable, Type
+from typing import TYPE_CHECKING, Callable, Any, Iterable, Type, Iterator
 from dataclasses import dataclass
 
 from ..camera import Camera
@@ -35,6 +35,11 @@ class Scene:
     name = "unnamed"
 
     def __init__(self) -> None:
+        """Initializes the Scene instance.
+
+        Sets up the default Camera, collections for objects, sprites, timers,
+        and allocates a default 4-layer physics partitioning grid.
+        """
         self.camera = Camera()
         self._objects: dict[str, "GameObject"] = {}
         self._sprites: list[Sprite] = []
@@ -143,11 +148,20 @@ class Scene:
         """
         self.add_object(Timer(time, callback, args, pause_process, one_shot))
 
-    def get_layer_collisions(self, collider, layer=0):
+    def get_layer_collisions(self, collider: "PhysicsObject", layer: int = 0) -> list["PhysicsObject"]:
+        """Retrieves candidate colliders from a specific physics layer using AABB overlaps.
+
+        Args:
+            collider (PhysicsObject): The physics object/collider to check against.
+            layer (int, optional): The physics grid layer index. Defaults to 0.
+
+        Returns:
+            list[PhysicsObject]: A list of physics objects overlapping the query collider's bounds.
+        """
         return self._physics_world[layer].get_AABB_collisions(collider)
 
     # Object Management
-    def add_object(self, obj: "Type[GameObject]") -> "GameObject":
+    def add_object(self, obj: "GameObject") -> "GameObject":
         """Adds an object to the scene.
 
         Args:
@@ -167,12 +181,12 @@ class Scene:
             raise JazzException(f"{obj.id}:{obj.name} already in the scene")
 
     # TODO clean this up
-    def add_physics_object(self, obj: "PhysicsObject", layers) -> None:
+    def add_physics_object(self, obj: "PhysicsObject", layers: str | int) -> None:
         """Adds an object to the scene's physics layers
 
         Args:
             obj (PhysicsObject): The object to add to the scene
-            layers (_type_): _description_
+            layers (str | int): Layer mask
         """
         if isinstance(layers, str):
             layers = int(layers, 2)
@@ -210,7 +224,7 @@ class Scene:
         for layer, grid in self._physics_world.items():
             grid.remove_object(obj)
 
-    def remove_sprite(self, sprite: "Sprite"):
+    def remove_sprite(self, sprite: "Sprite") -> None:
         """Removes an object from the draw list.
 
         Args:
@@ -252,9 +266,20 @@ class Scene:
         self,
         start: Vec2,
         end: Vec2,
-        layers="0001",
-        blacklist: list["PhysicsObject"] = None,
-    ):
+        layers: str | int = "0001",
+        blacklist: list["PhysicsObject"] | None = None,
+    ) -> "tuple[GameObject | None, Vec2 | None]":
+        """Casts a ray from start to end and returns collision information.
+
+        Args:
+            start (Vec2): Origin coordinate of the raycast.
+            end (Vec2): Target coordinate of the raycast.
+            layers (str | int, optional): Binary string or int mask of layers to check. Defaults to "0001".
+            blacklist (list[PhysicsObject], optional): List of physics objects to ignore during queries. Defaults to None.
+
+        Returns:
+            list[tuple]: List of hit tuples detailing collision points and distances.
+        """
         ray_cast = Ray(pos=start, length=dist_to(start, end), layers=layers)
         ray_cast.facing = direction_to(start, end)
         return ray_cast.cast(blacklist)
@@ -323,14 +348,14 @@ class Scene:
             clear_moved_flags(obj)
 
     # Properties and builtins
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> "GameObject | None":
         obj = self._objects.get(key, None)
         return obj
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator["GameObject"]:
         return iter(self._objects.values())
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self._objects)
 
     @property
@@ -345,14 +370,17 @@ class Scene:
 
     @property
     def camera_offset(self) -> Vec2:
+        """Vec2: Gets the active Camera's viewport drawing offset."""
         return self.camera.offset
 
     @property
     def width(self) -> int:
+        """int: Gets the width of the application display in pixels."""
         return Globals.display.get_width()
 
     @property
     def height(self) -> int:
+        """int: Gets the height of the application display in pixels."""
         return Globals.display.get_height()
 
     @property

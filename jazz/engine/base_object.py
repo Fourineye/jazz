@@ -8,7 +8,7 @@ from ..primatives import Draw
 class GameObject:
     """Base object in jazz"""
 
-    def __init__(self, name="Object", **kwargs):
+    def __init__(self, name: str = "Object", **kwargs) -> None:
         """Base object in Jazz Engine.
 
         Args:
@@ -48,7 +48,7 @@ class GameObject:
         self._cached_rotation = 0.0
 
     # Base Methods
-    def on_load(self):
+    def on_load(self) -> None:
         """Base method that can be overwritten. Called when the object is added to the scene."""
 
     def update(self, delta: float) -> None:
@@ -211,6 +211,10 @@ class GameObject:
         """Overwritable hook. Called when local_pos, pos, local_rotation, or rotation changes."""
 
     def _set_dirty(self) -> None:
+        """Marks this object and all of its descendants as transform-dirty.
+
+        Triggers the on_transform_change event hook on this object.
+        """
         self.on_transform_change()
         if not self._dirty:
             self._dirty = True
@@ -218,6 +222,11 @@ class GameObject:
                 child._set_dirty()
 
     def _update_transform(self) -> None:
+        """Updates and caches the global position and rotation of this object.
+
+        If marked dirty, recalculates position and rotation relative to the parent,
+        propagating transform values, then marks the cache as clean.
+        """
         if self._dirty:
             if self._parent is not None:
                 parent_pos = self._parent.pos
@@ -423,7 +432,7 @@ class GameObject:
                 count += child.child_count
         return count
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         children = ""
         for _, child in self._children.items():
             children += f" {child}"

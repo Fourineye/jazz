@@ -1,64 +1,192 @@
-def LINEAR(t):
+def LINEAR(t: float) -> float:
+    """Linear easing function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Linear mapped value.
+    """
     return t
 
 
-def EASE_IN_QUADRATIC(t):
+def EASE_IN_QUADRATIC(t: float) -> float:
+    """Quadratic ease-in function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return t**2
 
 
-def EASE_OUT_QUADRATIC(t):
+def EASE_OUT_QUADRATIC(t: float) -> float:
+    """Quadratic ease-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 1 - (1 - t) ** 2
 
 
-def EASE_IN_OUT_QUADRATIC(t):
+def EASE_IN_OUT_QUADRATIC(t: float) -> float:
+    """Quadratic ease-in-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 2 * t**2 if t < 0.5 else 1 - (-2 * t + 2) ** 2 / 2
 
 
-def EASE_IN_CUBIC(t):
+def EASE_IN_CUBIC(t: float) -> float:
+    """Cubic ease-in function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return t**3
 
 
-def EASE_OUT_CUBIC(t):
-    return 1 - (1 - t) ** 2
+def EASE_OUT_CUBIC(t: float) -> float:
+    """Cubic ease-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
+    return 1 - (1 - t) ** 3
 
 
-def EASE_IN_OUT_CUBIC(t):
+def EASE_IN_OUT_CUBIC(t: float) -> float:
+    """Cubic ease-in-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
 
 
-def EASE_IN_QUARTIC(t):
+def EASE_IN_QUARTIC(t: float) -> float:
+    """Quartic ease-in function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return t**4
 
 
-def EASE_OUT_QUARTIC(t):
+def EASE_OUT_QUARTIC(t: float) -> float:
+    """Quartic ease-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 1 - (1 - t) ** 4
 
 
-def EASE_IN_OUT_QUARTIC(t):
+def EASE_IN_OUT_QUARTIC(t: float) -> float:
+    """Quartic ease-in-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 8 * t**4 if t < 0.5 else 1 - (-2 * t + 2) ** 4 / 2
 
 
-def EASE_IN_QUINTIC(t):
+def EASE_IN_QUINTIC(t: float) -> float:
+    """Quintic ease-in function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return t**5
 
 
-def EASE_OUT_QUINTIC(t):
+def EASE_OUT_QUINTIC(t: float) -> float:
+    """Quintic ease-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 1 - (1 - t) ** 5
 
 
-def EASE_IN_OUT_QUINTIC(t):
+def EASE_IN_OUT_QUINTIC(t: float) -> float:
+    """Quintic ease-in-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 16 * t**5 if t < 0.5 else 1 - (-2 * t + 2) ** 5 / 2
 
 
-def EASE_IN_EXPO(t):
+def EASE_IN_EXPO(t: float) -> float:
+    """Exponential ease-in function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 0 if t == 0 else 2 ** (10 * t - 10)
 
 
-def EASE_OUT_EXPO(t):
+def EASE_OUT_EXPO(t: float) -> float:
+    """Exponential ease-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return 1 if t == 1 else 1 - 2 ** (-10 * t)
 
 
-def EASE_IN_OUT_EXPO(t):
+def EASE_IN_OUT_EXPO(t: float) -> float:
+    """Exponential ease-in-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     return (
         0
         if t == 0
@@ -70,26 +198,50 @@ def EASE_IN_OUT_EXPO(t):
     )
 
 
-def EASE_IN_BACK(t):
+def EASE_IN_BACK(t: float) -> float:
+    """Back ease-in function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     c1 = 1.70158
     c3 = c1 + 1
     return c3 * t**3 - c1 * t**2
 
 
-def EASE_OUT_BACK(t):
+def EASE_OUT_BACK(t: float) -> float:
+    """Back ease-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     c1 = 1.70158
     c3 = c1 + 1
     return 1 + c3 * (t - 1) ** 3 + c1 * (t - 1) ** 2
 
 
-def EASE_IN_OUT_BACK(t):
+def EASE_IN_OUT_BACK(t: float) -> float:
+    """Back ease-in-out function.
+
+    Args:
+        t (float): Interpolation factor between 0.0 and 1.0.
+
+    Returns:
+        float: Mapped value.
+    """
     c1 = 1.70158
     c2 = c1 * 1.525
     in_ = ((2 * t) ** 2 * ((c2 + 1) * 2 * t - c2)) / 2
     out_ = ((2 * t - 2) ** 2 * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2
     return (
         in_ if t < 0.5 else out_
-    )  # (Math.pow(2 * x - 2, 2) * ((c2 + 1) * (x * 2 - 2) + c2) + 2) / 2
+    )
 
 
 EASINGS = [

@@ -5,7 +5,23 @@ from ..global_dict import Globals
 from ..utils import Color, Rect, Surface, Vec2
 
 class TextBox(Sprite):
-    def __init__(self, name="TextBox", **kwargs):
+    """Event-driven interactive input TextBox component supporting keyboard entry and focus toggles."""
+
+    def __init__(self, name: str = "TextBox", **kwargs) -> None:
+        """Initializes the TextBox component.
+
+        Args:
+            name (str, optional): The name of the textbox. Defaults to "TextBox".
+            font (Font, optional): Custom pygame Font object. Defaults to None.
+            fontsize (int, optional): Size of font to generate if no custom font is provided. Defaults to 24.
+            text_color (tuple | Color, optional): RGB/Color value for input text. Defaults to white.
+            text (str, optional): The initial text contents. Defaults to " ".
+            size (tuple, optional): Manual width and height. Defaults to bounds computed based on text.
+            bg_color (tuple | Color, optional): Background fill color. Defaults to dark gray.
+            blink_rate (float, optional): Cursor blinking cycle interval in seconds. Defaults to 0.25.
+            on_submit (callable, optional): Callback triggered when 'enter' is pressed. Defaults to None.
+            on_change (callable, optional): Callback triggered when text content changes. Defaults to None.
+        """
         font = kwargs.get("font", None)
         if font is None:
             font_size = kwargs.get("fontsize", 24)
@@ -59,10 +75,11 @@ class TextBox(Sprite):
 
     @property
     def active(self) -> bool:
+        """bool: Check if the textbox is active/focused and accepting text input."""
         return self._active
 
     @active.setter
-    def active(self, val: bool):
+    def active(self, val: bool) -> None:
         if self._active != val:
             self._active = val
             self._blink = 0.0
@@ -72,7 +89,12 @@ class TextBox(Sprite):
             else:
                 Globals.key.stop_text_input()
 
-    def update(self, delta: float):
+    def update(self, delta: float) -> None:
+        """Processes time deltas, cursor blinks, keyboard key presses, and focus click selections.
+
+        Args:
+            delta (float): Time since the last frame in seconds.
+        """
         if self.active:
             self._blink += delta
             if self._blink >= self._blink_rate:
@@ -104,7 +126,12 @@ class TextBox(Sprite):
             if Globals.mouse.click(0) and self.rect.collidepoint(Globals.mouse.pos):
                 self.active = True
 
-    def set_text(self, text):
+    def set_text(self, text: str) -> None:
+        """Updates text display contents, re-renders the label, and updates cursor coordinates.
+
+        Args:
+            text (str): The new text string.
+        """
         old_text = self._text.text_content
         self._text.set_text(text)
         self._cursor.local_pos = (
@@ -116,8 +143,9 @@ class TextBox(Sprite):
 
     @property
     def text(self) -> str:
+        """str: Gets the text string content of the textbox."""
         return self._text.text_content
 
     @text.setter
-    def text(self, new_text: str):
+    def text(self, new_text: str) -> None:
         self.set_text(new_text)

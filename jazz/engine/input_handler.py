@@ -1,5 +1,6 @@
 """Module that holds The input wrappers"""
 
+from typing import Callable, Any
 import pygame
 
 from ..global_dict import Globals
@@ -7,20 +8,26 @@ from ..utils import Vec2, key_from_value
 
 
 class InputHandler:
-    """Input Wrapper"""
+    """Dispatches pygame input events to Keyboard and Mouse helper classes."""
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initializes the InputHandler wrapping Keyboard and Mouse sub-handlers."""
         self.mouse = Mouse()
         self.key = Keyboard()
         self.user_events = []
         self.event_handler = None
 
-    def set_event_handler(self, method):
+    def set_event_handler(self, method: Callable[[pygame.event.Event], None]) -> None:
+        """Registers a custom callback function for processing raw Pygame events.
+
+        Args:
+            method (callable): The callback function that takes a Pygame Event as argument.
+        """
         if callable(method):
             self.event_handler = method
 
 
-    def update(self):
+    def update(self) -> None:
         """Called every frame to update user input."""
         self.user_events = []
         self.mouse.update()
@@ -47,15 +54,16 @@ class Mouse:
         "middle",
     ]
 
-    def __init__(self):
-        self._just_pressed = [False] * 6
+    def __init__(self) -> None:
+        """Initializes the Mouse input tracker with empty states and positions."""
+        self._just_pressed = {}
         self._pressed = [False] * 6
-        self._just_released = [False] * 6
+        self._just_released = {}
         self._pos = Vec2()
         self._world_offset = Vec2()
         self.rel = Vec2()
 
-    def update(self):
+    def update(self) -> None:
         """Called every frame to update mouse inputs."""
         self._just_pressed = {}
         self._just_released = {}
@@ -75,7 +83,16 @@ class Mouse:
             self._just_released[button] = True
         self._pressed = pygame.mouse.get_pressed()
 
-    def click(self, key, consume=False):
+    def click(self, key: str | int, consume: bool = False) -> bool:
+        """Checks if a mouse button was clicked (pressed down) in the current frame.
+
+        Args:
+            key (str | int): Button name ("left", "middle", "right") or index (0-2).
+            consume (bool, optional): If True, marks the click event as consumed/handled. Defaults to False.
+
+        Returns:
+            bool: True if clicked, otherwise False.
+        """
         if isinstance(key, int):
             if key < len(Mouse.BUTTONS):
                 key = Mouse.BUTTONS[key]
@@ -84,13 +101,32 @@ class Mouse:
             self._just_pressed[key] = False
         return click
 
-    def release(self, key):
+    def release(self, key: str | int) -> bool:
+        """Checks if a mouse button was released in the current frame.
+
+        Args:
+            key (str | int): Button name ("left", "middle", "right") or index (0-2).
+
+        Returns:
+            bool: True if released, otherwise False.
+        """
         if isinstance(key, int):
             if key < len(Mouse.BUTTONS):
                 key = Mouse.BUTTONS[key]
         return self._just_released.get(key, False)
 
-    def held(self, key):
+    def held(self, key: str | int) -> bool:
+        """Checks if a mouse button is currently being held down.
+
+        Args:
+            key (str | int): Button name ("left", "middle", "right") or index (0-2).
+
+        Raises:
+            ValueError: If input is invalid.
+
+        Returns:
+            bool: True if held, otherwise False.
+        """
         if isinstance(key, str):
             if key.lower() in Mouse.BUTTONS:
                 key = Mouse.BUTTONS.index(key.lower())
@@ -101,35 +137,42 @@ class Mouse:
         return self._pressed[key]
 
     @property
-    def x(self):
+    def x(self) -> float:
         """Returns the x component of pos."""
         return self.pos.x
 
     @property
-    def y(self):
+    def y(self) -> float:
         """Returns the y component of pos."""
         return self.pos.y
 
     @property
-    def pos(self):
+    def pos(self) -> Vec2:
+        """Vec2: Gets the mouse coordinate in screen space."""
         return Vec2(self._pos)
 
     @pos.setter
-    def pos(self, new_pos):
+    def pos(self, new_pos: Vec2 | tuple[float, float]) -> None:
+        """Sets the mouse coordinate in screen space.
+
+        Args:
+            new_pos (Vec2 | tuple): The new coordinate to warp the mouse cursor to.
+        """
         self._pos = Vec2(new_pos)
         pygame.mouse.set_pos(new_pos)
 
     @property
-    def global_pos(self):
+    def global_pos(self) -> Vec2:
+        """Vec2: Gets the mouse coordinate in global world space (compensating for camera offset)."""
         return self.pos - self._world_offset
 
     @property
-    def dx(self):
+    def dx(self) -> float:
         """Retruns the x compnent of rel."""
         return self.rel.x
 
     @property
-    def dy(self):
+    def dy(self) -> float:
         """Returns the y component of rel."""
         return self.rel.y
 
@@ -150,7 +193,8 @@ class Keyboard:
         "del",
     }
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initializes the Keyboard input tracker."""
         self._just_pressed = {}
         self._pressed = [False] * 200
         self._just_released = {}
@@ -158,15 +202,17 @@ class Keyboard:
         self.text = ""
         self._text_input = False
 
-    def start_text_input(self):
+    def start_text_input(self) -> None:
+        """Enables system text input mode for receiving unicode character entries."""
         pygame.key.start_text_input()
         self._text_input = True
 
-    def stop_text_input(self):
+    def stop_text_input(self) -> None:
+        """Disables system text input mode."""
         pygame.key.stop_text_input()
         self._text_input = False
 
-    def update(self):
+    def update(self) -> None:
         """Called every frame to update keyboard inputs."""
         self._just_pressed = {}
         self._just_released = {}
@@ -186,7 +232,15 @@ class Keyboard:
         self._pressed = pygame.key.get_pressed()
         self._mods = pygame.key.get_mods()
 
-    def press(self, key):
+    def press(self, key: str | int) -> bool:
+        """Checks if a key was pressed down in the current frame.
+
+        Args:
+            key (str | int): Key name string or pygame key code.
+
+        Returns:
+            bool: True if pressed, otherwise False.
+        """
         if isinstance(key, int):
             if key in Keyboard.KEYS:
                 key = Keyboard.KEYS[key]
@@ -194,12 +248,28 @@ class Keyboard:
             return self._just_pressed.get(key, False)
         return False
 
-    def mod(self, key):
+    def mod(self, key: str) -> bool:
+        """Checks if a modifier key (shift, control, alt, meta) is currently active.
+
+        Args:
+            key (str): Modifier name.
+
+        Returns:
+            bool: True if active, otherwise False.
+        """
         if self._mods & self.MODS.get(key, 0):
             return True
         return False
 
-    def release(self, key):
+    def release(self, key: str | int) -> bool:
+        """Checks if a key was released in the current frame.
+
+        Args:
+            key (str | int): Key name string or pygame key code.
+
+        Returns:
+            bool: True if released, otherwise False.
+        """
         if isinstance(key, int):
             if key in Keyboard.KEYS:
                 key = Keyboard.KEYS[key]
@@ -207,7 +277,18 @@ class Keyboard:
             return self._just_released.get(key, False)
         return False
 
-    def held(self, key):
+    def held(self, key: str) -> bool:
+        """Checks if a key is currently being held down.
+
+        Args:
+            key (str): Key name string.
+
+        Raises:
+            ValueError: If input is not a string.
+
+        Returns:
+            bool: True if held, otherwise False.
+        """
         if isinstance(key, str):
             key_code = key_from_value(Keyboard.KEYS, key)
             if key_code:

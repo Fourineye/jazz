@@ -4,7 +4,15 @@ from ._physics_object import PhysicsObject
 
 
 class Area(PhysicsObject):
-    def __init__(self, **kwargs):
+    """Sensor zone component that detects overlapping physical objects without resolution checks."""
+
+    def __init__(self, **kwargs) -> None:
+        """Initializes the Area component.
+
+        Args:
+            target_group (Group, optional): Filter overlaps against a specific Entity Group. Defaults to None.
+            active (bool, optional): Active status check flag. Defaults to True.
+        """
         kwargs.setdefault("name", "Area")
         kwargs.setdefault("layers", "0000")
         super().__init__(**kwargs)
@@ -14,11 +22,17 @@ class Area(PhysicsObject):
         self._active = kwargs.get("active", True)
         self._entered_cache = {}
 
-    def update(self, _delta):
+    def update(self, _delta: float) -> None:
+        """Updates and queries overlapping candidates each frame if sensor is active."""
         if self._active:
             self.entered = self.get_entered()
 
-    def get_entered(self):
+    def get_entered(self) -> list[PhysicsObject]:
+        """Queries and returns a sorted list of physics objects currently overlapping this area.
+
+        Returns:
+            list[PhysicsObject]: Sensed physics objects, sorted by proximity to the area center.
+        """
         entered = []
         collisions = Globals.scene.get_AABB_collisions(self)
         if collisions:

@@ -1,4 +1,5 @@
-from typing import Type
+from typing import Type, Any
+from collections.abc import KeysView
 
 import pygame
 
@@ -12,22 +13,22 @@ from ..primatives import Draw
 
 
 class Application:
+    """Manages the main game loop, window initialization, and active scenes.
+
+    Only a single instance of Application can be initialized.
+    """
     instance: "Application" = None
-    """
-    A class that handles the basic window creation and run loop
-    for a pygame application.
-    """
 
     def __init__(
         self,
         width: int,
         height: int,
         name: str = "",
-        flags=0,
-        fps_max=60,
-        vsync=False,
-        experimental=False,
-    ):
+        flags: int = 0,
+        fps_max: int = 60,
+        vsync: bool = False,
+        experimental: bool = False,
+    ) -> None:
         """Initializes the Application object and pygame, creates the
         application window
 
@@ -76,7 +77,7 @@ class Application:
 
         Draw.init()
 
-    def add_scene(self, scene: Type[Scene]):
+    def add_scene(self, scene: Type[Scene]) -> None:
         """Adds a scene class reference to the game to be initilaized at
         a later point. Setting the next scene if on is not already set
 
@@ -88,7 +89,7 @@ class Application:
         if self._next_scene == "":
             self._next_scene = name
 
-    def set_next_scene(self, name: str):
+    def set_next_scene(self, name: str) -> None:
         """Sets the _next_scene property verifying that the scene exists in
         the game first
 
@@ -103,7 +104,7 @@ class Application:
             raise Exception(f"Could not find scene: {name}")
         self._next_scene = name
 
-    def run(self):
+    def run(self) -> None:
         """Starts the main game loop of the application.
 
         Raises:
@@ -146,13 +147,13 @@ class Application:
         self._window.destroy()
         pygame.quit()
 
-    def stop(self):
+    def stop(self) -> None:
         """Sets the neccessary flags to stop the main game loop"""
         self.running = False
         if self._active_scene is not None:
             self._active_scene.running = False
 
-    def _load_scene(self, name):
+    def _load_scene(self, name: str) -> Scene:
         """
         Returns a new instance of a scene in the _scenes attribute.
 
@@ -166,7 +167,7 @@ class Application:
         scene_object = scene_class()
         return scene_object
 
-    def _quit_check(self):
+    def _quit_check(self) -> None:
         """
         Gets events from pygame.event.get() and manages the QUIT event,
         it then passes the event to the handle_event() method.
@@ -174,7 +175,7 @@ class Application:
         if pygame.event.get(pygame.QUIT):
             self.stop()
 
-    def set_caption(self, text: str):
+    def set_caption(self, text: str) -> None:
         """Sets the caption on the application window
 
         Args:
@@ -184,7 +185,7 @@ class Application:
             text = str(text)
         self._window.title = text
 
-    def get_fps(self):
+    def get_fps(self) -> float:
         """Returns fps as a float
 
         Returns:
@@ -192,5 +193,10 @@ class Application:
         """
         return self._clock.get_fps()
 
-    def get_scenes(self):
+    def get_scenes(self) -> KeysView[str]:
+        """Returns the list of registered scene names.
+
+        Returns:
+            dict_keys: The names of the scenes registered to the application.
+        """
         return self._scenes.keys()

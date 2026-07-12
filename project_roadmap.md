@@ -48,6 +48,12 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
   - Clean up hardware-vs-software checking loops. Fully commit to `_sdl2` rendering targets.
 - [ ] **Vector Allocation Cleanup (`jazz/utils.py`)**
   - Use in-place vector operations (e.g. `vec.normalize_ip()`) to reduce `pygame.Vector2` object creation overhead in math loops.
+- [ ] **Fix Configuration Loading in `load_ini` (`jazz/utils.py`)**
+  - Passed file object to `ConfigParser.read()` silently fails to load settings. Change to `read_file(ini)` or path.
+- [ ] **Vector Math Built-ins for Distance (`jazz/utils.py`)**
+  - Replace custom `(vec2 - vec1).magnitude()` with built-in `vec1.distance_to(vec2)` or `distance_squared_to(vec2)` which are optimized in C.
+- [ ] **Optimize Circle and Line Drawing Loops (`jazz/primatives.py`)**
+  - Cache circle vertex offsets and avoid creating new `Vec2` instances inside drawing iterations.
 
 ---
 
@@ -65,6 +71,14 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
   - Make the number of physics grid layers configurable instead of hardcoded to four layers (0-3).
 - [ ] **Audio Initialization Decoupling (`jazz/engine/sound_manager.py`)**
   - Accept settings as an initialization volume dict rather than hardcoding dependency on `SETTINGS["AUDIO"]`.
+- [ ] **Fix `ResourceManager.add_surface` Return Key (`jazz/engine/resource_manager.py`)**
+  - Fix returning of `self._textures[id]` instead of `self._surfaces[id]`, preventing potential KeyErrors.
+- [ ] **Casting INI Settings to Floats/Ints (`jazz/engine/sound_manager.py`)**
+  - Ensure string settings loaded from the INI are converted to float before volume multiplications.
+- [ ] **Clean up Dynamic Textures on Sprite Destruction (`jazz/engine/resource_manager.py`)**
+  - Dynamically created textures registered via sprite IDs are never purged from `ResourceManager._textures` on sprite death.
+- [ ] **Track Moved Objects Directly (`jazz/engine/scene.py`)**
+  - Keep a track of moved objects rather than recursively traversing the entire scene tree to clear `_moved_this_frame` flags.
 
 ---
 
@@ -80,6 +94,12 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
   - Render health/progress bars using standard geometry primitive draws rather than creating/recreating text surfaces.
 - [ ] **Bounding Box Cache (`jazz/components/sprite.py`)**
   - Cache the `pygame.Rect` object on `Sprite` and update it only when `pos`, `scale`, or size changes.
+- [ ] **Fix Button Collision Bounds After Movement (`jazz/components/button.py`)**
+  - Clicks and hovers fail when buttons move because they check a static `self._rect` set at load. Modify to use the dynamic `self.rect` property.
+- [ ] **Implement UI Layout Containers (`jazz/components/vbox.py`, `hbox.py`, `ui_container.py`)**
+  - Implement vertical/horizontal ordering and alignment logic rather than having empty stub classes.
+- [ ] **Avoid Redundant `_hardware_offset()` Calls on Animated Sprites (`jazz/components/animated_sprite.py`)**
+  - Check if the frame index or texture has changed before updating dimensions and offsets.
 
 ---
 
@@ -97,3 +117,8 @@ This living roadmap lists all optimization, refactoring, and clean-up tasks for 
   - Replace the heavy `uuid.uuid1()` generator with built-in `id()` or an incrementing integer counter.
 - [ ] **Tween Setter Reference (`jazz/animation/tween.py`)**
   - Accept a direct setter function reference or a dictionary key instead of string-based `setattr`/`getattr` reflection.
+- [ ] **Fix Cubic Ease Out Math (`jazz/animation/easing.py`)**
+  - Update `EASE_OUT_CUBIC` to use correct exponent of `3` instead of `2`.
+- [ ] **Destroy Completed Tween Objects (`jazz/animation/tween.py`)**
+  - Set `self.do_kill = True` when a non-looping Tween finishes so it doesn't linger in the scene update queue.
+

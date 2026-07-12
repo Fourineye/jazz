@@ -4,7 +4,21 @@ from .sprite import Sprite
 
 
 class AnimatedSprite(Sprite):
-    def __init__(self, name: str = "animated sprite", **kwargs):
+    """Component that renders multi-frame spritesheets with playing controls."""
+
+    def __init__(self, name: str = "animated sprite", **kwargs) -> None:
+        """Initializes the AnimatedSprite component.
+
+        Args:
+            name (str, optional): The name of the animated sprite object. Defaults to "animated sprite".
+            animation_frames (list[int], optional): Sequence indices of frames to play. Defaults to [-1] (plays all).
+            spritesheet (str | list, optional): Slices/images source of the frames. Defaults to None.
+            sprite_dim (tuple, optional): Dimensions of each frame cell in pixels. Defaults to (0, 0).
+            sprite_offset (tuple, optional): Slicing offset in pixels. Defaults to (0, 0).
+            playing (bool, optional): Auto-start playback flag. Defaults to True.
+            oneshot (bool, optional): Loop disable flag. Defaults to False.
+            animation_fps (int, optional): Playback frame rate. Defaults to 30.
+        """
         super().__init__(**kwargs)
         self.animation_frames: list[int] = kwargs.get("animation_frames", [-1])
         self._sheet: list[Image | Texture] = kwargs.get("spritesheet", None)
@@ -53,7 +67,14 @@ class AnimatedSprite(Sprite):
         spritesheet: str | list[str | Texture | Image] | None = None,
         animation_frames: list[int] | None = None,
         fps: int | None = None,
-    ):
+    ) -> None:
+        """Updates animation settings dynamically.
+
+        Args:
+            spritesheet (str | list, optional): Slices/images source of the frames. Defaults to None.
+            animation_frames (list[int], optional): Sequence indices of frames to play. Defaults to None.
+            fps (int, optional): Playback frame rate. Defaults to None.
+        """
         if spritesheet is not None:
             if isinstance(spritesheet, str):
                 try:
@@ -97,7 +118,12 @@ class AnimatedSprite(Sprite):
         if fps is not None:
             self.set_fps(fps)
 
-    def update(self, delta):
+    def update(self, delta: float) -> None:
+        """Advances active frame index based on delta time and playback FPS.
+
+        Args:
+            delta (float): Time since the last frame in seconds.
+        """
         if self._playing:
             self._frame = self._frame + delta * self.animation_fps
             if self._frame >= len(self.animation_frames):
@@ -108,15 +134,26 @@ class AnimatedSprite(Sprite):
                     self._frame %= len(self.animation_frames)
             self.texture = self._sheet[self.animation_frames[int(self._frame)]]
 
-    def play(self, start_over=False):
+    def play(self, start_over: bool = False) -> None:
+        """Starts or resumes animation playback.
+
+        Args:
+            start_over (bool, optional): Rewind frame tracker to 0. Defaults to False.
+        """
         self._playing = True
         if start_over:
             self._frame = 0
 
-    def stop(self):
+    def stop(self) -> None:
+        """Stops/pauses animation playback."""
         self._playing = False
 
-    def set_fps(self, fps):
+    def set_fps(self, fps: int) -> None:
+        """Sets the animation playback FPS rate.
+
+        Args:
+            fps (int): Frame rate value.
+        """
         if fps < 0:
             raise Exception(f"invalid fps {fps}, fps must be greater than 0")
         self.animation_fps = fps

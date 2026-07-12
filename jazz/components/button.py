@@ -1,4 +1,5 @@
 import pygame
+from typing import Callable
 
 from .sprite import Sprite
 from .label import Label
@@ -8,12 +9,26 @@ from ..utils import Color, Rect, Vec2, Surface
 
 
 class Button(Sprite):
+    """Event-driven interactive Button UI component supporting unpressed, hover, and pressed states."""
     STATES = ["UNPRESSED", "HOVER", "PRESSED"]
     UNPRESSED = 0
     HOVER = 1
     PRESSED = 2
 
-    def __init__(self, name="button", **kwargs):
+    def __init__(self, name: str = "button", **kwargs) -> None:
+        """Initializes the Button component.
+
+        Args:
+            name (str, optional): The name of the button. Defaults to "button".
+            callback (callable, optional): Callback executed on press/release events. Defaults to None.
+            on_release (bool, optional): Execute callback when releasing button. Defaults to True.
+            size (tuple, optional): Width and height of the button bounds. Defaults to (10, 10).
+            unpressed (Texture, optional): Render asset for default state. Defaults to white color block.
+            pressed (Texture, optional): Render asset for pressed state. Defaults to dark gray color block.
+            hover (Texture, optional): Render asset for hover state. Defaults to light gray color block.
+            label (str, optional): Custom label text layout inside button bounds. Defaults to None.
+            text_size (int, optional): Size of font to display. Defaults to 12.
+        """
         super().__init__(name, **kwargs)
         self.screen_space = True
 
@@ -54,13 +69,19 @@ class Button(Sprite):
 
         self._texture = self._unpressed_asset
 
-    def on_load(self):
+    def on_load(self) -> None:
+        """Initializes target position bounds and updates nested child label positions on scene mount."""
         super().on_load()
         self._rect.topleft = self.draw_pos
         if self._label is not None:
             self._label.pos = self._rect.center
 
-    def update(self, _delta):
+    def update(self, _delta: float) -> None:
+        """Monitors mouse cursor interaction events to resolve button hover and click states.
+
+        Args:
+            _delta (float): Unused engine timing delta value.
+        """
         mouse_pos = Globals.mouse.pos
         if self.visible:
             if self._rect.collidepoint(mouse_pos):
@@ -94,9 +115,19 @@ class Button(Sprite):
                         self._callback()
             self.last_state = self.state
 
-    def set_callback(self, callback):
+    def set_callback(self, callback: Callable[[], None]) -> None:
+        """Registers a callback method to trigger when the button is clicked.
+
+        Args:
+            callback (callable): The callback function.
+        """
         self._callback = callback
 
     def render_debug(self, offset: Vec2):
+        """Draws the active bounding box around the button in debug mode.
+
+        Args:
+            offset (Vec2): Screen space render offset.
+        """
         super().render_debug(offset)
         Draw.rect(self._rect.move(offset), Color("green"), 3)

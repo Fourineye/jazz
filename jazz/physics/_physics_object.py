@@ -5,7 +5,15 @@ from ..utils import COLLIDER_RECT, COLLIDER_POLY, COLLIDER_CIRCLE, COLLIDER_RAY,
 
 
 class PhysicsObject(GameObject):
-    def __init__(self, **kwargs):
+    """Base physical object component that integrates with the engine's 2D physics layers and colliders."""
+
+    def __init__(self, **kwargs) -> None:
+        """Initializes the PhysicsObject component.
+
+        Args:
+            layers (str | int, optional): Binary string or int mask indicating active physics layers. Defaults to "0001".
+            collision_layers (str | int, optional): Binary string or int mask of layers this object collides with. Defaults to "0001".
+        """
         kwargs.setdefault("name", "PhysicsObject")
         super().__init__(**kwargs)
         
@@ -24,16 +32,22 @@ class PhysicsObject(GameObject):
         self.collider: Collider | None = None
         self._moved_this_frame = True
 
-    def on_transform_change(self):
+    def on_transform_change(self) -> None:
+        """Updates internal frame movement dirty flags when position/rotation updates."""
         super().on_transform_change()
         self._moved_this_frame = True
 
-    def on_load(self):
+    def on_load(self) -> None:
+        """Mounts and registers this object with the active scene's physics simulation grids.
+
+        Raises:
+            JazzException: If the object is loaded without registering a collider.
+        """
         if self.collider is None:
             raise (JazzException("Physics Object does not have collider"))
         Globals.scene.add_physics_object(self, self._layers)
 
-    def add_collider(self, type: int, **kwargs):
+    def add_collider(self, type: int, **kwargs) -> None:
         """Adds a collider to the object
 
         Args:

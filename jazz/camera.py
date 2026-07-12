@@ -22,7 +22,12 @@ if TYPE_CHECKING:
 class Camera:
     """Class that handles the drawing of objects onto the display."""
 
-    def __init__(self):
+    def __init__(self) -> None:
+        """Initializes the Camera object.
+
+        Sets default values for background color, centering, target, tracking bounds,
+        shake parameters, and display dimensions.
+        """
         self._bg_color = (0, 0, 0)
         self._blanking = True
         self.target = None
@@ -115,18 +120,18 @@ class Camera:
 
         self.offset.update(offset_x, offset_y)
 
-    def set_offset(self, position=(0, 0)) -> None:
+    def set_offset(self, position: tuple[float, float] | Vec2 = (0, 0)) -> None:
         """Sets the camera offset to a specified value
 
         Args:
-            position (tuple, optional): New offset to set the Camera to.
+            position (tuple | Vec2, optional): New offset to set the Camera to.
                 Defaults to (0, 0).
         """
         offset_x = self.display_center[0] - position[0]
         offset_y = self.display_center[1] - position[1]
         self.offset.update(offset_x, offset_y)
 
-    def set_target(self, target: Type["GameObject"]) -> None:
+    def set_target(self, target: "GameObject | Vec2") -> None:
         """
         Sets the target of the Camera, which it will follow.
 
@@ -155,9 +160,14 @@ class Camera:
             self.bounds = Rect(*bounds)
 
     def set_bg_color(self, color: Color | tuple[int, int, int] | str) -> None:
+        """Sets the background clear color for the camera.
+
+        Args:
+            color (Color | tuple | str): The clear color to be used when rendering.
+        """
         self._bg_color = Color(color)
 
-    def add_shake(self, magnitude) -> None:
+    def add_shake(self, magnitude: float) -> None:
         """
         Adds magnitude to the Camera shake.
 
@@ -169,10 +179,12 @@ class Camera:
 
     @property
     def pos(self) -> Vec2:
+        """Vec2: Gets the current world position of the camera center."""
         return self.display_center - self.offset
 
     @property
     def screen_rect(self) -> Rect:
+        """Rect: Gets the bounding rectangle of the camera view in screen space."""
         return Rect(
             self.offset.x,
             self.offset.y,

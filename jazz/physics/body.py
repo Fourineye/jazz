@@ -4,12 +4,19 @@ from ._physics_object import PhysicsObject
 
 
 class Body(PhysicsObject):
-    def __init__(self, **kwargs):
+    """Rigid body physical component that handles rigid collisions and positional corrections."""
+
+    def __init__(self, **kwargs) -> None:
+        """Initializes the Body component.
+
+        Args:
+            static (bool, optional): If True, the object is static (immovable) and acts as an obstacle. Defaults to False.
+        """
         kwargs.setdefault("name", "Body")
         super().__init__(**kwargs)
         self.static = kwargs.get("static", False)
 
-    def move_and_collide(self, direction: Vec2):
+    def move_and_collide(self, direction: Vec2) -> list[tuple[PhysicsObject, tuple[float, Vec2]]]:
         """
         A function to move the Entity and check for collisions, stopping if one is found.
 

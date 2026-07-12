@@ -1,7 +1,7 @@
 """
 Module to provide a base for active game entities.
 """
-from typing import List, Tuple, TYPE_CHECKING
+from typing import TYPE_CHECKING
 
 from ._physics_object import PhysicsObject
 from ..global_dict import Globals
@@ -12,7 +12,15 @@ if TYPE_CHECKING:
 
 
 class Ray(PhysicsObject):
-    def __init__(self, **kwargs):
+    """Raycast component representing a straight projection line for detecting physical overlaps."""
+
+    def __init__(self, **kwargs) -> None:
+        """Initializes the Ray component.
+
+        Args:
+            length (float | int, optional): The casting distance. Defaults to 1.
+            active (bool, optional): Auto-update and cast flag. Defaults to True.
+        """
         kwargs.setdefault("name", "Ray")
         super().__init__(**kwargs)
         length = kwargs.get("length", 1)
@@ -21,11 +29,12 @@ class Ray(PhysicsObject):
         self.collision_point = None
         self.collision_object = None
 
-    def update(self, _delta: float):
+    def update(self, _delta: float) -> None:
+        """Triggers raycast collision check if marked active."""
         if self._active:
             self.collision_object, self.collision_point = self.cast()
 
-    def cast_all(self, blacklist: List[PhysicsObject] = None):
+    def cast_all(self, blacklist: list[PhysicsObject] | None = None) -> list[tuple["GameObject", Vec2]]:
         """
         Method that returns all collisions with the ray that are not in the blacklist
         :param blacklist: A list of objects to ignore
@@ -34,7 +43,7 @@ class Ray(PhysicsObject):
         if blacklist is None:
             blacklist = []
         collisions = Globals.scene.get_AABB_collisions(self)
-        precise_collisions: List[Tuple[GameObject, Vec2]] = []
+        precise_collisions: list[tuple[GameObject, Vec2]] = []
         for collider in collisions:
             if collider not in blacklist:
                 point = self.collider.collide_ray(collider.collider)
@@ -45,7 +54,7 @@ class Ray(PhysicsObject):
         )
         return precise_collisions
 
-    def cast(self, blacklist: List[PhysicsObject] = None):
+    def cast(self, blacklist: list[PhysicsObject] | None = None) -> "tuple[GameObject | None, Vec2 | None]":
         """
         A function to move the Entity and check for collisions, stopping if one is found.
 
@@ -80,9 +89,10 @@ class Ray(PhysicsObject):
         return None, None
 
     @property
-    def length(self):
+    def length(self) -> float | int:
+        """float: Gets the length of the ray segment."""
         return self.collider.length
 
     @length.setter
-    def length(self, length):
+    def length(self, length: float | int) -> None:
         self.collider.length = length

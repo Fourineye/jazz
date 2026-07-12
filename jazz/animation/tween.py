@@ -15,7 +15,7 @@ class Tween(GameObject):
         target_value: Any,
         time: float,
         **kwargs,
-    ):
+    ) -> None:
         """A an object that moves a property between two numeric values using a given easing function.
 
         Args:

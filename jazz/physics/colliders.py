@@ -14,7 +14,13 @@ from ..primatives import Draw
 
 
 class Collider(GameObject):
-    def __init__(self, **kwargs):
+    """Base class for collision shapes in the Jazz Engine scene graph."""
+
+    def __init__(self, **kwargs) -> None:
+        """Initializes the Collider component.
+
+        Sets up vertices, edges, normals, and cached values for transformation checks.
+        """
         kwargs.setdefault("name", "Collider")
         super().__init__(**kwargs)
         self.collider = self
@@ -40,6 +46,7 @@ class Collider(GameObject):
         self._cached_normals = []
 
     def on_transform_change(self):
+        """Recalculates local bounds, radius, and edges when local/parent transforms change."""
         self._vertices_dirty = True
         if self._parent is not None:
             if hasattr(self._parent, "_moved_this_frame"):
@@ -63,6 +70,11 @@ class Collider(GameObject):
         self.get_rect()
 
     def render_debug(self, offset: Vec2):
+        """Renders the outline edges, vertices, center, and bounding box of the collider.
+
+        Args:
+            offset (Vec2): Viewport offset for debug rendering.
+        """
         super().render_debug(offset)
         for edge in self.edges:
             Draw.line(edge[0] + offset, edge[1] + offset, Color("white"), 2)
@@ -80,7 +92,15 @@ class Collider(GameObject):
             2,
         )
 
-    def project(self, axis):
+    def project(self, axis: Vec2) -> tuple[float, float]:
+        """Projects the vertices of the collider onto a target axis.
+
+        Args:
+            axis (Vec2): The axis vector to project onto.
+
+        Returns:
+            tuple[float, float]: The minimum and maximum projected values.
+        """
         min_v, max_v = None, None
         for vert in self.vertices:
             proj = (vert).dot(axis)
@@ -93,16 +113,33 @@ class Collider(GameObject):
                 max_v = proj
         return min_v, max_v
 
-    def collide_circle(self, collider):
+    def collide_circle(self, collider: "Collider") -> bool:
+        """Performs a quick bounding-radius collision test against another collider.
+
+        Args:
+            collider (Collider): The other collider.
+
+        Returns:
+            bool: True if bounding circles overlap, otherwise False.
+        """
         return (
             (collider.center - self.center).magnitude_squared()
             <= (self._radius + collider._radius) ** 2
         )
 
-    def collide_rect(self, collider):
+    def collide_rect(self, collider: "Collider") -> bool:
+        """Performs a quick bounding-box collision test against another collider's bounding box.
+
+        Args:
+            collider (Collider): The other collider.
+
+        Returns:
+            bool: True if bounding rectangles overlap, otherwise False.
+        """
         return self.rect.colliderect(collider.rect)
 
-    def __collide_rect(self, collider):
+    def __collide_rect(self, collider: "Collider") -> bool:
+        """Internal helper to test bounding box overlaps."""
         if (
             (self.top) < (collider.bottom)
             and (self.bottom) > (collider.top)
@@ -113,7 +150,14 @@ class Collider(GameObject):
         else:
             return False
 
-    def get_rect(self):
+    def get_rect(self) -> pygame.Rect:
+        """Calculates and returns the bounding pygame.Rect of the collider.
+
+        Uses cached bounds if rotation hasn't changed.
+
+        Returns:
+            Rect: Bounding rectangle in world coordinates.
+        """
         if self._rot_cache == self.rotation:
             return pygame.Rect(
                 self.left,
@@ -145,7 +189,15 @@ class Collider(GameObject):
             self.bottom - self.top,
         )
 
-    def collide_sat(self, collider):
+    def collide_sat(self, collider: "Collider | pygame.Rect") -> tuple[float, Vec2]:
+        """Runs the Separating Axis Theorem (SAT) algorithm against another collider.
+
+        Args:
+            collider (Collider): The other collider to check.
+
+        Returns:
+            tuple[float, Vec2]: Minimum penetration depth and the normalized collision normal pointing towards the other collider. Returns (0, Vec2()) if not colliding.
+        """
         if not isinstance(collider, Collider):
             collider = getattr(collider, "collider", None)
         if isinstance(collider, pygame.Rect):
@@ -197,6 +249,7 @@ class Collider(GameObject):
 
     @property
     def vertices(self):
+        """list[Vec2]: Gets the list of vertices rotated and translated in world space."""
         if self._vertices_dirty:
             self._cached_vertices = [
                 self.pos + vert.rotate(self.rotation) for vert in self._vertices
@@ -208,6 +261,7 @@ class Collider(GameObject):
 
     @property
     def edges(self):
+        """list[tuple[Vec2, Vec2]]: Gets the list of edges in world coordinates."""
         verts = self.vertices
         if self._cached_edges is None:
             self._cached_edges = [(verts[edge[0]], verts[edge[1]]) for edge in self._edges]
@@ -215,6 +269,7 @@ class Collider(GameObject):
 
     @property
     def normals(self):
+        """list[Vec2]: Gets the list of unique edge normals of the shape."""
         _ = self.edges
         if self._cached_normals is None:
             normals = []
@@ -232,35 +287,50 @@ class Collider(GameObject):
 
     @property
     def top(self):
+        """float: Gets the top Y coordinate boundary in world space."""
         return self.pos.y + self._top
 
     @property
     def right(self):
+        """float: Gets the right X coordinate boundary in world space."""
         return self.pos.x + self._right
 
     @property
     def bottom(self):
+        """float: Gets the bottom Y coordinate boundary in world space."""
         return self.pos.y + self._bottom
 
     @property
     def left(self):
+        """float: Gets the left X coordinate boundary in world space."""
         return self.pos.x + self._left
 
     @property
     def center(self):
+        """Vec2: Gets the center coordinate in world space."""
         return self.pos + self._center
 
     @property
     def rect(self):
+        """Rect: Gets the bounding Rect object."""
         return self.get_rect()
 
     @property
     def size(self):
+        """Vec2: Gets the width and height of the bounding box."""
         return Vec2(self.right - self.left, self.bottom - self.top)
 
 
 class RectCollider(Collider):
-    def __init__(self, w, h, **kwargs):
+    """Collider shape representing a rectangle."""
+
+    def __init__(self, w: float | int, h: float | int, **kwargs) -> None:
+        """Initializes the RectCollider.
+
+        Args:
+            w (float | int): Width of the rectangle.
+            h (float | int): Height of the rectangle.
+        """
         self._vertices = [
             Vec2(w / 2, h / 2),
             Vec2(w / 2, -h / 2),
@@ -271,13 +341,28 @@ class RectCollider(Collider):
         self.collider_type = "Rect"
 
     @staticmethod
-    def from_rect(rect: Rect, **kwargs):
+    def from_rect(rect: Rect, **kwargs) -> "RectCollider":
+        """Creates a RectCollider from an existing Rect object.
+
+        Args:
+            rect (Rect): The source rectangle.
+
+        Returns:
+            RectCollider: The constructed rectangle collider.
+        """
         kwargs.setdefault("pos", rect.center)
         return RectCollider(rect.w, rect.h, **kwargs)
 
 
 class CircleCollider(Collider):
-    def __init__(self, radius, **kwargs):
+    """Collider shape representing a circle."""
+
+    def __init__(self, radius: float | int, **kwargs) -> None:
+        """Initializes the CircleCollider.
+
+        Args:
+            radius (float | int): The radius of the circle.
+        """
         self._radius = radius
         super().__init__(**kwargs)
         self.collider_type = "Circle"
@@ -286,7 +371,15 @@ class CircleCollider(Collider):
         self._top = -self._radius
         self._bottom = self._radius
 
-    def project(self, axis):
+    def project(self, axis: Vec2) -> tuple[float, float]:
+        """Projects the circle bounds onto a target axis.
+
+        Args:
+            axis (Vec2): Projection axis.
+
+        Returns:
+            tuple[float, float]: Projection boundaries.
+        """
         proj = (self.pos).dot(axis)
         min_v = proj - self._radius
         max_v = proj + self._radius
@@ -294,11 +387,21 @@ class CircleCollider(Collider):
             min_v, max_v = max_v, min_v
         return min_v, max_v
 
-    def render_debug(self, offset):
+    def render_debug(self, offset: Vec2) -> None:
+        """Renders circle bounds in debug mode.
+
+        Args:
+            offset (Vec2): Viewport offset.
+        """
         super().render_debug(offset)
         Draw.circle(self.pos + offset, self._radius, Color("white"), 2)
 
-    def get_rect(self):
+    def get_rect(self) -> pygame.Rect:
+        """Calculates bounding box of the circle.
+
+        Returns:
+            Rect: The bounding rectangle in world space.
+        """
         return pygame.Rect(
             self.left,
             self.top,
@@ -308,14 +411,25 @@ class CircleCollider(Collider):
 
 
 class PolyCollider(Collider):
-    def __init__(self, vertices=None, **kwargs):
+    """Collider shape representing a convex polygon."""
+
+    def __init__(self, vertices: list[Vec2] | None = None, **kwargs) -> None:
+        """Initializes the PolyCollider.
+
+        Args:
+            vertices (list[Vec2], optional): List of vertices defining the polygon shape.
+
+        Raises:
+            Exception: If vertices are not defined or are less than 3.
+        """
         if vertices is None or len(vertices) < 3:
             raise Exception("A shape must be defined for Polygon collider")
         self._vertices = vertices
         super().__init__(**kwargs)
         self.collider_type = "Polygon"
 
-    def recenter(self):
+    def recenter(self) -> None:
+        """Recalculates the center coordinate and offsets the local vertices to be origin-centered."""
         if self.center != Vec2():
             for i, vert in enumerate(self._vertices):
                 vert = Vec2(vert) - self._center
@@ -325,7 +439,14 @@ class PolyCollider(Collider):
 
 
 class RayCollider(Collider):
-    def __init__(self, **kwargs):
+    """Collider representing a single line segment raycast."""
+
+    def __init__(self, **kwargs) -> None:
+        """Initializes the RayCollider.
+
+        Args:
+            length (float | int, optional): The length of the ray segment. Defaults to 1.
+        """
         length = kwargs.get("length", 1)
         self._vertices = [Vec2(0, 0), Vec2(length, 0)]
         self._length = length
@@ -334,15 +455,24 @@ class RayCollider(Collider):
 
     @property
     def length(self):
+        """float: The length of the ray segment."""
         return self._length
 
     @length.setter
-    def length(self, length):
+    def length(self, length: float | int) -> None:
         self._length = length
         self._vertices[1] = Vec2(length, 0)
         self._vertices_dirty = True
 
-    def collide_ray(self, collider):
+    def collide_ray(self, collider: Collider) -> Vec2 | None:
+        """Calculates collision intersection points of the ray segment with another collider.
+
+        Args:
+            collider (Collider): The other collider shape.
+
+        Returns:
+            Vec2 | None: The closest collision point, or None if no collision.
+        """
         if isinstance(collider, CircleCollider):
             return line_circle(
                 self.pos, self.vertices[1], collider.pos, collider._radius
@@ -370,7 +500,12 @@ class RayCollider(Collider):
                 return closest_collision
         return None
 
-    def get_rect(self):
+    def get_rect(self) -> pygame.Rect:
+        """Calculates bounding box of the ray segment.
+
+        Returns:
+            Rect: Bounding rectangle.
+        """
         if self._rot_cache == self.rotation:
             return pygame.Rect(
                 self.left,
