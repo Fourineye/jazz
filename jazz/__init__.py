@@ -22,7 +22,7 @@ from .utils import (
 )
 from .primatives import Draw
 
-__version__ = "0.2.2"
+__version__ = "1.0.0"
 
 pygame.init()
 print(f"Thank you for using jazz {__version__}")

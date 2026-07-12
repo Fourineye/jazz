@@ -7,3 +7,4 @@ jazz.egg-info
 .agents
 .mypy_cache/
 *.code-workspace
+.planning
