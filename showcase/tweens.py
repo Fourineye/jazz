@@ -93,3 +93,10 @@ class TweenTest(Test):
                 point.pos = (100, point.y)
             [tween.play() for tween in self.tweens]
             self.pause_timer = 2
+
+
+if __name__ == "__main__":
+    from jazz import Application
+    app = Application(800, 800)
+    app.add_scene(TweenTest)
+    app.run()

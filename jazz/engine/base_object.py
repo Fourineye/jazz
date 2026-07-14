@@ -34,6 +34,7 @@ class GameObject:
         self.pause_process = kwargs.get("pause_process", False)
         self.game_process = kwargs.get("game_process", True)
         self.do_kill = False
+        self._loaded: bool = False
 
         # Rendering flags
         self._visible = kwargs.get("visible", True)
@@ -111,6 +112,7 @@ class GameObject:
 
     def _on_load(self) -> None:
         """Engine method that propogates the on_load call to it's children."""
+        self._loaded = True
         self.on_load()
         for child in self._children.values():
             child._on_load()
@@ -133,6 +135,8 @@ class GameObject:
             obj._depth = self._depth + 1
             self._children[obj.id] = obj
             obj._set_dirty()
+            if getattr(self, "_loaded", False):
+                obj._on_load()
             return obj
         else:
             raise JazzException(

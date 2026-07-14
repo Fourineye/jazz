@@ -50,3 +50,10 @@ class DrawTest(Test):
         Draw.lines(
             self.test_lines, Color("blue"), int(self.line_width), self.closed
         )
+
+
+if __name__ == "__main__":
+    from jazz import Application
+    app = Application(800, 800)
+    app.add_scene(DrawTest)
+    app.run()

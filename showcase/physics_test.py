@@ -397,3 +397,10 @@ class PhysicsTest(Test):
             rect = self.selected_body.collider.get_rect()
             Draw.rect(rect, Color("yellow"), 2)
             Draw.circle(self.selected_body.pos, 4, Color("yellow"), 1)
+
+
+if __name__ == "__main__":
+    from jazz import Application
+    app = Application(800, 800)
+    app.add_scene(PhysicsTest)
+    app.run()

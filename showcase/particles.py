@@ -45,3 +45,10 @@ class ParticleTest(Test):
 
     def update(self, delta):
         self.emitter.rotate(60 * delta)
+
+
+if __name__ == "__main__":
+    from jazz import Application
+    app = Application(800, 800)
+    app.add_scene(ParticleTest)
+    app.run()

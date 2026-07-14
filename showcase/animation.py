@@ -18,3 +18,10 @@ class AnimationTest(Test):
             ),
         )
         self.create_timer(5, self.stop, ())
+
+
+if __name__ == "__main__":
+    from jazz import Application
+    app = Application(800, 800)
+    app.add_scene(AnimationTest)
+    app.run()

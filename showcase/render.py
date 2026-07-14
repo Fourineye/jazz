@@ -68,3 +68,10 @@ class RenderTest(Test):
             self.create_timer(TIME, self.record_fps, ())
         else:
             self.stop()
+
+
+if __name__ == "__main__":
+    from jazz import Application
+    app = Application(800, 800)
+    app.add_scene(RenderTest)
+    app.run()
