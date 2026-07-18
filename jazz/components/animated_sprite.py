@@ -39,11 +39,12 @@ class AnimatedSprite(Sprite):
             else:
                 for i, sprite in enumerate(self._sheet):
                     if isinstance(sprite, str):
-                        self._sheet[i] = Globals.resource.get_texture(sprite)
-                    if isinstance(sprite, Surface):
-                        self._sheet[i] = Globals.resource.add_texture(
+                        sprite = Globals.resource.get_texture(sprite)
+                    elif isinstance(sprite, Surface):
+                        sprite = Globals.resource.add_texture(
                             sprite, f"{self.id}:{i}", True
                         )
+                    self._sheet[i] = sprite
                     if not isinstance(
                         sprite,
                         (
@@ -89,11 +90,12 @@ class AnimatedSprite(Sprite):
                 self._sheet = spritesheet
                 for i, sprite in enumerate(spritesheet):
                     if isinstance(sprite, str):
-                        self._sheet[i] = Globals.resource.get_texture(sprite)
-                    if isinstance(sprite, Surface):
-                        self._sheet[i] = Globals.resource.add_texture(
+                        sprite = Globals.resource.get_texture(sprite)
+                    elif isinstance(sprite, Surface):
+                        sprite = Globals.resource.add_texture(
                             sprite, f"{self.id}:{i}", True
                         )
+                    self._sheet[i] = sprite
                     if not isinstance(
                         sprite,
                         (
