@@ -1,8 +1,12 @@
 import uuid
+from typing import TypeVar
 
 from ..global_dict import Globals
 from ..utils import Color, Vec2, angle_from_vec, unit_from_angle, JazzException
 from ..primatives import Draw
+
+
+T = TypeVar("T", bound="GameObject")
 
 
 class GameObject:
@@ -118,17 +122,17 @@ class GameObject:
             child._on_load()
 
     # Child management
-    def add_child(self, obj: "GameObject") -> "GameObject":
+    def add_child(self, obj: T) -> T:
         """Adds an object to the child tree.
 
         Args:
-            obj (GameObject): Object to add
+            obj (T): Object to add
 
         Raises:
             JazzException: If obj is already a child
 
         Returns:
-            GameObject: obj to allow for chaining
+            T: obj to allow for chaining
         """
         if obj.id not in self._children.keys():
             obj._parent = self

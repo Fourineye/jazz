@@ -8,3 +8,5 @@ jazz.egg-info
 .mypy_cache/
 *.code-workspace
 .planning
+.python-version
+uv.lock

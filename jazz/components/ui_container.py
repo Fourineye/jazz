@@ -1,8 +1,11 @@
+from typing import TypeVar
 from .. import Globals
 from .sprite import Sprite
 from ..engine.base_object import GameObject
 from ..utils import Vec2, Color, Rect, Texture
 from ..primatives import Draw
+
+T = TypeVar("T", bound=GameObject)
 
 class UIContainer(Sprite):
     """Container component that groups, renders, and layouts child UI elements."""
@@ -254,14 +257,14 @@ class UIContainer(Sprite):
                     self._size, self.bg_color, radius, shadow_offset, shadow_color, shadow_blur, style, border_color, border_width
                 )
 
-    def add_child(self, obj: GameObject) -> GameObject:
+    def add_child(self, obj: T) -> T:
         """Adds a child object to the container and triggers layout update.
 
         Args:
-            obj (GameObject): The child game object to add.
+            obj (T): The child game object to add.
 
         Returns:
-            GameObject: The added game object.
+            T: The added game object.
         """
         res = super().add_child(obj)
         self.layout()

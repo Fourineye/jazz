@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "jazz"
+dynamic = ["version"]
+description = "A pygame wrapper that provides tools to quickly build games."
+readme = "README.md"
+requires-python = ">=3.14"
+license = { text = "GPLv3" }
+authors = [
+    { name = "Paul Smith", email = "paulsmith8812@gmail.com" }
+]
+urls = { Homepage = "https://github.com/Fourineye/jazz" }
+dependencies = [
+    "pygame-ce",
+]
+
+[tool.hatch.version]
+path = "jazz/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["jazz"]
+
+[tool.pyrefly]
+extra-paths = ["./showcase"]

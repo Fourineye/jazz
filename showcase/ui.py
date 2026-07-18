@@ -1,4 +1,3 @@
-from numpy._core.defchararray import title
 from base import Test
 
 import jazz

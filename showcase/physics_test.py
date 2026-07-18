@@ -1,15 +1,20 @@
 import random
 import math
+import pygame
 from base import Test
 import jazz
 from jazz import (
     Globals,
     Vec2,
     Color,
+    Surface,
     Draw,
     Body,
     Label,
     Button,
+    Sprite,
+    VBox,
+    HBox,
     COLLIDER_RECT,
     COLLIDER_CIRCLE,
     COLLIDER_POLY,
@@ -32,6 +37,117 @@ def make_regular_polygon(sides: int, radius: float) -> list[Vec2]:
         angle = i * (2 * math.pi / sides) - math.pi / 2
         verts.append(Vec2(radius * math.cos(angle), radius * math.sin(angle)))
     return verts
+
+
+def generate_circle_texture() -> Surface:
+    """Generates a high-quality 256x256 circle texture with a neon pink/purple gradient and a rotation indicator."""
+    surf = Surface((256, 256), pygame.SRCALPHA)
+    center = (128, 128)
+    max_r = 127
+    
+    # Draw radial gradient
+    for r in range(max_r, 0, -1):
+        t = r / max_r
+        color = (
+            int(255 * t + 75 * (1 - t)),
+            0,
+            int(128 * t + 130 * (1 - t)),
+            255
+        )
+        pygame.draw.circle(surf, color, center, r)
+        
+    # Draw outer neon ring
+    pygame.draw.circle(surf, (255, 255, 255, 255), center, max_r, width=3)
+    pygame.draw.circle(surf, (255, 105, 180, 150), center, max_r - 2, width=2)
+    
+    # Draw rotation indicators (spokes)
+    pygame.draw.line(surf, (255, 255, 255, 220), center, (128, 128 - max_r), 3)
+    pygame.draw.line(surf, (255, 255, 255, 100), center, (128 + max_r, 128), 2)
+    pygame.draw.line(surf, (255, 255, 255, 100), center, (128, 128 + max_r), 2)
+    pygame.draw.line(surf, (255, 255, 255, 100), center, (128 - max_r, 128), 2)
+    
+    # Glassy shine reflection
+    pygame.draw.circle(surf, (255, 255, 255, 80), (90, 90), 25)
+    pygame.draw.circle(surf, (255, 255, 255, 40), (95, 95), 15)
+    
+    return surf
+
+
+def generate_rect_texture() -> Surface:
+    """Generates a high-quality 256x256 rounded rect texture with a neon cyan/blue gradient."""
+    surf = Surface((256, 256), pygame.SRCALPHA)
+    
+    # Draw linear gradient from center outwards
+    for i in range(127, 0, -2):
+        t = i / 127.0
+        color = (
+            int(0 * t + 10 * (1 - t)),
+            int(255 * t + 20 * (1 - t)),
+            int(255 * t + 60 * (1 - t)),
+            255
+        )
+        w = int(254 * t)
+        h = int(254 * t)
+        x = 128 - w // 2
+        y = 128 - h // 2
+        r = max(4, int(24 * t))
+        pygame.draw.rect(surf, color, (x, y, w, h), border_radius=r)
+        
+    # Outer borders
+    pygame.draw.rect(surf, (255, 255, 255, 255), (1, 1, 254, 254), width=3, border_radius=24)
+    pygame.draw.rect(surf, (0, 191, 255, 150), (3, 3, 250, 250), width=2, border_radius=22)
+        
+    return surf
+
+
+def generate_poly_texture(sides: int) -> Surface:
+    """Generates a high-quality 256x256 regular polygon texture of given sides with gradient fill."""
+    surf = Surface((256, 256), pygame.SRCALPHA)
+    center = (128, 128)
+    max_r = 127
+    
+    # Colors depending on sides
+    if sides == 3:
+        c_start = (57, 255, 20)
+        c_end = (5, 45, 10)
+        border_col = (124, 252, 0)
+    elif sides == 5:
+        c_start = (255, 255, 0)
+        c_end = (80, 20, 0)
+        border_col = (255, 165, 0)
+    else:
+        c_start = (255, 0, 255)
+        c_end = (40, 0, 40)
+        border_col = (238, 130, 238)
+        
+    # Draw concentric scaled polygons to create a gradient
+    for r in range(max_r, 0, -4):
+        t = r / max_r
+        color = (
+            int(c_start[0] * t + c_end[0] * (1 - t)),
+            int(c_start[1] * t + c_end[1] * (1 - t)),
+            int(c_start[2] * t + c_end[2] * (1 - t)),
+            255
+        )
+        points = []
+        for i in range(sides):
+            angle = i * (2 * math.pi / sides) - math.pi / 2
+            points.append((128 + r * math.cos(angle), 128 + r * math.sin(angle)))
+        pygame.draw.polygon(surf, color, points)
+        
+    # Outer white/accent border
+    outer_points = []
+    for i in range(sides):
+        angle = i * (2 * math.pi / sides) - math.pi / 2
+        outer_points.append((128 + max_r * math.cos(angle), 128 + max_r * math.sin(angle)))
+    pygame.draw.polygon(surf, (255, 255, 255, 255), outer_points, width=3)
+    pygame.draw.polygon(surf, border_col + (150,), outer_points, width=1)
+    
+    # Draw internal structure lines (spokes from center to vertices)
+    for pt in outer_points:
+        pygame.draw.line(surf, (255, 255, 255, 50), center, pt, 1)
+        
+    return surf
 
 
 
@@ -80,11 +196,22 @@ class PhysicsTest(Test):
         super().on_load(data)
         self._debug = True  # Enable debug colliders rendering by default
 
+        # Generate and register shape textures
+        circle_surf = generate_circle_texture()
+        rect_surf = generate_rect_texture()
+        poly_3_surf = generate_poly_texture(3)
+        poly_5_surf = generate_poly_texture(5)
+
+        Globals.resource.add_texture(circle_surf, "circle_texture")
+        Globals.resource.add_texture(rect_surf, "rect_texture")
+        Globals.resource.add_texture(poly_3_surf, "poly_3_texture")
+        Globals.resource.add_texture(poly_5_surf, "poly_5_texture")
+
         # 1. Create walls enclosing the physics area (Y: 130 to 780, X: 20 to 780)
         self.create_wall(Vec2(400, 130), 800, 10)  # Top boundary
         self.create_wall(Vec2(400, 785), 800, 10)  # Bottom floor
-        self.create_wall(Vec2(15, 455), 10, 650)   # Left wall
-        self.create_wall(Vec2(785, 455), 10, 650)  # Right wall
+        self.create_wall(Vec2(10, 455), 20, 650)   # Left wall
+        self.create_wall(Vec2(790, 455), 20, 650)  # Right wall
 
         # 2. Create static slanted ramps and obstacles
         self.create_obstacle(Vec2(230, 310), 180, 20, rotation=25)
@@ -96,35 +223,36 @@ class PhysicsTest(Test):
         # Sweeper spinner bar
         self.spinner = self.create_obstacle(Vec2(400, 640), 220, 15, rotation=0)
 
+        ui = self.add_object(HBox(pos=(0, 0), size=(800, 125), align="top", padding=0, bg_color=(64, 64, 64, 100), radius=0, shadow_offset=(0,0), shadow_blur=0, spacing=0))
+        left_column = ui.add_child(VBox(align="left", auto_size=True, spacing=10))
+        right_column = ui.add_child(VBox(align="left", auto_size=True, spacing=0))
+
         # 3. Create UI Labels in the top control panel
-        self.fps_label = self.add_object(
-            Label(text="FPS: --", pos=(20, 10), anchor=(0, 0), fontsize=18)
+        self.fps_label = right_column.add_child(
+            Label(text="FPS: --", anchor=(0, 0), fontsize=18)
         )
-        self.stats_label = self.add_object(
-            Label(text="Bodies: 0 | Cells: 0", pos=(20, 35), anchor=(0, 0), fontsize=18)
+        self.stats_label = right_column.add_child(
+            Label(text="Bodies: 0 | Cells: 0", anchor=(0, 0), fontsize=18)
         )
-        self.controls_label = self.add_object(
+        self.controls_label = right_column.add_child(
             Label(
                 text="Keys: [D] Debug [G] Gravity [H] Grid [C] Clear [R] Random",
-                pos=(20, 60),
                 anchor=(0, 0),
                 fontsize=14,
                 text_color=(200, 200, 200),
             )
         )
-        self.add_object(
+        right_column.add_child(
             Label(
                 text="Click empty space to spawn dynamic shapes. Drag & throw shapes with left click.",
-                pos=(20, 85),
                 anchor=(0, 0),
                 fontsize=14,
                 text_color=(200, 200, 200),
             )
         )
-        self.selected_label = self.add_object(
+        self.selected_label = right_column.add_child(
             Label(
                 text="Selected: None (Right-click a body to inspect)",
-                pos=(20, 110),
                 anchor=(0, 0),
                 fontsize=14,
                 text_color=(255, 255, 100),
@@ -132,21 +260,21 @@ class PhysicsTest(Test):
         )
 
         # 4. Create UI Control Buttons
-        self.btn_gravity = self.add_object(
-            Button(pos=(510, 25), size=(130, 25), anchor=(1, 0), label="Toggle Gravity", text_size=12, callback=self.toggle_gravity)
-        )
-        self.btn_debug = self.add_object(
-            Button(pos=(650, 25), size=(130, 25), anchor=(1, 0), label="Toggle Debug", text_size=12, callback=self.toggle_debug_mode)
-        )
-        self.btn_grid = self.add_object(
-            Button(pos=(510, 55), size=(130, 25), anchor=(1, 0), label="Toggle Grid", text_size=12, callback=self.toggle_grid)
-        )
-        self.btn_clear = self.add_object(
-            Button(pos=(650, 55), size=(130, 25), anchor=(1, 0), label="Clear Bodies", text_size=12, callback=self.clear_dynamic)
-        )
-        self.btn_spawn = self.add_object(
-            Button(pos=(580, 85), size=(180, 25), anchor=(1, 0), label="Spawn 50 Random", text_size=12, callback=self.spawn_50_random)
-        )
+        row1 = HBox(padding=0)
+        row1.add_child(Button(size=(130, 25), anchor=(1, 0), label="Toggle Gravity", text_size=12, callback=self.toggle_gravity))
+        row1.add_child(Button(size=(130, 25), anchor=(1, 0), label="Toggle Debug", text_size=12, callback=self.toggle_debug_mode))
+        left_column.add_child(row1)
+
+        row2 = HBox(padding=0)
+        row2.add_child(Button(size=(130, 25), anchor=(1, 0), label="Toggle Grid", text_size=12, callback=self.toggle_grid))
+        row2.add_child(Button(size=(130, 25), anchor=(1, 0), label="Clear Bodies", text_size=12, callback=self.clear_dynamic))
+        left_column.add_child(row2)
+
+        row3 = HBox(padding=0)
+        row3.add_child(Button(size=(130, 25), anchor=(1, 0), label="Spawn 50 Random", text_size=12, callback=self.spawn_50_random))
+
+        left_column.add_child(row3)
+
 
     def create_wall(self, pos: Vec2, w: float | int, h: float | int) -> Body:
         """Helper to spawn a static boundary wall.
@@ -161,12 +289,14 @@ class PhysicsTest(Test):
         """
         wall = Body(static=True, pos=pos)
         wall.add_collider(COLLIDER_RECT, w=w, h=h)
+        wall.add_child(Sprite(texture=Globals.resource.get_color(Color(128,128,128,255)), scale=(w,h), anchor=(0.5,0.5)))
+
         self.add_object(wall)
         self.static_bodies.append(wall)
         return wall
 
     def create_obstacle(self, pos: Vec2, w: float | int, h: float | int, rotation: float = 0, is_circle: bool = False) -> Body:
-        """Helper to spawn static obstacles.
+        """Helper to spawn static obstacles and attach scaled sprites to match their shapes.
 
         Args:
             pos (Vec2): Center coordinates.
@@ -181,8 +311,10 @@ class PhysicsTest(Test):
         obs = Body(static=True, pos=pos, rotation=rotation)
         if is_circle:
             obs.add_collider(COLLIDER_CIRCLE, radius=w / 2)
+            obs.add_child(Sprite(texture="circle_texture", scale=(w / 256, w / 256), anchor=(0.5, 0.5)))
         else:
             obs.add_collider(COLLIDER_RECT, w=w, h=h)
+            obs.add_child(Sprite(texture="rect_texture", scale=(w / 256, h / 256), anchor=(0.5, 0.5)))
         self.add_object(obs)
         self.static_bodies.append(obs)
         return obs
@@ -235,9 +367,14 @@ class PhysicsTest(Test):
         if self.selected_body is not None and not getattr(self.selected_body, "do_kill", False):
             pos = self.selected_body.pos
             vel = getattr(self.selected_body, "velocity", Vec2(0, 0))
-            self.selected_label.set_text(
-                f"Selected: {self.selected_body.name} | Pos: ({pos.x:3.1f}, {pos.y:3.1f}) | Vel: ({vel.x:3.1f}, {vel.y:3.1f}) | Grounded: {self.selected_body.on_ground}"
-            )
+            if hasattr(self.selected_body, "on_ground"):
+                self.selected_label.set_text(
+                    f"Selected: {self.selected_body.name} | Pos: ({pos.x:3.1f}, {pos.y:3.1f}) | Vel: ({vel.x:3.1f}, {vel.y:3.1f}) | Grounded: {self.selected_body.on_ground}"
+                )
+            else:
+                self.selected_label.set_text(
+                    f"Selected: {self.selected_body.name} | Pos: ({pos.x:3.1f}, {pos.y:3.1f}) | Vel: ({vel.x:3.1f}, {vel.y:3.1f})"
+                )
         else:
             self.selected_body = None
             self.selected_label.set_text("Selected: None (Right-click a body to inspect)")
@@ -306,7 +443,7 @@ class PhysicsTest(Test):
             self.spawn_50_random()
 
     def spawn_random_shape(self, pos: Vec2) -> None:
-        """Spawns a random circle, rectangle, or polygon with random velocity and restitution.
+        """Spawns a random circle, rectangle, or polygon with random velocity, restitution, and scaled shape textures.
 
         Args:
             pos (Vec2): Position to spawn the shape at.
@@ -319,12 +456,16 @@ class PhysicsTest(Test):
         body = DynamicBody(pos=pos, velocity=vel, restitution=restitution)
         if shape_type == "circle":
             body.add_collider(COLLIDER_CIRCLE, radius=size)
+            body.add_child(Sprite(texture="circle_texture", scale=(size / 128, size / 128), anchor=(0.5, 0.5)))
         elif shape_type == "rect":
             body.add_collider(COLLIDER_RECT, w=size * 2, h=size * 2)
+            body.add_child(Sprite(texture="rect_texture", scale=(size / 128, size / 128), anchor=(0.5, 0.5)))
         else:
             sides = random.choice([3, 5])
             verts = make_regular_polygon(sides, size * 1.2)
             body.add_collider(COLLIDER_POLY, vertices=verts)
+            scale_val = (size * 1.2) / 128.0
+            body.add_child(Sprite(texture=f"poly_{sides}_texture", scale=(scale_val, scale_val), anchor=(0.5, 0.5)))
 
         self.add_object(body)
         self.dynamic_bodies.append(body)
@@ -355,9 +496,11 @@ class PhysicsTest(Test):
 
     def render(self) -> None:
         """Draws visual spatial hash cells, panel divider, and raycast visualization overlays."""
-        super().render()
+        # 1. Clear the screen manually
+        Globals.renderer.draw_color = self.camera._bg_color
+        Globals.renderer.clear()
 
-        # 1. Spatial grid partition overlay
+        # 2. Draw spatial grid partition overlay (behind sprites)
         if self.grid_overlay:
             grid_size = 50
             grid_color = Color(35, 35, 35)
@@ -368,7 +511,16 @@ class PhysicsTest(Test):
             for y in range(130, 780, grid_size):
                 Draw.line(Vec2(20, y), Vec2(780, y), grid_color, 1)
 
-        # 2. Dynamic mouse-based raycast demo
+        # 3. Render the sprites (without clearing the screen again)
+        prev_blanking = self.camera._blanking
+        self.camera._blanking = False
+        try:
+            super().render()
+        finally:
+            self.camera._blanking = prev_blanking
+
+        # 4. Draw remaining overlays on top of the sprites
+        # Dynamic mouse-based raycast demo
         mouse_pos = Globals.mouse.pos
         if mouse_pos.y > 130:
             blacklist = self.static_bodies + ([self.dragged_object] if self.dragged_object else [])
@@ -389,14 +541,14 @@ class PhysicsTest(Test):
                 # Clear path: Draw fully green ray line to mouse
                 Draw.line(self.ray_start, mouse_pos, Color("green"), 2)
 
-        # 3. Horizontal panel boundary line
+        # Horizontal panel boundary line
         Draw.line(Vec2(0, 130), Vec2(800, 130), Color("gray"), 3)
 
-        # 4. Highlight selected body
+        # Highlight selected body
         if self.selected_body is not None and not getattr(self.selected_body, "do_kill", False):
             rect = self.selected_body.collider.get_rect()
             Draw.rect(rect, Color("yellow"), 2)
-            Draw.circle(self.selected_body.pos, 4, Color("yellow"), 1)
+            # Draw.circle(self.selected_body.pos, 4, Color("yellow"), 1)
 
 
 if __name__ == "__main__":

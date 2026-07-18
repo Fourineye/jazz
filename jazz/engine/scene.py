@@ -3,7 +3,7 @@ Scene class
 
 """
 
-from typing import TYPE_CHECKING, Callable, Any, Iterable, Type, Iterator
+from typing import TYPE_CHECKING, Callable, Any, Iterable, Type, Iterator, TypeVar
 from dataclasses import dataclass
 
 from ..camera import Camera
@@ -27,6 +27,9 @@ if TYPE_CHECKING:
     from .base_object import GameObject
     from ..physics._physics_object import PhysicsObject
     from ..components import Sprite
+
+
+T = TypeVar("T", bound="GameObject")
 
 
 class Scene:
@@ -160,18 +163,17 @@ class Scene:
         """
         return self._physics_world[layer].get_AABB_collisions(collider)
 
-    # Object Management
-    def add_object(self, obj: "GameObject") -> "GameObject":
+    def add_object(self, obj: T) -> T:
         """Adds an object to the scene.
 
         Args:
-            obj (GameObject): The object to add to the scene.
+            obj (T): The object to add to the scene.
 
         Returns:
-            GameObject: Returns the object added for chaining
+            T: Returns the object added for chaining
 
         Raises:
-            JazzException: Raises an exception if the object is already in the
+            JazzException: Raises an exception if the object is already in the scene.
         """
         if obj.id not in self._objects:
             obj._on_load()
