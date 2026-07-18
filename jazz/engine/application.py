@@ -8,7 +8,7 @@ from .scene import Scene
 from .sound_manager import SoundManager
 from .resource_manager import ResourceManager
 from ..global_dict import Globals
-from ..utils import load_ini, JazzException
+from ..utils import load_ini, JazzException, Surface
 from ..primatives import Draw
 
 
@@ -33,12 +33,13 @@ class Application:
         application window
 
         Args:
-            width (int): Width of the window in pixels
-            height (int): Height of the window in pixels
-            name (str, optional): String to be shown on the window. Defaults to None.
-            flags (int, optional): Flags to be passed to the pygame.display.set_mode function. Defaults to 0.
+            width (int): Width of the window in pixels.
+            height (int): Height of the window in pixels.
+            name (str, optional): String to be shown on the window. Defaults to "".
+            flags (int, optional): Unused flag parameter kept for compatibility. Defaults to 0.
             fps_max (int, optional): Sets the max fps that the window will be limited to. Defaults to 60.
             vsync (bool, optional): Controls if the window will try to use vsync. Defaults to False.
+            experimental (bool, optional): Unused experimental parameter kept for compatibility. Defaults to False.
         """
         if self.instance is not None:
             raise JazzException("Application has already been initialized.")
@@ -47,7 +48,12 @@ class Application:
 
         self._window = pygame.Window(name, (width, height))
         self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
-        self._display = self._window.get_surface()
+        try:
+            self._display = self._window.get_surface()
+        except pygame.error:
+            # Fallback for systems/backends (like macOS Metal/OpenGL) where
+            # window surface support is not available when a renderer is active.
+            self._display = Surface((width, height))
 
         self._clock = pygame.time.Clock()
         self._input = InputHandler()
