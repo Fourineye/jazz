@@ -45,7 +45,10 @@ class Scene:
         """
         self.camera = Camera()
         self._objects: dict[str, "GameObject"] = {}
-        self._sprites: list[Sprite] = []
+        self._sprites: list["Sprite"] = []
+        self._sprites_set: set["Sprite"] = set()
+        self._sprites_dirty: bool = False
+        self._moved_objects: set[Any] = set()
         self._timers: list[Timer] = []
         self._physics_world = {
             0: PhysicsGrid(),
@@ -93,9 +96,25 @@ class Scene:
             delta (float): Time since last frame
         """
 
+    def mark_moved(self, obj: Any) -> None:
+        """Registers an object whose transform changed during the current frame.
+
+        Args:
+            obj (Any): The object that moved.
+        """
+        self._moved_objects.add(obj)
+
+    def _sync_sprites(self) -> None:
+        """Filters removed sprites and sorts active sprites by Z-index if dirty."""
+        if self._sprites_dirty:
+            self._sprites = [s for s in self._sprites if s in self._sprites_set]
+            self._sprites.sort(key=lambda obj: obj.z, reverse=False)
+            self._sprites_dirty = False
+
     def render(self) -> None:
         """Base method that can be overwritten. Called once per frame,
         calls the camera render method."""
+        self._sync_sprites()
         self.camera.render()
         if self._debug:
             self.camera.render_debug()
@@ -203,19 +222,39 @@ class Scene:
         Args:
             sprite (Sprite): The object to add.
         """
-        if sprite not in self._sprites:
+        if sprite not in self._sprites_set:
+            self._sprites_set.add(sprite)
             self._sprites.append(sprite)
-            self._sprites.sort(key=lambda obj: obj.z, reverse=False)
+            self._sprites_dirty = True
 
     def remove_object(self, obj: "GameObject") -> None:
-        """Removes an object from the scene.
+        """Removes an object and its children from the scene, cleaning up sprites and physics layers.
 
         Args:
             obj (GameObject): The object to remove.
-
         """
         if obj.id in self._objects:
             self._objects.pop(obj.id)
+            self._cleanup_object(obj)
+
+    def _cleanup_object(self, obj: "GameObject") -> None:
+        """Recursively purges sprite, physics, and texture references for an object and its hierarchy.
+
+        Args:
+            obj (GameObject): The object to recursively purge references for.
+        """
+        from ..components import Sprite
+        from ..physics._physics_object import PhysicsObject
+
+        if isinstance(obj, Sprite):
+            self.remove_sprite(obj)
+            if Globals.resource is not None:
+                Globals.resource.purge_sprite_textures(obj.id)
+        if isinstance(obj, PhysicsObject):
+            self.remove_physics_object(obj)
+
+        for child in list(getattr(obj, "_children", {}).values()):
+            self._cleanup_object(child)
 
     def remove_physics_object(self, obj: "PhysicsObject") -> None:
         """Removes the object from the scene's physics layers
@@ -231,15 +270,10 @@ class Scene:
 
         Args:
             sprite (Sprite): The object to remove
-
-        Raises:
-            JazzException: Raises an exception if the object is not in the draw list
         """
-        try:
-            self._sprites.remove(sprite)
-        except ValueError:
-            # raise JazzException(f"Sprite not found: {sprite.id}:{sprite.name}")
-            pass
+        if sprite in self._sprites_set:
+            self._sprites_set.remove(sprite)
+            self._sprites_dirty = True
 
     def get_AABB_collisions(
         self, physics_object: "PhysicsObject"
@@ -339,15 +373,11 @@ class Scene:
         for obj in kill_items:
             obj.kill()
 
-        # Clear moved flags at the end of the frame
-        def clear_moved_flags(o):
-            if hasattr(o, "_moved_this_frame"):
-                o._moved_this_frame = False
-            for child in getattr(o, "_children", {}).values():
-                clear_moved_flags(child)
-
-        for obj in self._objects.values():
-            clear_moved_flags(obj)
+        # Clear moved flags at the end of the frame directly from moved objects set
+        for obj in self._moved_objects:
+            if hasattr(obj, "_moved_this_frame"):
+                obj._moved_this_frame = False
+        self._moved_objects.clear()
 
     # Properties and builtins
     def __getitem__(self, key: str) -> "GameObject | None":

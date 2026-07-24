@@ -30,7 +30,18 @@ class PhysicsObject(GameObject):
             self.collision_layers = coll_layers_val
             
         self.collider: Collider | None = None
-        self._moved_this_frame = True
+        self._moved_this_frame_val: bool = True
+
+    @property
+    def _moved_this_frame(self) -> bool:
+        """bool: Indicates whether the object moved in the current frame."""
+        return self._moved_this_frame_val
+
+    @_moved_this_frame.setter
+    def _moved_this_frame(self, val: bool) -> None:
+        self._moved_this_frame_val = val
+        if val:
+            Globals.scene.mark_moved(self)
 
     def on_transform_change(self) -> None:
         """Updates internal frame movement dirty flags when position/rotation updates."""
@@ -43,6 +54,7 @@ class PhysicsObject(GameObject):
         Raises:
             JazzException: If the object is loaded without registering a collider.
         """
+        Globals.scene.mark_moved(self)
         if self.collider is None:
             raise (JazzException("Physics Object does not have collider"))
         Globals.scene.add_physics_object(self, self._layers)

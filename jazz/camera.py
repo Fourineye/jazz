@@ -35,7 +35,7 @@ class Camera:
         self.follow_type = FOLLOW_STRICT
         self.offset = Vec2()
         self.shake = Vec2()
-        self.magnitude = 0
+        self.magnitude = 0.0
         self.damping = 0.1
         self.display_center = (
             Globals.display.get_width() / 2,

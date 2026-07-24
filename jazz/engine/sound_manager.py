@@ -24,19 +24,25 @@ class SoundManager:
         SETTINGS["AUDIO"]["sound_volume"] = self._volume_s
         save_ini()
 
-    def load_settings(self) -> None:
-        """Loads and applies sound manager volumes from the global settings."""
-        self._volume_m = SETTINGS["AUDIO"]["music_volume"]
-        self._volume_s = SETTINGS["AUDIO"]["sound_volume"]
-        self.set_master_volume(SETTINGS["AUDIO"]["master_volume"])
+    def load_settings(self, settings: dict | None = None) -> None:
+        """Loads and applies sound manager volumes from settings dictionary or global settings.
 
-    def set_master_volume(self, volume: float) -> None:
+        Args:
+            settings (dict, optional): Volume settings dict. Defaults to None (uses global SETTINGS["AUDIO"]).
+        """
+        if settings is None:
+            settings = SETTINGS.get("AUDIO", {})
+        self._volume_m = float(settings.get("music_volume", 1.0))
+        self._volume_s = float(settings.get("sound_volume", 1.0))
+        self.set_master_volume(settings.get("master_volume", 1.0))
+
+    def set_master_volume(self, volume: float | str) -> None:
         """Sets the master volume and updates active music and sound volumes.
 
         Args:
-            volume (float): Master volume factor between 0.0 and 1.0.
+            volume (float | str): Master volume factor between 0.0 and 1.0.
         """
-        self._master_volume = clamp(volume, 0.0, 1.0)
+        self._master_volume = clamp(float(volume), 0.0, 1.0)
         music.set_volume(self._volume_m * self._master_volume)
         for sound in self._sounds:
             sound.set_volume(self._volume_s * self._master_volume)

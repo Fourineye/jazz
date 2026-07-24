@@ -48,13 +48,22 @@ class MockRect:
     def __init__(self, w, h):
         self.size = (w, h)
 
+class MockInputHandler:
+    def start_text_input(self):
+        pass
+    def stop_text_input(self):
+        pass
+
 class TestUIContainers(unittest.TestCase):
     def setUp(self):
         self.old_resource = jazz.global_dict.Globals.resource
+        self.old_key = jazz.global_dict.Globals.key
         jazz.global_dict.Globals.resource = MockResource()
+        jazz.global_dict.Globals.key = MockInputHandler()
 
     def tearDown(self):
         jazz.global_dict.Globals.resource = self.old_resource
+        jazz.global_dict.Globals.key = self.old_key
 
     def test_vbox_vertical_stacking(self):
         # Create a vertical container with spacing 5, padding 10

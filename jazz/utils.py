@@ -42,7 +42,7 @@ def load_ini(path: str = "./.jini") -> None:
     settings = ConfigParser()
     try:
         with open(path, "r") as ini:
-            settings.read(ini)
+            settings.read_file(ini)
         for key, value in settings.items():
             SETTINGS[key] = value
     except FileNotFoundError:

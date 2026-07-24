@@ -116,6 +116,40 @@ class ResourceManager:
                 )
         return self._textures[id]
 
+    def remove_texture(self, id: str) -> None:
+        """Removes a registered texture by ID if present.
+
+        Args:
+            id (str): The identifier key of the texture to remove.
+        """
+        self._textures.pop(id, None)
+
+    def purge_sprite_textures(self, sprite_id: str) -> None:
+        """Purges all dynamic textures registered for a given sprite ID.
+
+        Args:
+            sprite_id (str): The sprite object ID whose textures should be purged.
+        """
+        keys_to_remove = set([
+            k
+            for k in self._textures
+            if k == sprite_id or k.startswith(f"{sprite_id}:")
+        ])
+        keys_to_remove |= set([
+            k
+            for k in self._surfaces
+            if k == sprite_id or k.startswith(f"{sprite_id}:")
+        ])
+        keys_to_remove |= set([
+            k
+            for k in self._sprite_sheets
+            if k == sprite_id or k.startswith(f"{sprite_id}:")
+        ])
+        for k in keys_to_remove:
+            self._textures.pop(k, None)
+            self._surfaces.pop(k, None)
+            self._sprite_sheets.pop(k, None)
+
     def get_surface(self, id: str) -> Surface:
         """Retrieves or loads a cached software Surface.
 
@@ -131,7 +165,7 @@ class ResourceManager:
             self._surfaces.setdefault(id, resource)
         return resource
 
-    def add_surface(self, texture: Surface, id: str) -> Texture | Image:
+    def add_surface(self, texture: Surface, id: str) -> Surface:
         """Manually registers a software Surface under a unique ID.
 
         Args:
@@ -139,11 +173,11 @@ class ResourceManager:
             id (str): The identifier key to register the surface under.
 
         Returns:
-            Texture | Image: The texture equivalent of the surface.
+            Surface: The registered Pygame Surface.
         """
         if id not in self._surfaces.keys():
             self._surfaces[id] = texture
-        return self._textures[id]
+        return self._surfaces[id]
 
     def get_sprite_sheet(self, id: str) -> list[Image | Texture]:
         """Retrieves a pre-sliced sprite sheet list of textures.

@@ -95,8 +95,9 @@ class Sprite(GameObject):
         self._hardware_offset()
 
     def kill(self) -> None:
-        """Kills the game object and removes the sprite from the draw list."""
+        """Kills the game object, purges dynamic textures, and removes the sprite from the draw list."""
         super().kill()
+        Globals.resource.purge_sprite_textures(self.id)
         Globals.scene.remove_sprite(self)
 
     @property
