@@ -244,7 +244,10 @@ class Collider(GameObject):
             if axis_depth < depth:
                 depth = axis_depth
                 normal = axis
-        normal.normalize_ip()
+        if normal.length() == 0:
+            normal = Vec2(1, 0)
+        else:
+            normal.normalize_ip()
         if normal.dot(direction_to(self.center, collider.center)) > 0:
             return depth, normal
         else:
