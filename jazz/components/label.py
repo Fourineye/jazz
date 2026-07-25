@@ -19,26 +19,62 @@ class Label(Sprite):
             text_color (tuple | Color, optional): RGB/Color values for text color. Defaults to white.
             text (str, optional): The initial text content. Defaults to " ".
         """
-        super().__init__(name, **kwargs)
         font_size = kwargs.get("fontsize", 24)
+        self.font = kwargs.get("font", None)
+        if self.font is None:
+            self.font = Globals.resource.get_font(size=font_size)
 
-        self.font = kwargs.get(
-            "font", Globals.resource.get_font(size=font_size)
-        )
         self.text_color = kwargs.get("text_color", (255, 255, 255))
+        self.text_content: str = kwargs.get("text", " ")
+        self._dirty: bool = True
+        self._real_size: Vec2 = Vec2()
 
-        self.text_content = kwargs.get("text", " ")
+        super().__init__(name, **kwargs)
+
+    def _update_text_texture(self) -> None:
+        """Re-renders the font surface to update the underlying texture if marked dirty."""
+        if not hasattr(self, "text_content") or not self._dirty or self.font is None:
+            return
+        self._dirty = False
         if self.text_content:
-            self.texture = self.font.render(
-                self.text_content, True, self.text_color
-            )
+            surf = self.font.render(self.text_content, True, self.text_color)
+            self.texture = surf
         else:
-            self.texture = self.font.render(" ", True, self.text_color)
-            self._size = Vec2(0, self._size.y)
+            surf = self.font.render(" ", True, self.text_color)
+            self.texture = surf
+            self._real_size = Vec2(0, self._real_size.y)
             self._hardware_offset()
 
+
+    @property
+    def _size(self) -> Vec2:
+        """Vec2: Gets the size vector of the label sprite, updating if dirty."""
+        if self._dirty:
+            self._update_text_texture()
+        return self._real_size
+
+    @_size.setter
+    def _size(self, val: Vec2) -> None:
+        self._real_size = Vec2(val)
+
+    @property
+    def texture(self):
+        """Texture | Image: Gets the active text texture asset, re-rendering if dirty."""
+        if self._dirty:
+            self._update_text_texture()
+        return super().texture
+
+    @texture.setter
+    def texture(self, new_texture) -> None:
+        """Sets the texture asset, refreshing dimensions and offsets.
+
+        Args:
+            new_texture (str | Texture | Image | Surface): Asset key or source image surface.
+        """
+        Sprite.texture.fset(self, new_texture)
+
     def set_text(self, text: str) -> None:
-        """Updates the text content and re-renders the label.
+        """Updates the text content and marks the label dirty.
 
         Args:
             text (str): The new text string to show.
@@ -47,12 +83,7 @@ class Label(Sprite):
             text = str(text)
         if self.text_content != text:
             self.text_content = text
-            if text:
-                self.texture = self.font.render(text, True, self.text_color)
-            else:
-                self.texture = self.font.render(" ", True, self.text_color)
-                self._size = Vec2(0, self._size.y)
-                self._hardware_offset()
+            self._dirty = True
 
     def append_text(self, text: str) -> None:
         """Appends text to the existing content and updates the label.
@@ -60,5 +91,16 @@ class Label(Sprite):
         Args:
             text (str): The string to append.
         """
-        self.text_content += text
-        self.set_text(self.text_content)
+        self.set_text(self.text_content + text)
+
+    def render(self, offset: Vec2) -> None:
+        """Draws the text sprite onto the display, re-rendering text if dirty.
+
+        Args:
+            offset (Vec2): Viewport rendering offset to apply.
+        """
+        if self._dirty:
+            self._update_text_texture()
+        super().render(offset)
+
+

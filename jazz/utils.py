@@ -199,6 +199,9 @@ def color_mult(color: Color | tuple[int, int, int], mult: float) -> tuple[int, i
     return tuple(new_color)
 
 
+_AXIS_X = Vec2(1, 0)
+
+
 def dist_to(vec1: Vec2, vec2: Vec2) -> float:
     """Computes the Euclidean distance between two vectors.
 
@@ -209,8 +212,7 @@ def dist_to(vec1: Vec2, vec2: Vec2) -> float:
     Returns:
         float: The Euclidean distance.
     """
-    dist = vec2 - vec1
-    return dist.magnitude()
+    return Vec2(vec1).distance_to(vec2)
 
 
 def direction_to(vec1: Vec2, vec2: Vec2) -> Vec2:
@@ -223,7 +225,7 @@ def direction_to(vec1: Vec2, vec2: Vec2) -> Vec2:
     Returns:
         Vec2: The normalized direction vector. Returns zero or non-normalized vector if magnitude is 0.
     """
-    direction = vec2 - vec1
+    direction = Vec2(vec2) - Vec2(vec1)
     if (
         direction.magnitude_squared() != 1
         and direction.magnitude_squared() != 0
@@ -285,13 +287,13 @@ def line_intersection(p_0: Vec2 | tuple[float, float], p_1: Vec2 | tuple[float, 
     Returns:
         Vec2 | None: The intersection coordinate vector, or None if lines are parallel or do not intersect.
     """
-    p_0 = pygame.Vector2(p_0)
-    p_1 = pygame.Vector2(p_1)
-    p_2 = pygame.Vector2(p_2)
-    p_3 = pygame.Vector2(p_3)
+    p_0 = Vec2(p_0)
+    p_1 = Vec2(p_1)
+    p_2 = Vec2(p_2)
+    p_3 = Vec2(p_3)
 
-    s_1 = pygame.Vector2(p_1 - p_0)
-    s_2 = pygame.Vector2(p_3 - p_2)
+    s_1 = p_1 - p_0
+    s_2 = p_3 - p_2
 
     if abs(s_1.normalize().dot(s_2.normalize())) == 1:
         return None
@@ -304,8 +306,7 @@ def line_intersection(p_0: Vec2 | tuple[float, float], p_1: Vec2 | tuple[float, 
     )
 
     if 0 <= s <= 1 and 0 <= t <= 1:
-        i = p_0 + (t * s_1)
-        return pygame.Vector2(i)
+        return p_0 + (t * s_1)
     else:
         return None
 
@@ -322,9 +323,9 @@ def line_circle(a: Vec2 | tuple[float, float], b: Vec2 | tuple[float, float], c:
     Returns:
         Vec2 | None: The corrected intersection point resolving penetration, or None if no collision.
     """
-    a = pygame.Vector2(a)
-    b = pygame.Vector2(b)
-    c = pygame.Vector2(c)
+    a = Vec2(a)
+    b = Vec2(b)
+    c = Vec2(c)
 
     ac = c - a
     ab = b - a
@@ -364,7 +365,7 @@ def unit_from_angle(angle: float | int) -> Vec2:
     Returns:
         Vec2: The normalized unit direction vector.
     """
-    return rotated_pos(Vec2(1, 0), angle)
+    return _AXIS_X.rotate(angle)
 
 
 def angle_from_vec(vector: Vec2) -> float:
@@ -376,4 +377,5 @@ def angle_from_vec(vector: Vec2) -> float:
     Returns:
         float: The angle in degrees.
     """
-    return Vec2(1, 0).angle_to(vector)
+    return _AXIS_X.angle_to(vector)
+

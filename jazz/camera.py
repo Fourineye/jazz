@@ -1,4 +1,4 @@
-from typing import Type, TYPE_CHECKING
+from typing import Type, TYPE_CHECKING, Tuple
 
 from random import randint
 
@@ -28,39 +28,46 @@ class Camera:
         Sets default values for background color, centering, target, tracking bounds,
         shake parameters, and display dimensions.
         """
-        self._bg_color = (0, 0, 0)
-        self._blanking = True
-        self.target = None
-        self.bounds = None
-        self.follow_type = FOLLOW_STRICT
-        self.offset = Vec2()
-        self.shake = Vec2()
-        self.magnitude = 0.0
-        self.damping = 0.1
-        self.display_center = (
-            Globals.display.get_width() / 2,
-            Globals.display.get_height() / 2,
+        self._bg_color: Color | Tuple[int, int, int] | str = (0, 0, 0)
+        self._blanking: bool = True
+        self.target: GameObject | Vec2 | None = None
+        self.bounds: Rect | None = None
+        self.follow_type: int = FOLLOW_STRICT
+        self.offset: Vec2 = Vec2()
+        self.shake: Vec2 = Vec2()
+        self.magnitude: float = 0.0
+        self.damping: float = 0.1
+        self._display_width: int = Globals.display.get_width()
+        self._display_height: int = Globals.display.get_height()
+        self.display_center: Vec2 = Vec2(
+            self._display_width / 2,
+            self._display_height / 2,
         )
-        self.zoom = 1
+        self.zoom: float = 1.0
 
     def update(self, _delta: float) -> None:
-        """
-        Called every frame to update the offset and shake values
+        """Called every frame to update the offset and shake values
 
         Args:
             _delta (float): For Engine compatibility. Unused.
         """
+        w = Globals.display.get_width()
+        h = Globals.display.get_height()
+        if w != self._display_width or h != self._display_height:
+            self._display_width = w
+            self._display_height = h
+            self.display_center.update(w / 2, h / 2)
+
         if self.target:
             self.update_offset()
         if self.magnitude > 0.1:
+            self.shake.x = self.magnitude * randint(-10, 10)
+            self.shake.y = self.magnitude * randint(-10, 10)
             self.magnitude -= self.magnitude * self.damping
-            self.shake = Vec2(
-                self.magnitude * randint(-10, 10),
-                self.magnitude * randint(-10, 10),
-            )
         else:
-            self.shake = Vec2()
-            self.magnitude = 0
+            self.shake.x = 0.0
+            self.shake.y = 0.0
+            self.magnitude = 0.0
 
     def render(self) -> None:
         """Renders visible objects to the screen."""
@@ -100,21 +107,21 @@ class Camera:
             target_x, target_y = self.target.pos
 
         if self.follow_type == FOLLOW_STRICT:
-            offset_x = self.display_center[0] - target_x
-            offset_y = self.display_center[1] - target_y
+            offset_x = self.display_center.x - target_x
+            offset_y = self.display_center.y - target_y
         elif self.follow_type == FOLLOW_SMOOTH:
-            offset_x += (self.display_center[0] - target_x - offset_x) / 5
-            offset_y += (self.display_center[1] - target_y - offset_y) / 5
+            offset_x += (self.display_center.x - target_x - offset_x) / 5
+            offset_y += (self.display_center.y - target_y - offset_y) / 5
 
         if self.bounds is not None:
             offset_x = clamp(
                 offset_x,
-                -self.bounds.right + Globals.display.get_width(),
+                -self.bounds.right + self._display_width,
                 -self.bounds.left,
             )
             offset_y = clamp(
                 offset_y,
-                -self.bounds.bottom + Globals.display.get_height(),
+                -self.bounds.bottom + self._display_height,
                 -self.bounds.top,
             )
 
@@ -127,21 +134,20 @@ class Camera:
             position (tuple | Vec2, optional): New offset to set the Camera to.
                 Defaults to (0, 0).
         """
-        offset_x = self.display_center[0] - position[0]
-        offset_y = self.display_center[1] - position[1]
+        offset_x = self.display_center.x - position[0]
+        offset_y = self.display_center.y - position[1]
         self.offset.update(offset_x, offset_y)
 
     def set_target(self, target: "GameObject | Vec2") -> None:
-        """
-        Sets the target of the Camera, which it will follow.
+        """Sets the target of the Camera, which it will follow.
 
         Args:
             target (GameObject, Vec2): The target to follow.
         """
-        if isinstance(target, object):
+        if isinstance(target, (GameObject, Vec2)):
             self.target = target
         else:
-            raise JazzException("Camera can only be set to follow an object")
+            raise JazzException("Camera can only be set to follow a GameObject or a Vec2")
 
     def set_bounds(self, bounds: Rect | tuple[int, int, int, int]) -> None:
         """This method sets the world coordinantes bounds of the camera.
@@ -168,14 +174,12 @@ class Camera:
         self._bg_color = Color(color)
 
     def add_shake(self, magnitude: float) -> None:
-        """
-        Adds magnitude to the Camera shake.
+        """Adds magnitude to the Camera shake.
 
         Args:
             magnitude (float): The magnitude of the shake to add.
         """
         self.magnitude = magnitude
-        self.shake = Vec2()
 
     @property
     def pos(self) -> Vec2:
@@ -188,6 +192,7 @@ class Camera:
         return Rect(
             self.offset.x,
             self.offset.y,
-            Globals.display.get_width(),
-            Globals.display.get_height(),
+            self._display_width,
+            self._display_height,
         )
+

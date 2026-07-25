@@ -32,40 +32,56 @@ class AnimatedSprite(Sprite):
         if self._sheet is None:
             self._sheet = [self._texture]
         else:
-            if isinstance(self._sheet, str):
-                self._sheet = Globals.resource.make_sprite_sheet(
-                    self._sheet, self._sprite_dim, self._sprite_offset
-                )
-            else:
-                for i, sprite in enumerate(self._sheet):
-                    if isinstance(sprite, str):
-                        sprite = Globals.resource.get_texture(sprite)
-                    elif isinstance(sprite, Surface):
-                        sprite = Globals.resource.add_texture(
-                            sprite, f"{self.id}:{i}", True
-                        )
-                    self._sheet[i] = sprite
-                    if not isinstance(
-                        sprite,
-                        (
-                            Texture,
-                            Image,
-                        ),
-                    ):
-                        raise TypeError(
-                            "'spritesheet' must be one of the following:"
-                            "\n-Valid path\n-list containing surfaces"
-                            " or valid paths"
-                        )
+            self._sheet = self._parse_spritesheet(self._sheet)
 
         if self.animation_frames[0] == -1:
             self.animation_frames = [i for i in range(len(self._sheet))]
 
         self.texture = self._sheet[self.animation_frames[0]]
 
+    def _parse_spritesheet(
+        self,
+        spritesheet: str | list[str | Texture | Image | Surface],
+    ) -> list[Image | Texture]:
+        """Parses a spritesheet source argument into a list of textures or images.
+
+        Args:
+            spritesheet (str | list): File path to spritesheet or list of frame sources.
+
+        Returns:
+            list[Image | Texture]: Parsed list of texture/image frame assets.
+
+        Raises:
+            TypeError: If an element in spritesheet list is of an invalid type.
+        """
+        if isinstance(spritesheet, str):
+            try:
+                return Globals.resource.get_sprite_sheet(spritesheet)
+            except JazzException:
+                return Globals.resource.make_sprite_sheet(
+                    spritesheet, self._sprite_dim, self._sprite_offset
+                )
+
+        parsed_sheet: list[Image | Texture] = list(spritesheet)
+        for i, sprite in enumerate(parsed_sheet):
+            if isinstance(sprite, str):
+                sprite = Globals.resource.get_texture(sprite)
+            elif isinstance(sprite, Surface):
+                sprite = Globals.resource.add_texture(
+                    sprite, f"{self.id}:{i}", True
+                )
+            if not isinstance(sprite, (Texture, Image)):
+                raise TypeError(
+                    "'spritesheet' must be one of the following:\n"
+                    "-Valid path\n"
+                    "-list containing surfaces or valid paths"
+                )
+            parsed_sheet[i] = sprite
+        return parsed_sheet
+
     def update_animation(
         self,
-        spritesheet: str | list[str | Texture | Image] | None = None,
+        spritesheet: str | list[str | Texture | Image | Surface] | None = None,
         animation_frames: list[int] | None = None,
         fps: int | None = None,
     ) -> None:
@@ -77,37 +93,7 @@ class AnimatedSprite(Sprite):
             fps (int, optional): Playback frame rate. Defaults to None.
         """
         if spritesheet is not None:
-            if isinstance(spritesheet, str):
-                try:
-                    self._sheet = Globals.resource.get_sprite_sheet(
-                        spritesheet
-                    )
-                except JazzException:
-                    self._sheet = Globals.resource.make_sprite_sheet(
-                        spritesheet, self._sprite_dim, self._sprite_offset
-                    )
-            else:
-                self._sheet = spritesheet
-                for i, sprite in enumerate(spritesheet):
-                    if isinstance(sprite, str):
-                        sprite = Globals.resource.get_texture(sprite)
-                    elif isinstance(sprite, Surface):
-                        sprite = Globals.resource.add_texture(
-                            sprite, f"{self.id}:{i}", True
-                        )
-                    self._sheet[i] = sprite
-                    if not isinstance(
-                        sprite,
-                        (
-                            Texture,
-                            Image,
-                        ),
-                    ):
-                        raise TypeError(
-                            "'spritesheet' must be one of the following:"
-                            "\n-Valid path\n-list containing surfaces"
-                            " or valid paths"
-                        )
+            self._sheet = self._parse_spritesheet(spritesheet)
 
         if animation_frames is not None:
             for frame in animation_frames:
