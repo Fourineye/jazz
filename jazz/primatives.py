@@ -7,7 +7,7 @@ from .global_dict import Globals
 from .utils import Rect, Color, Vec2, Surface
 
 
-from typing import Iterator
+from collections.abc import Generator
 
 class Draw:
     """Helper class for drawing geometric primitives.
@@ -27,7 +27,7 @@ class Draw:
 
     @staticmethod
     @contextmanager
-    def canvas(texture: Texture | Surface) -> Iterator[None]:
+    def canvas(texture: Texture | Surface) -> Generator[None, None, None]:
         """Context manager to temporarily redirect drawing operations to a specific target.
 
         Args:

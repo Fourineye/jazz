@@ -46,7 +46,7 @@ class ResourceManager:
         }
         self._colors: dict[tuple[int, int, int], Texture] = {}
         self._styled_textures: dict[tuple, Texture] = {}
-        self._sprite_sheets: dict[str, list[Image | Texture]] = {}
+        self._sprite_sheets: dict[str, list[Image] | list[Texture]] = {}
         self._fonts: dict[str, dict[int, pygame.Font]] = {}
 
     def clear(self) -> None:
@@ -351,14 +351,17 @@ class ResourceManager:
         return resource
 
     def make_sprite_sheet(
-        self, id: str, dimensions: Vec2, offset: tuple[int, int] = (0, 0)
+        self,
+        id: str,
+        dimensions: Vec2 | tuple[int, int],
+        offset: tuple[int, int] | Vec2 = (0, 0),
     ) -> list[Image | Texture]:
         """Loads, slices, and registers a grid-aligned sprite sheet of textures.
 
         Args:
             id (str): The texture path/id to load and slice.
-            dimensions (Vec2): The width and height of each individual frame cell.
-            offset (tuple[int, int], optional): Top-left start padding offset. Defaults to (0, 0).
+            dimensions (Vec2 | tuple[int, int]): The width and height of each individual frame cell.
+            offset (tuple[int, int] | Vec2, optional): Top-left start padding offset. Defaults to (0, 0).
 
         Returns:
             list[Image | Texture]: Sliced list of Image sub-textures.

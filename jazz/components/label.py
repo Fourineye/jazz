@@ -71,7 +71,9 @@ class Label(Sprite):
         Args:
             new_texture (str | Texture | Image | Surface): Asset key or source image surface.
         """
-        Sprite.texture.fset(self, new_texture)
+        fset = Sprite.texture.fset
+        if fset is not None:
+            fset(self, new_texture)
 
     def set_text(self, text: str) -> None:
         """Updates the text content and marks the label dirty.

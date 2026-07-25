@@ -21,7 +21,6 @@ class AnimatedSprite(Sprite):
         """
         super().__init__(**kwargs)
         self.animation_frames: list[int] = kwargs.get("animation_frames", [-1])
-        self._sheet: list[Image | Texture] = kwargs.get("spritesheet", None)
         self._sprite_dim: Vec2 = Vec2(kwargs.get("sprite_dim", (0, 0)))
         self._sprite_offset: Vec2 = Vec2(kwargs.get("sprite_offset", (0, 0)))
         self._playing: bool = kwargs.get("playing", True)
@@ -29,10 +28,11 @@ class AnimatedSprite(Sprite):
         self._frame: float = 0
         self.animation_fps: int = kwargs.get("animation_fps", 30)
 
-        if self._sheet is None:
-            self._sheet = [self._texture]
+        spritesheet_arg: str | list[str | Texture | Image | Surface] | None = kwargs.get("spritesheet", None)
+        if spritesheet_arg is None:
+            self._sheet: list[Image | Texture] = [self._texture]
         else:
-            self._sheet = self._parse_spritesheet(self._sheet)
+            self._sheet = self._parse_spritesheet(spritesheet_arg)
 
         if self.animation_frames[0] == -1:
             self.animation_frames = [i for i in range(len(self._sheet))]
@@ -62,8 +62,9 @@ class AnimatedSprite(Sprite):
                     spritesheet, self._sprite_dim, self._sprite_offset
                 )
 
-        parsed_sheet: list[Image | Texture] = list(spritesheet)
-        for i, sprite in enumerate(parsed_sheet):
+        parsed_sheet: list[Image | Texture] = []
+        for i, item in enumerate(spritesheet):
+            sprite: Texture | Image | Surface | str = item
             if isinstance(sprite, str):
                 sprite = Globals.resource.get_texture(sprite)
             elif isinstance(sprite, Surface):
@@ -76,7 +77,7 @@ class AnimatedSprite(Sprite):
                     "-Valid path\n"
                     "-list containing surfaces or valid paths"
                 )
-            parsed_sheet[i] = sprite
+            parsed_sheet.append(sprite)
         return parsed_sheet
 
     def update_animation(
@@ -113,6 +114,7 @@ class AnimatedSprite(Sprite):
             delta (float): Time since the last frame in seconds.
         """
         if self._playing:
+            old_idx = int(self._frame)
             self._frame = self._frame + delta * self.animation_fps
             if self._frame >= len(self.animation_frames):
                 if self._one_shot:
@@ -120,7 +122,9 @@ class AnimatedSprite(Sprite):
                     self._playing = False
                 else:
                     self._frame %= len(self.animation_frames)
-            self.texture = self._sheet[self.animation_frames[int(self._frame)]]
+            new_idx = int(self._frame)
+            if new_idx != old_idx or self._texture is not self._sheet[self.animation_frames[new_idx]]:
+                self.texture = self._sheet[self.animation_frames[new_idx]]
 
     def play(self, start_over: bool = False) -> None:
         """Starts or resumes animation playback.

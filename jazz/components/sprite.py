@@ -26,6 +26,7 @@ class Sprite(GameObject):
         self._scale: Vec2 = Vec2(kwargs.get("scale", Vec2(1, 1)))
         self._alpha: int = kwargs.get("alpha", 255)
         self._anchor: list[int] = [1, 1]
+        self._real_size: Vec2 = Vec2(0, 0)
 
         self._texture: Texture | Image = None
         self.texture = kwargs.get("texture", "default")
@@ -33,6 +34,15 @@ class Sprite(GameObject):
         anchor: list[int] | None = kwargs.get("anchor", None)
         if anchor is not None:
             self.set_anchor(*anchor)
+
+    @property
+    def _size(self) -> Vec2:
+        """Vec2: Gets the size vector of the sprite."""
+        return self._real_size
+
+    @_size.setter
+    def _size(self, val: Vec2) -> None:
+        self._real_size = Vec2(val)
 
     def on_load(self) -> None:
         """Registers the sprite to the active scene's draw list on mount."""

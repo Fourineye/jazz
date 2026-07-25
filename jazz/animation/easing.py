@@ -43,7 +43,7 @@ def EASE_IN_OUT_QUADRATIC(t: float) -> float:
     Returns:
         float: Mapped value.
     """
-    return 2 * t**2 if t < 0.5 else 1 - (-2 * t + 2) ** 2 / 2
+    return 2 * t**2 if t < 0.5 else 1 - (-2 * t + 2) ** 2 * 0.5
 
 
 def EASE_IN_CUBIC(t: float) -> float:
@@ -79,7 +79,7 @@ def EASE_IN_OUT_CUBIC(t: float) -> float:
     Returns:
         float: Mapped value.
     """
-    return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+    return 4 * t**3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 * 0.5
 
 
 def EASE_IN_QUARTIC(t: float) -> float:
@@ -115,7 +115,7 @@ def EASE_IN_OUT_QUARTIC(t: float) -> float:
     Returns:
         float: Mapped value.
     """
-    return 8 * t**4 if t < 0.5 else 1 - (-2 * t + 2) ** 4 / 2
+    return 8 * t**4 if t < 0.5 else 1 - (-2 * t + 2) ** 4 * 0.5
 
 
 def EASE_IN_QUINTIC(t: float) -> float:
@@ -151,7 +151,7 @@ def EASE_IN_OUT_QUINTIC(t: float) -> float:
     Returns:
         float: Mapped value.
     """
-    return 16 * t**5 if t < 0.5 else 1 - (-2 * t + 2) ** 5 / 2
+    return 16 * t**5 if t < 0.5 else 1 - (-2 * t + 2) ** 5 * 0.5
 
 
 def EASE_IN_EXPO(t: float) -> float:
@@ -192,9 +192,9 @@ def EASE_IN_OUT_EXPO(t: float) -> float:
         if t == 0
         else 1
         if t == 1
-        else 2 ** (20 * t - 10) / 2
+        else 2 ** (20 * t - 10) * 0.5
         if t < 0.5
-        else (2 - 2 ** (-20 * t + 10)) / 2
+        else (2 - 2 ** (-20 * t + 10)) * 0.5
     )
 
 
@@ -237,8 +237,8 @@ def EASE_IN_OUT_BACK(t: float) -> float:
     """
     c1 = 1.70158
     c2 = c1 * 1.525
-    in_ = ((2 * t) ** 2 * ((c2 + 1) * 2 * t - c2)) / 2
-    out_ = ((2 * t - 2) ** 2 * ((c2 + 1) * (t * 2 - 2) + c2) + 2) / 2
+    in_ = ((2 * t) ** 2 * ((c2 + 1) * 2 * t - c2)) * 0.5
+    out_ = ((2 * t - 2) ** 2 * ((c2 + 1) * (t * 2 - 2) + c2) + 2) * 0.5
     return (
         in_ if t < 0.5 else out_
     )
