@@ -10,3 +10,5 @@ jazz.egg-info
 .planning
 .python-version
 uv.lock
+docs/_build/
+dist/
