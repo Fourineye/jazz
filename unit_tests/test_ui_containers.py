@@ -5,9 +5,7 @@ import os
 # Add parent directory to path to import jazz
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from jazz import GameObject, Vec2
-from jazz.components import VBox, HBox, UIContainer
-import jazz.global_dict
+from jazz import Sprite, Vec2, VBox, HBox, UIContainer, Globals
 
 class MockResource:
     def get_texture(self, name):
@@ -56,23 +54,23 @@ class MockInputHandler:
 
 class TestUIContainers(unittest.TestCase):
     def setUp(self):
-        self.old_resource = jazz.global_dict.Globals.resource
-        self.old_key = jazz.global_dict.Globals.key
-        jazz.global_dict.Globals.resource = MockResource()
-        jazz.global_dict.Globals.key = MockInputHandler()
+        self.old_resource = Globals.resource
+        self.old_key = Globals.key
+        Globals.resource = MockResource()
+        Globals.key = MockInputHandler()
 
     def tearDown(self):
-        jazz.global_dict.Globals.resource = self.old_resource
-        jazz.global_dict.Globals.key = self.old_key
+        Globals.resource = self.old_resource
+        Globals.key = self.old_key
 
     def test_vbox_vertical_stacking(self):
         # Create a vertical container with spacing 5, padding 10
         vbox = VBox(spacing=5, padding=10)
         
         # Add mock child sprites
-        child1 = GameObject(name="child1")
+        child1 = Sprite(texture="test", anchor=(0,0))
         child1._size = Vec2(30, 20)
-        child2 = GameObject(name="child2")
+        child2 = Sprite(texture="test", anchor=(0,0))
         child2._size = Vec2(40, 15)
         
         vbox.add_child(child1)
@@ -105,7 +103,7 @@ class TestUIContainers(unittest.TestCase):
     def test_vbox_alignments(self):
         # Test start/left alignment
         vbox_left = VBox(align="left", padding=5, spacing=0)
-        child = GameObject()
+        child = Sprite(anchor=(0,0))
         child._size = Vec2(20, 10)
         vbox_left.add_child(child)
         vbox_left.layout()
@@ -113,7 +111,7 @@ class TestUIContainers(unittest.TestCase):
 
         # Test end/right alignment with explicit size
         vbox_right = VBox(align="right", padding=5, spacing=0, size=(100, 100))
-        child2 = GameObject()
+        child2 = Sprite(anchor=(0,0))
         child2._size = Vec2(20, 10)
         vbox_right.add_child(child2)
         vbox_right.layout()
@@ -124,9 +122,9 @@ class TestUIContainers(unittest.TestCase):
         # Create a horizontal container with spacing 10, padding 5
         hbox = HBox(spacing=10, padding=5)
         
-        child1 = GameObject(name="child1")
+        child1 = Sprite(name="child1", anchor=(0,0))
         child1._size = Vec2(30, 20)
-        child2 = GameObject(name="child2")
+        child2 = Sprite(name="child2", anchor=(0,0))
         child2._size = Vec2(40, 15)
         
         hbox.add_child(child1)
@@ -154,9 +152,9 @@ class TestUIContainers(unittest.TestCase):
     def test_ui_container_layout_policies(self):
         # UIContainer - vertical layout policy
         container = UIContainer(layout_type="vertical", padding=10, spacing=2)
-        child1 = GameObject()
+        child1 = Sprite(anchor=(0,0))
         child1._size = Vec2(10, 10)
-        child2 = GameObject()
+        child2 = Sprite(anchor=(0,0))
         child2._size = Vec2(20, 20)
         
         container.add_child(child1)
@@ -172,14 +170,14 @@ class TestUIContainers(unittest.TestCase):
         # Auto size:
         # Width: left (10) + max_w (20) + right (10) = 40
         # Height: top (10) + sum_h (10 + 20) + spacing (2) + bottom (10) = 52
-        self.assertAlmostEqual(container.size.x, 40, places=2)
-        self.assertAlmostEqual(container.size.y, 52, places=2)
+        self.assertAlmostEqual(container._size.x, 40, places=2)
+        self.assertAlmostEqual(container._size.y, 52, places=2)
 
     def test_visibility_filtering(self):
         vbox = VBox(spacing=5, padding=0)
-        child1 = GameObject()
+        child1 = Sprite(anchor=(0,0))
         child1._size = Vec2(10, 10)
-        child2 = GameObject()
+        child2 = Sprite(anchor=(0,0))
         child2._size = Vec2(10, 10)
         
         vbox.add_child(child1)
@@ -198,11 +196,11 @@ class TestUIContainers(unittest.TestCase):
 
     def test_child_scaling(self):
         vbox = VBox(spacing=10, padding=0)
-        child1 = GameObject()
+        child1 = Sprite(anchor=(0,0))
         child1._size = Vec2(10, 10)
         child1._scale = Vec2(2, 2)  # effectively 20x20
         
-        child2 = GameObject()
+        child2 = Sprite(anchor=(0,0))
         child2._size = Vec2(10, 10)
         
         vbox.add_child(child1)

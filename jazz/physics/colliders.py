@@ -28,6 +28,7 @@ class Collider(GameObject):
         self.collider_type = None
         if not hasattr(self, "_vertices"):
             self._vertices = [Vec2(0, 0)]
+        self._size = len(self._vertices)
         self._edges = []
         self._normals = []
         if not hasattr(self, "_radius"):

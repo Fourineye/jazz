@@ -1,3 +1,4 @@
+from abc import ABC
 from typing import Any
 import uuid
 from typing import TypeVar
@@ -9,76 +10,139 @@ from ..primatives import Draw
 
 T = TypeVar("T", bound="GameObject")
 
-class BaseObject:
+
+class BaseObject(ABC):
     """Base class for all objects in the scene"""
 
+    def __new__(cls, *args, **kwargs):
+        if cls is BaseObject:
+            raise TypeError("BaseObject is an abstract base class and cannot be instantiated directly.")
+        return super().__new__(cls)
 
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        if "__init__" in cls.__dict__:
+            orig_init = cls.__init__
 
-class GameObject:
-    """Base object in jazz"""
+            def wrapped_init(self, *args, **kwargs):
+                depth = self.__dict__.get("_init_depth", 0)
+                object.__setattr__(self, "_init_depth", depth + 1)
+                try:
+                    orig_init(self, *args, **kwargs)
+                finally:
+                    depth = self.__dict__.get("_init_depth", 1)
+                    object.__setattr__(self, "_init_depth", max(0, depth - 1))
 
-    def __init__(
-        self,
-        name: str = "Object",
-        properties: dict[str, Any] | list[str] | None = None,
-        **kwargs,
-    ) -> None:
-        """Base object in Jazz Engine.
+            cls.__init__ = wrapped_init
+
+    def __init__(self, name="BaseObject", **kwargs) -> None:
+        """Initializes base object lifecycle and tree attributes."""
+        depth = self.__dict__.get("_init_depth", 0)
+        object.__setattr__(self, "_init_depth", depth + 1)
+        try:
+            # Saving args
+            self._kwargs = kwargs.copy()
+            self._scripts: dict[str, str] = {}
+
+            # Engine Attributes
+            self.name = name
+            self.id = str(uuid.uuid1())
+
+            # Child properties
+            self._children: dict[str, Any] = {}
+            self._parent: BaseObject | None = None
+            self._depth = 0
+
+            # Custom Properties dict
+            raw_props = kwargs.get("properties", {})
+            if isinstance(raw_props, (list, tuple, set)):
+                self._properties: dict[str, Any] = {str(p): None for p in raw_props}
+            elif isinstance(raw_props, dict):
+                self._properties: dict[str, Any] = dict(raw_props)
+            else:
+                self._properties: dict[str, Any] = {}
+
+            # Engine flags
+            self._pause_process = kwargs.get("pause_process", False)
+            self._game_process = kwargs.get("game_process", True)
+            self._kill = False
+
+            self._loaded: bool = False
+        finally:
+            depth = self.__dict__.get("_init_depth", 1)
+            object.__setattr__(self, "_init_depth", max(0, depth - 1))
+
+    def __setattr__(self, name: str, value: Any) -> None:
+        """Sets an attribute, checking properties if necessary.
+
+        Allows creating new attributes during __init__, but outside of __init__
+        only allows updating existing attributes or custom properties.
 
         Args:
-            name (str, optional): Name for the object. Defaults to "Object".
-            properties (dict[str, Any] | list[str] | None, optional): Custom properties dict or list of attribute names. Defaults to None.
-            pause_process (bool, optional): Whether the object should update when the scene is paused. Defaults to False.
-            game_process (bool, optional): Whether the object should update every frame. Defaults to True.
-            visible (bool, optional): Whether the object should be rendered. Defaults to True.
-            screen_space (bool, optional): Whether the object is in screen space or world space. Defaults to False.
-            pos (Vec2, optional): The object's local position. Defaults to Vec2(0,0).
-            rotation (float, optional): The object's local rotation. Defaults to 0.
+            name (str): The attribute name
+            value (Any): The attribute value
 
+        Raises:
+            AttributeError: If attempting to add a new attribute outside of __init__.
         """
-        # Saving args
-        self._kwargs = kwargs.copy()
-        self._scripts: dict[str, str] = {}
+        props = self.__dict__.get("_properties")
+        if props is not None and name in props:
+            props[name] = value
+            return
 
-        # Custom Properties dict
-        raw_props = (
-            properties if properties is not None else kwargs.get("properties", {})
-        )
-        if isinstance(raw_props, (list, tuple, set)):
-            self._properties: dict[str, Any] = {str(p): None for p in raw_props}
-        elif isinstance(raw_props, dict):
-            self._properties: dict[str, Any] = dict(raw_props)
+        if (
+            name in self.__dict__
+            or hasattr(type(self), name)
+            or self.__dict__.get("_init_depth", 0) > 0
+        ):
+            super().__setattr__(name, value)
         else:
-            self._properties: dict[str, Any] = {}
+            raise AttributeError(
+                f"Cannot add new attribute '{name}' to '{type(self).__name__}' outside of __init__"
+            )
 
-        self._kwargs["properties"] = self._properties
+    def __getattr__(self, name: str) -> Any:
+        """Returns the attribute value, checking properties if necessary.
 
-        # Engine Attributes
-        self.name = name
-        self.id = str(uuid.uuid1())
+        Args:
+            name (str): The attribute name
 
-        # Child properties
-        self._children = {}
-        self._parent = None
-        self._depth = 0
+        Returns:
+            Any: The attribute value
 
-        # Engine flags
-        self.pause_process = kwargs.get("pause_process", False)
-        self.game_process = kwargs.get("game_process", True)
-        self.do_kill = False
-        self._loaded: bool = False
+        Raises:
+            AttributeError: If the attribute is not found in properties.
+        """
+        props = self.__dict__.get("_properties")
+        if props is not None and name in props:
+            return props[name]
+        raise AttributeError(
+            f"'{type(self).__name__}' object has no attribute '{name}'"
+        )
 
-        # Rendering flags
-        self._visible = kwargs.get("visible", True)
-        self._screen_space = kwargs.get("screen_space", False)
-        self._z = kwargs.get("z", 0)
+    def __repr__(self) -> str:
+        children = ""
+        for _, child in self._children.items():
+            children += f" {child}"
+        return (
+            "-" * self._depth
+            + f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}\n"
+            + children
+        )
 
-        # Basic positional Attributes
-        self._pos = Vec2(kwargs.get("pos", (0, 0)))
-        self._rotation = kwargs.get("rotation", 0)
-        self._transform_dirty = True
-        self._cached_pos = Vec2()
-        self._cached_rotation = 0.0
+    def assign_script(self, hook: str, path: str) -> None:
+        """Assigns a script path to a specific hook method on the game object.
+
+        Args:
+            hook (str): The hook method name (e.g., 'update', 'on_load').
+            path (str): The script file path or function reference string.
+        """
+        from .serializer import Serializer
+        if hasattr(self, "_scripts"):
+            self._scripts[hook] = path
+        else:
+            self._scripts = {hook: path}
+        setattr(self, hook, Serializer.resolve_script(path))
 
     # Base Methods
     def on_load(self) -> None:
@@ -95,27 +159,22 @@ class GameObject:
         """Base method that can be overwritten. Called after every object has run its update method
 
         Args:
-            delta (float): Time since last frame
+            delta (float): Time in seconds since the last frame.
         """
 
     def render_debug(self, offset: Vec2) -> None:
-        """Base method that can be overwritten. Draws a circle at the object's world
-        position and a line in it's look direction.
+        """Base method that can be overwritten. Called to draw debug visuals.
 
         Args:
-            offset (Vec2): Screen offset for drawing
+            offset (Vec2): Screen offset for drawing.
         """
-        screen_pos = self.pos + offset
-        look_pos = screen_pos + self.facing * 10
-        Draw.circle(self.pos + offset, 5, Color("yellow"), 3)
-        Draw.line(screen_pos, look_pos, Color("red"), 3)
 
     # Engine called methods that allow object nesting
     def _update(self, delta: float) -> None:
         """Engine method that propogates the update call to it's children
 
         Args:
-            delta (float): Time in seconds since the last frame
+            delta (float): Time in seconds since the last frame.
         """
         for child in self._children.values():
             child._update(delta)
@@ -123,13 +182,17 @@ class GameObject:
         self.update(delta)
 
     def _engine_update(self, delta: float) -> None:
-        """Engine method method that can be overwritten for engine classes. Called in the update loop"""
+        """Engine method method that can be overwritten for engine classes. Called in the update loop
+
+        Args:
+            delta (float): Time in seconds since the last frame.
+        """
 
     def _late_update(self, delta: float) -> None:
         """Engine method that propogates the late_update call to it's children
 
         Args:
-            delta (float): Time in seconds since the last frame
+            delta (float): Time in seconds since the last frame.
         """
         for child in self._children.values():
             child._late_update(delta)
@@ -137,15 +200,19 @@ class GameObject:
         self.late_update(delta)
 
     def _engine_late_update(self, delta: float) -> None:
-        """Engine method method that can be overwritten for engine classes. Called in the late_update loop"""
+        """Engine method method that can be overwritten for engine classes. Called in the late_update loop
+
+        Args:
+            delta (float): Time in seconds since the last frame.
+        """
 
     def _render_debug(self, offset: Vec2) -> None:
         """Engine method that propogates the render_debug call to it's children.
 
         Args:
-            offset (Vec2): Screen offset for drawing
+            offset (Vec2): Screen offset for drawing.
         """
-        if self.visible:
+        if getattr(self, "visible", True):
             self.render_debug(offset)
             for child in self._children.values():
                 child._render_debug(offset)
@@ -156,6 +223,9 @@ class GameObject:
         self.on_load()
         for child in self._children.values():
             child._on_load()
+
+    def _on_tree_change(self) -> None:
+        """Engine method that that can be overwritten for engine classes."""
 
     # Child management
     def add_child(self, obj: T) -> T:
@@ -174,7 +244,7 @@ class GameObject:
             obj._parent = self
             obj._depth = self._depth + 1
             self._children[obj.id] = obj
-            obj._set_transform_dirty()
+            obj._on_tree_change()
             if getattr(self, "_loaded", False):
                 obj._on_load()
             return obj
@@ -183,11 +253,11 @@ class GameObject:
                 f"{obj.id}:{obj.name} is already a child of {self.id}:{self.name}"
             )
 
-    def remove_child(self, obj: "GameObject", kill=True) -> None:
+    def remove_child(self, obj: "BaseObject", kill=True) -> None:
         """Removes the object from the child tree, optionally deleting it from the scene.
 
         Args:
-            obj (GameObject): Object to remove
+            obj (BaseObject): Object to remove
             kill (bool, optional): Delete from scene after removing. Defaults to True.
 
         Raises:
@@ -196,13 +266,100 @@ class GameObject:
         if obj.id in self._children:
             self._children.pop(obj.id)
             obj._parent = None
-            obj._set_transform_dirty()
             if kill:
                 obj.kill()
+                return
+            obj._on_tree_change()
         else:
             raise JazzException(
                 f"{obj.id}:{obj.name} not found as child of {self.id}:{self.name}"
             )
+
+    def queue_kill(self) -> None:
+        """Marks the object for destruction at the end of the frame."""
+        self._game_process = False
+        self._pause_process = False
+        self._game_input = False
+        self._kill = True
+
+    def kill(self) -> None:
+        """Destroys the object and any children."""
+
+        Globals.scene.remove_physics_object(self)
+        Globals.scene.remove_object(self)
+        if self._parent is not None:
+            self._parent.remove_child(self, False)
+
+        for child in self._children.copy().values():
+            self.remove_child(child)
+
+    @property
+    def root(self) -> "BaseObject":
+        """Returns the root of the object's children tree.
+
+        Returns:
+            BaseObject: The root of the object's children tree
+        """
+        if self._parent is None:
+            return self
+        else:
+            return self._parent.root
+
+
+class GameObject(BaseObject):
+    """Simplest object in jazz, has transform properties but is not directly renderable"""
+
+    def __init__(
+        self,
+        name: str = "Object",
+        **kwargs,
+    ) -> None:
+        """Base object in Jazz Engine.
+
+        Args:
+            name (str, optional): Name for the object. Defaults to "Object".
+            pause_process (bool, optional): Whether the object should update when the scene is paused. Defaults to False.
+            game_process (bool, optional): Whether the object should update every frame. Defaults to True.
+            visible (bool, optional): Whether the object should be rendered. Defaults to True.
+            screen_space (bool, optional): Whether the object is in screen space or world space. Defaults to False.
+            pos (Vec2, optional): The object's local position. Defaults to Vec2(0,0).
+            rotation (float, optional): The object's local rotation. Defaults to 0.
+
+        """
+        kwargs["name"] = name
+        super().__init__(**kwargs)
+
+        # Rendering flags
+        self._visible = kwargs.get("visible", True)
+        self._screen_space = kwargs.get("screen_space", False)
+        self._z = kwargs.get("z", 0)
+
+        # Basic positional Attributes
+        self._pos = Vec2(kwargs.get("pos", (0, 0)))
+        self._rotation = kwargs.get("rotation", 0)
+        self._moved_this_frame = False
+        self._transform_dirty = True
+        self._cached_pos = Vec2()
+        self._cached_rotation = 0.0
+
+    def render(self, offset: Vec2) -> None:
+        """Base method that can be overwritten. Draws the object to the screen.
+
+        Args:
+            offset (Vec2): Screen offset for drawing
+        """
+
+    def render_debug(self, offset: Vec2) -> None:
+        """Base method that can be overwritten. Draws a circle at the object's world
+        position and a line in it's look direction.
+
+        Args:
+            offset (Vec2): Screen offset for drawing
+        """
+        screen_pos = self.pos + offset
+        look_pos = screen_pos + self.facing * 10
+        Draw.circle(self.pos + offset, 5, Color("yellow"), 3)
+        Draw.line(screen_pos, look_pos, Color("red"), 3)
 
     # movement methods
     def move(self, movement: Vec2) -> None:
@@ -220,39 +377,11 @@ class GameObject:
             degrees (float): The angle in degrees to rotate the object by.
         """
         self.local_rotation = self.local_rotation + degrees
+    
+    def _on_tree_change(self) -> None:
+        self._set_transform_dirty()
 
-    def queue_kill(self) -> None:
-        """Marks the object for destruction at the end of the frame."""
-        self.game_process = False
-        self.pause_process = False
-        self.game_input = False
-        self.do_kill = True
-
-    def kill(self) -> None:
-        """Destroy's the object and any children."""
-
-        Globals.scene.remove_physics_object(self)
-        Globals.scene.remove_object(self)
-        if self._parent is not None:
-            self._parent.remove_child(self, False)
-
-        for child in self._children.copy().values():
-            self.remove_child(child)
-
-    @property
-    def root(self) -> "GameObject":
-        """Returns the root of the object's children tree.
-
-        Returns:
-            GameObject: The root of the object's children tree
-        """
-        if self._parent is None:
-            return self
-        else:
-            return self._parent.root
-
-    def on_transform_change(self) -> None:
-        """Overwritable hook. Called when local_pos, pos, local_rotation, or rotation changes."""
+    def on_transform_change(self) -> None: pass
 
     def _set_transform_dirty(self) -> None:
         """Marks this object and all of its descendants as transform-dirty.
@@ -475,62 +604,6 @@ class GameObject:
                 count += 1
                 count += child.child_count
         return count
-
-    def assign_script(self, hook: str, path: str) -> None:
-        """Assigns a script path to a specific hook method on the game object.
-
-        Args:
-            hook (str): The hook method name (e.g., 'update', 'on_load').
-            path (str): The script file path or function reference string.
-        """
-        from .serializer import Serializer
-        if hasattr(self, "_scripts"):
-            self._scripts[hook] = path
-        else:
-            self._scripts = {hook: path}
-        setattr(self, hook, Serializer.resolve_script(path))
-
-    def __setattr__(self, name: str, value: Any) -> None:
-        """Sets an attribute, checking properties if necessary.
-
-        Args:
-            name (str): The attribute name
-            value (Any): The attribute value
-        """
-        props = self.__dict__.get("_properties")
-        if props is not None and name in props:
-            props[name] = value
-            return
-        super().__setattr__(name, value)
-
-    def __getattr__(self, name: str) -> Any:
-        """Returns the attribute value, checking properties if necessary.
-
-        Args:
-            name (str): The attribute name
-
-        Returns:
-            Any: The attribute value
-
-        Raises:
-            AttributeError: If the attribute is not found in properties.
-        """
-        props = self.__dict__.get("_properties")
-        if props is not None and name in props:
-            return props[name]
-        raise AttributeError(
-            f"'{type(self).__name__}' object has no attribute '{name}'"
-        )
-
-    def __repr__(self) -> str:
-        children = ""
-        for _, child in self._children.items():
-            children += f" {child}"
-        return (
-            "-" * self._depth
-            + f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}\n"
-            + children
-        )
 
 from .serializer import Serializer
 

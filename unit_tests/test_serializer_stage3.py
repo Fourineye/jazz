@@ -132,7 +132,7 @@ class TestSerializerStage3(unittest.TestCase):
         restored = Serializer.deserialize_object(data)
         self.assertIsInstance(restored, Timer)
         self.assertEqual(restored.time_left, 5.0)
-        self.assertTrue(restored.pause_process)
+        self.assertTrue(restored._pause_process)
         restored.callback()
         self.assertTrue(getattr(Globals, "_timer_expired", False))
 

@@ -24,12 +24,12 @@ from ..utils import (
 )
 
 if TYPE_CHECKING:
-    from .base_object import GameObject
+    from .base_object import GameObject, BaseObject
     from ..physics._physics_object import PhysicsObject
-    from ..components import Sprite
+    from ..components import DrawableObject, Sprite
 
 
-T = TypeVar("T", bound="GameObject")
+T = TypeVar("T", bound="BaseObject")
 
 
 class Scene:
@@ -44,9 +44,9 @@ class Scene:
         and allocates a default 4-layer physics partitioning grid.
         """
         self.camera = Camera()
-        self._objects: dict[str, "GameObject"] = {}
-        self._sprites: list["Sprite"] = []
-        self._sprites_set: set["Sprite"] = set()
+        self._objects: dict[str, "BaseObject"] = {}
+        self._sprites: list["DrawableObject"] = []
+        self._sprites_set: set["DrawableObject"] = set()
         self._sprites_dirty: bool = False
         self._moved_objects: set[Any] = set()
         self._timers: list[Timer] = []
@@ -170,7 +170,7 @@ class Scene:
             pause_process (bool, optional): Whether the timer should count
                 down when the scene is paused. Defaults to False.
         """
-        self.add_object(Timer(time, callback, args, pause_process, one_shot))
+        self.add_object(Timer(time_left=time, callback=callback, args=args, pause_process=pause_process, one_shot=one_shot))
 
     def get_layer_collisions(self, collider: "PhysicsObject", layer: int = 0) -> list["PhysicsObject"]:
         """Retrieves candidate colliders from a specific physics layer using AABB overlaps.
@@ -218,11 +218,11 @@ class Scene:
             if (layers & (1 << (num_layers - 1 - layer))) != 0:
                 self._physics_world[layer].add_object(obj)
 
-    def add_sprite(self, sprite: "Sprite") -> None:
+    def add_sprite(self, sprite: "DrawableObject") -> None:
         """Adds an object to the draw list.
 
         Args:
-            sprite (Sprite): The object to add.
+            sprite (DrawableObject): The object to add.
         """
         if sprite not in self._sprites_set:
             self._sprites_set.add(sprite)
@@ -245,12 +245,12 @@ class Scene:
         Args:
             obj (GameObject): The object to recursively purge references for.
         """
-        from ..components import Sprite
+        from ..components import DrawableObject, Sprite
         from ..physics._physics_object import PhysicsObject
 
-        if isinstance(obj, Sprite):
+        if isinstance(obj, DrawableObject):
             self.remove_sprite(obj)
-            if Globals.resource is not None:
+            if isinstance(obj, Sprite) and Globals.resource is not None:
                 Globals.resource.purge_sprite_textures(obj.id)
         if isinstance(obj, PhysicsObject):
             self.remove_physics_object(obj)
@@ -267,11 +267,11 @@ class Scene:
         for layer, grid in self._physics_world.items():
             grid.remove_object(obj)
 
-    def remove_sprite(self, sprite: "Sprite") -> None:
+    def remove_sprite(self, sprite: "DrawableObject") -> None:
         """Removes an object from the draw list.
 
         Args:
-            sprite (Sprite): The object to remove
+            sprite (DrawableObject): The object to remove
         """
         if sprite in self._sprites_set:
             self._sprites_set.remove(sprite)
@@ -338,13 +338,13 @@ class Scene:
         objects = list(self._objects.values())
 
         for obj in objects:
-            if getattr(obj, "do_kill", False):
+            if getattr(obj, "_kill", False):
                 kill_items.add(obj)
                 continue
             if hasattr(obj, "_update"):
-                if obj.game_process:
+                if obj._game_process:
                     if self._paused:
-                        if obj.pause_process:
+                        if obj._pause_process:
                             obj._update(delta)
                     else:
                         obj._update(delta)
@@ -354,13 +354,13 @@ class Scene:
 
         # late update
         for obj in objects:
-            if getattr(obj, "do_kill", False):
+            if getattr(obj, "_kill", False):
                 kill_items.add(obj)
                 continue
             if hasattr(obj, "_late_update"):
-                if obj.game_process:
+                if obj._game_process:
                     if self._paused:
-                        if obj.pause_process:
+                        if obj._pause_process:
                             obj._late_update(delta)
                     else:
                         obj._late_update(delta)
@@ -430,11 +430,11 @@ class Scene:
         return Globals.display.get_height()
 
     @property
-    def sprites(self) -> list["Sprite"]:
+    def sprites(self) -> list["DrawableObject"]:
         """Returns the list of objects to draw.
 
         Returns:
-            list[Sprite]: List of objects that will get drawn.
+            list[DrawableObject]: List of objects that will get drawn.
         """
         return self._sprites
 

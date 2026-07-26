@@ -2,9 +2,10 @@ from typing import Callable, Any
 import uuid
 
 from ..global_dict import Globals
+from ..engine.base_object import BaseObject
 
 
-class Timer:
+class Timer(BaseObject):
     """A countdown timer that triggers a callback when it expires."""
 
     def __init__(
@@ -12,8 +13,8 @@ class Timer:
         time_left: float,
         callback: Callable[..., Any] | str,
         args: tuple[Any, ...] = (),
-        pause_process: bool = False,
         one_shot: bool = True,
+        **kwargs
     ) -> None:
         """Initializes the Timer.
 
@@ -24,7 +25,7 @@ class Timer:
             pause_process (bool, optional): If True, timer will pause counting down when scene is paused. Defaults to False.
             one_shot (bool, optional): If True, the timer kills itself after firing once. Defaults to True.
         """
-        self.id = str(uuid.uuid1())
+        super().__init__(**kwargs)
         self.time = time_left
         self.time_left = time_left
         callback_arg = callback
@@ -33,11 +34,8 @@ class Timer:
             callback = Serializer.resolve_script(callback)
         self.callback = callback
         self.args = args
-        self.game_process = True
-        self.pause_process = pause_process
         self.one_shot = one_shot
-        self.do_kill = False
-        self._kwargs = {"time_left": time_left, "callback": callback_arg, "args": args, "pause_process": pause_process, "one_shot": one_shot}
+        self._kwargs = {"time_left": time_left, "callback": callback_arg, "args": args, "one_shot": one_shot, **kwargs}
 
     def _on_load(self) -> None:
         """Engine hook. Called when the timer is mounted to the active scene."""
@@ -52,7 +50,7 @@ class Timer:
         if self.time_left <= 0:
             self.callback(*self.args)
             if self.one_shot:
-                self.do_kill = True
+                self._kill = True
                 return
             self.time_left += self.time
 

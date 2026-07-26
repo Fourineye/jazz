@@ -1,0 +1,168 @@
+import pygame
+
+from ..engine.base_object import GameObject
+from ..global_dict import Globals
+from ..utils import Rect, Vec2
+
+
+class DrawableObject(GameObject):
+    """Base class for all renderable and drawable objects in Jazz Engine."""
+
+    def __init__(self, name: str = "DrawableObject", **kwargs) -> None:
+        """Initializes the DrawableObject component.
+
+        Args:
+            name (str, optional): The name of the drawable object component. Defaults to "DrawableObject".
+            flip_x (bool, optional): Initial horizontal flip state. Defaults to False.
+            flip_y (bool, optional): Initial vertical flip state. Defaults to False.
+            scale (Vec2, optional): Initial scaling factor. Defaults to Vec2(1, 1).
+            alpha (int, optional): Initial opacity transparency (0 to 255). Defaults to 255.
+            anchor (tuple, optional): Horizontal and vertical alignment values (e.g. ("center", "center")). Defaults to None.
+        """
+        super().__init__(name, **kwargs)
+        self._flip_x: bool = kwargs.get("flip_x", False)
+        self._flip_y: bool = kwargs.get("flip_y", False)
+        self._scale: Vec2 = Vec2(kwargs.get("scale", Vec2(1, 1)))
+        self._alpha: int = kwargs.get("alpha", 255)
+        self._anchor: list[int] = [1, 1]
+        self._draw_offset: Vec2 = Vec2(0, 0)
+        self._real_size: Vec2 = Vec2(0, 0)
+        self._img_updated: bool = False
+
+        anchor: list[int] | tuple | None = kwargs.get("anchor", None)
+        if anchor is not None:
+            self.set_anchor(*anchor)
+
+    @property
+    def _size(self) -> Vec2:
+        """Vec2: Gets the size vector of the drawable object."""
+        return self._real_size
+
+    @_size.setter
+    def _size(self, val: Vec2) -> None:
+        self._real_size = Vec2(val)
+
+    def on_load(self) -> None:
+        """Registers the drawable object to the active scene's draw list on mount."""
+        Globals.scene.add_sprite(self)
+
+    def kill(self) -> None:
+        """Kills the game object and removes it from the scene draw list."""
+        super().kill()
+        Globals.scene.remove_sprite(self)
+
+    def render(self, offset: Vec2) -> None:
+        """Draws the object onto the screen/canvas.
+
+        Args:
+            offset (Vec2): Viewport rendering offset to apply.
+        """
+
+    def _hardware_offset(self) -> None:
+        """Recalculates hardware draw offsets based on the anchor point alignment and scale."""
+        self._draw_offset = -(
+            Vec2(
+                self._size.x * self._anchor[0] / 2,
+                self._size.y * self._anchor[1] / 2,
+            ).elementwise()
+            * self._scale
+        )
+
+    def set_anchor(
+        self,
+        horizontal: str | int | None = None,
+        vertical: str | int | None = None,
+    ) -> None:
+        """Configures the anchor point alignment.
+
+        Args:
+            horizontal (str | int, optional): Left (0), center (1), or right (2) horizontal anchor alignment.
+            vertical (str | int, optional): Top (0), center (1), or bottom (2) vertical anchor alignment.
+        """
+        if vertical in ["top", 0]:
+            self._anchor[1] = 0
+        elif vertical in ["center", 1]:
+            self._anchor[1] = 1
+        elif vertical in ["bottom", 2]:
+            self._anchor[1] = 2
+        if horizontal in ["left", 0]:
+            self._anchor[0] = 0
+        elif horizontal in ["center", 1]:
+            self._anchor[0] = 1
+        elif horizontal in ["right", 2]:
+            self._anchor[0] = 2
+        self._hardware_offset()
+
+    @property
+    def draw_pos(self) -> Vec2:
+        """Vec2: Gets the top-left drawing position coordinate relative to the camera."""
+        return Vec2(self.pos + self._draw_offset)
+
+    @draw_pos.setter
+    def draw_pos(self, new_offset: Vec2 | tuple[float, float]) -> None:
+        """Sets a manual draw offset.
+
+        Args:
+            new_offset (Vec2 | tuple): The new drawing offset.
+        """
+        self._draw_offset = Vec2(new_offset)
+
+    @property
+    def flip_x(self) -> bool:
+        """bool: Horizontal flip status."""
+        return self._flip_x
+
+    @flip_x.setter
+    def flip_x(self, flip_x: bool) -> None:
+        self._flip_x = flip_x
+        self._img_updated = False
+
+    @property
+    def flip_y(self) -> bool:
+        """bool: Vertical flip status."""
+        return self._flip_y
+
+    @flip_y.setter
+    def flip_y(self, flip_y: bool) -> None:
+        self._flip_y = flip_y
+        self._img_updated = False
+
+    @property
+    def scale(self) -> Vec2:
+        """Vec2: Scaling factor of the drawable object."""
+        return Vec2(self._scale)
+
+    @scale.setter
+    def scale(self, scale: Vec2 | tuple[float, float]) -> None:
+        self._scale = Vec2(scale)
+        self._img_updated = False
+        self._hardware_offset()
+
+    @property
+    def alpha(self) -> int:
+        """int: Opacity level between 0 (fully transparent) and 255 (fully opaque)."""
+        return self._alpha
+
+    @alpha.setter
+    def alpha(self, new_alpha: int) -> None:
+        if 0 <= new_alpha <= 255:
+            self._alpha = new_alpha
+            self._img_updated = False
+        else:
+            raise Exception("Invalid alpha value")
+
+    def on_transform_change(self) -> None:
+        """Clears rendering cache triggers on coordinate updates."""
+        self._img_updated = False
+
+    @property
+    def rect(self) -> pygame.Rect:
+        """pygame.Rect: Gets the bounding rectangle of the object in screen/world space."""
+        return pygame.Rect(
+            self.draw_pos, self._size.elementwise() * self._scale
+        )
+
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(DrawableObject)

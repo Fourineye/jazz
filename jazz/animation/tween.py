@@ -78,7 +78,7 @@ class Tween(GameObject):
             if not self.loop:
                 self.playing = False
                 if self.one_shot:
-                    self.do_kill = True
+                    self._kill = True
             if callable(self.on_end):
                 self.on_end()
         self.time += delta

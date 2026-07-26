@@ -224,16 +224,14 @@ class TestSerializerStage1(unittest.TestCase):
         self.assertEqual(restored_scene.name, "CustomPropScene")
     def test_gameobject_custom_properties(self) -> None:
         """Verifies serializing and restoring custom properties on GameObject instances."""
-        obj = GameObject("prop_obj", pos=(10, 20))
-        obj.properties["health"] = 100
-        obj.properties["faction"] = "hero"
+        obj = GameObject("prop_obj", pos=(10, 20), properties={"health": 100, "faction": "hero"})
 
         data = Serializer.serialize_object(obj)
         self.assertEqual(data["options"]["properties"]["health"], 100)
 
         restored = Serializer.deserialize_object(data)
-        self.assertEqual(restored.properties["health"], 100)
-        self.assertEqual(restored.properties["faction"], "hero")
+        self.assertEqual(restored._properties["health"], 100)
+        self.assertEqual(restored._properties["faction"], "hero")
 
     def test_scene_scripts_callback(self) -> None:
         """Verifies resolving and attaching script callbacks to Scene instances."""

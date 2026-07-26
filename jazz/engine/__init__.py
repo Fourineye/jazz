@@ -1,5 +1,5 @@
 from .application import Application
-from .base_object import GameObject
+from .base_object import BaseObject, GameObject
 from .group import Group
 from .input_handler import InputHandler, Mouse, Keyboard
 from .scene import Scene

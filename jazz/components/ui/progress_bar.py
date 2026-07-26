@@ -26,8 +26,7 @@ class ProgressBar(Sprite):
         kwargs["value"] = value
         kwargs["max_value"] = max_value
         super().__init__(**kwargs)
-        self.size = Vec2(kwargs.get("size", (200, 50)))
-        self._size = self.size
+        self._size = Vec2(kwargs.get("size", (200, 50)))
         self._hardware_offset()
         self.value = value
         self.max_value = max_value
@@ -40,7 +39,7 @@ class ProgressBar(Sprite):
 
     def update_bar(self) -> None:
         """Re-renders the progress bar texture based on current values and colors."""
-        w, h = int(self.size.x), int(self.size.y)
+        w, h = int(self._size.x), int(self._size.y)
         surf = pygame.Surface((w, h), pygame.SRCALPHA)
         
         bg_color = pygame.Color(self.bg_color)

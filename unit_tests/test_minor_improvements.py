@@ -55,7 +55,7 @@ class TestMinorImprovements(unittest.TestCase):
         t1.update(0.0)
 
         self.assertFalse(t1.playing)
-        self.assertTrue(t1.do_kill)
+        self.assertTrue(t1._kill)
         self.assertTrue(on_end_called)
         self.assertEqual(obj.val, 100)
 
@@ -67,9 +67,28 @@ class TestMinorImprovements(unittest.TestCase):
         t2.update(0.0)
 
         self.assertFalse(t2.playing)
-        self.assertFalse(t2.do_kill)
+        self.assertFalse(t2._kill)
         self.assertTrue(on_end_called_2)
         self.assertEqual(obj.val, 200)
+
+    def test_setattr_init_only_restriction(self):
+        class CustomObj(GameObject):
+            def __init__(self):
+                super().__init__()
+                self.created_in_init = "allowed"
+
+        obj = CustomObj()
+        # Modifying existing attribute outside __init__ is allowed
+        obj.created_in_init = "updated"
+        self.assertEqual(obj.created_in_init, "updated")
+
+        # Modifying existing property outside __init__ is allowed
+        obj.name = "NewName"
+        self.assertEqual(obj.name, "NewName")
+
+        # Creating new attribute outside __init__ raises AttributeError
+        with self.assertRaises(AttributeError):
+            obj.new_attr_outside_init = "forbidden"
 
 
 if __name__ == "__main__":

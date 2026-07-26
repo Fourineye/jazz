@@ -41,8 +41,6 @@ class BaseUI(GameObject):
 # Container Class
 class UIContainer:
     def __init__(self, initial_items=None, visible=True, **kwargs):
-        self.game_process = kwargs.get("game_process", True)
-        self.pause_process = kwargs.get("pause_process", False)
         self.game_input = kwargs.get("game_input", True)
         self.screen_layer = kwargs.get("screen_layer", True)
         self.visible = kwargs.get("visible", True)
@@ -79,14 +77,9 @@ class UIContainer:
 
     def add(self, element):
         self.elements.append(element)
-        element.game_process = False
-        element.pause_process = False
-        element.game_input = False
 
     def remove(self, element):
         self.elements.remove(element)
-        element.game_process = True
-        element.game_input = True
 
 
 # Vertical Container

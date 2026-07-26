@@ -338,7 +338,7 @@ class PhysicsTest(Test):
         self.handle_keyboard_input()
 
         # Prune killed dynamic bodies
-        self.dynamic_bodies = [b for b in self.dynamic_bodies if not b.do_kill]
+        self.dynamic_bodies = [b for b in self.dynamic_bodies if not b._kill]
 
     def late_update(self, delta: float) -> None:
         """Updates text labels for stats, FPS, and instructions.
@@ -364,7 +364,7 @@ class PhysicsTest(Test):
         )
 
         # Update selected body info
-        if self.selected_body is not None and not getattr(self.selected_body, "do_kill", False):
+        if self.selected_body is not None and not getattr(self.selected_body, "_kill", False):
             pos = self.selected_body.pos
             vel = getattr(self.selected_body, "velocity", Vec2(0, 0))
             if hasattr(self.selected_body, "on_ground"):
@@ -545,7 +545,7 @@ class PhysicsTest(Test):
         Draw.line(Vec2(0, 130), Vec2(800, 130), Color("gray"), 3)
 
         # Highlight selected body
-        if self.selected_body is not None and not getattr(self.selected_body, "do_kill", False):
+        if self.selected_body is not None and not getattr(self.selected_body, "_kill", False):
             rect = self.selected_body.collider.get_rect()
             Draw.rect(rect, Color("yellow"), 2)
             # Draw.circle(self.selected_body.pos, 4, Color("yellow"), 1)
