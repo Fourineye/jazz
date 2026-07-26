@@ -1,3 +1,5 @@
+from typing import Any
+
 from .colliders import CircleCollider, PolyCollider, RayCollider, RectCollider, Collider
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
@@ -80,3 +82,21 @@ class PhysicsObject(GameObject):
         else:
             raise JazzException("Invalid collider type")
         self.add_child(self.collider)
+
+    def add_child(self, obj: Any) -> Any:
+        """Adds a child object, assigning collider reference if not present.
+
+        Args:
+            obj (Any): Object to add as a child.
+
+        Returns:
+            Any: The added child object.
+        """
+        res = super().add_child(obj)
+        if getattr(self, "collider", None) is None and hasattr(obj, "collider"):
+            self.collider = getattr(obj, "collider", None)
+        return res
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(PhysicsObject)

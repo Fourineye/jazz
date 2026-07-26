@@ -1,0 +1,55 @@
+{
+  "SceneClass": "Scene",
+  "name": "AnimationTestV2",
+  "scripts": {
+    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+  },
+  "Resources": [
+    {
+      "type": "sprite_sheet",
+      "id": "idle_sheet",
+      "path": "showcase/assets/IDLE.png",
+      "sprite_dim": [96, 96]
+    },
+    {
+      "type": "animation",
+      "id": "idle_anim",
+      "spritesheet": "idle_sheet",
+      "animation_fps": 12,
+      "oneshot": false
+    }
+  ],
+  "Objects": [
+    {
+      "Class": "AnimatedSprite",
+      "options": {
+        "name": "hero_sprite",
+        "pos": [400, 400],
+        "scale": [5, 5],
+        "animation": "idle_anim"
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "title_label",
+        "text": "AnimatedSprite (Loaded via JSON Animation Resource)",
+        "pos": [400, 100],
+        "anchor": [1, 0.5],
+        "fontsize": 24,
+        "text_color": [255, 255, 255]
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "hint_label",
+        "text": "Press [Space] to return to Menu",
+        "pos": [400, 720],
+        "anchor": [1, 0.5],
+        "fontsize": 18,
+        "text_color": [160, 160, 160]
+      }
+    }
+  ]
+}

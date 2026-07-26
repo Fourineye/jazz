@@ -9,6 +9,7 @@ from ..utils import (
     dist_to,
     line_circle,
     line_intersection,
+    JazzException
 )
 from ..primatives import Draw
 
@@ -330,13 +331,17 @@ class Collider(GameObject):
 class RectCollider(Collider):
     """Collider shape representing a rectangle."""
 
-    def __init__(self, w: float | int, h: float | int, **kwargs) -> None:
+    def __init__(self, w: float | int = 0, h: float | int = 0, **kwargs) -> None:
         """Initializes the RectCollider.
 
         Args:
             w (float | int): Width of the rectangle.
             h (float | int): Height of the rectangle.
         """
+        self._w = float(w)
+        self._h = float(h)
+        kwargs["w"] = w
+        kwargs["h"] = h
         self._vertices = [
             Vec2(w / 2, h / 2),
             Vec2(w / 2, -h / 2),
@@ -363,13 +368,14 @@ class RectCollider(Collider):
 class CircleCollider(Collider):
     """Collider shape representing a circle."""
 
-    def __init__(self, radius: float | int, **kwargs) -> None:
+    def __init__(self, radius: float | int = 0, **kwargs) -> None:
         """Initializes the CircleCollider.
 
         Args:
-            radius (float | int): The radius of the circle.
+            radius (float | int, optional): The radius of the circle. Defaults to 0.
         """
         self._radius = radius
+        kwargs["radius"] = radius
         super().__init__(**kwargs)
         self.collider_type = "Circle"
         self._left = -self._radius
@@ -426,11 +432,12 @@ class PolyCollider(Collider):
             vertices (list[Vec2], optional): List of vertices defining the polygon shape.
 
         Raises:
-            Exception: If vertices are not defined or are less than 3.
+            JazzException: If vertices are not defined or are less than 3.
         """
         if vertices is None or len(vertices) < 3:
-            raise Exception("A shape must be defined for Polygon collider")
+            raise JazzException("A shape must be defined for Polygon collider")
         self._vertices = vertices
+        kwargs["vertices"] = vertices
         super().__init__(**kwargs)
         self.collider_type = "Polygon"
 
@@ -542,3 +549,12 @@ class RayCollider(Collider):
             self.right - self.left + 1,
             self.bottom - self.top + 1,
         )
+
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(Collider)
+Serializer.register_class(RectCollider)
+Serializer.register_class(CircleCollider)
+Serializer.register_class(PolyCollider)
+Serializer.register_class(RayCollider)

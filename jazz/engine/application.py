@@ -83,31 +83,37 @@ class Application:
 
         Draw.init()
 
-    def add_scene(self, scene: Type[Scene]) -> None:
-        """Adds a scene class reference to the game to be initilaized at
-        a later point. Setting the next scene if on is not already set
+    def add_scene(self, scene: Type[Scene] | Scene) -> None:
+        """Adds a scene class or instance reference to the application.
 
         Args:
-            scene (jazz.Scene): The class to add to the application
+            scene (Type[Scene] | Scene): The scene class or instance to add.
         """
         name: str = scene.name
         self._scenes[name] = scene
         if self._next_scene == "":
             self._next_scene = name
 
-    def set_next_scene(self, name: str) -> None:
-        """Sets the _next_scene property verifying that the scene exists in
-        the game first
+    def set_next_scene(self, scene: str | Type[Scene] | Scene) -> None:
+        """Sets the active scene for the application.
 
         Args:
-            name (str): The name of a given Scene added to the application
+            scene (str | Type[Scene] | Scene): The scene name, class, or instance.
 
         Raises:
-            Exception: The given string does not match the name of any added Scenes
+            JazzException: If the scene is not registered and not a Scene instance.
         """
-        scene_class = self._scenes.get(name)
-        if scene_class is None:
-            raise Exception(f"Could not find scene: {name}")
+        if isinstance(scene, Scene):
+            name = scene.name
+            self._scenes[name] = scene
+        elif isinstance(scene, type) and issubclass(scene, Scene):
+            name = scene.name
+            self._scenes[name] = scene
+        else:
+            name = str(scene)
+
+        if name not in self._scenes:
+            raise JazzException(f"Could not find scene: {name}")
         self._next_scene = name
 
     def run(self) -> None:
@@ -160,18 +166,21 @@ class Application:
             self._active_scene.running = False
 
     def _load_scene(self, name: str) -> Scene:
-        """
-        Returns a new instance of a scene in the _scenes attribute.
+        """Returns a new or pre-instantiated scene from the _scenes attribute.
 
         Args:
-            name (string): Name of the scene class to retrieve.
+            name (str): Name of the scene to retrieve.
 
         Returns:
-            Scene: New instance of the scene class.
+            Scene: Active scene instance.
         """
-        scene_class = self._scenes.get(name)
-        scene_object = scene_class()
-        return scene_object
+        scene_entry = self._scenes.get(name)
+        if isinstance(scene_entry, Scene):
+            return scene_entry
+        elif callable(scene_entry):
+            return scene_entry()
+        else:
+            raise JazzException(f"Could not load scene: {name}")
 
     def _quit_check(self) -> None:
         """

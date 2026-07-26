@@ -1,14 +1,8 @@
 __pycache__/
 build/
 jazz.egg-info
-.idea/
-.venv
-.jini
-.agents
-.mypy_cache/
+.*
 *.code-workspace
-.planning
-.python-version
 uv.lock
 docs/_build/
 dist/

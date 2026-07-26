@@ -1,4 +1,5 @@
 import pygame
+from typing import Any
 
 from pygame._sdl2 import Texture, Image, Renderer
 from ..global_dict import Globals
@@ -48,6 +49,8 @@ class ResourceManager:
         self._styled_textures: dict[tuple, Texture] = {}
         self._sprite_sheets: dict[str, list[Image] | list[Texture]] = {}
         self._fonts: dict[str, dict[int, pygame.Font]] = {}
+        self._animation_resources: dict[str, dict[str, Any]] = {}
+        self._custom_resources: dict[str, dict[str, Any]] = {}
 
     def clear(self) -> None:
         """Destroys any loaded images, fonts, and spritesheets."""
@@ -60,6 +63,8 @@ class ResourceManager:
         self._colors.clear()
         self._sprite_sheets.clear()
         self._fonts.clear()
+        self._animation_resources.clear()
+        self._custom_resources.clear()
 
     def get_font(self, id: str = DEFAULT_FONT, size: int = 12) -> pygame.font.Font:
         """Loads and returns a cached font from the filesystem.
@@ -382,3 +387,75 @@ class ResourceManager:
                 y += dimensions[1]
             self._sprite_sheets[id] = sprite_sheet
         return sprite_sheet
+
+    def add_animation_resource(
+        self,
+        id: str,
+        spritesheet: str | list[str | Texture | Image | Surface],
+        animation_frames: list[int] | None = None,
+        animation_fps: int = 30,
+        oneshot: bool = False,
+    ) -> dict[str, Any]:
+        """Registers a named animation resource packaging spritesheet, frame list, FPS, and loop mode.
+
+        Args:
+            id (str): Unique identifier for the animation resource.
+            spritesheet (str | list): Spritesheet key or frame list.
+            animation_frames (list[int], optional): Sequence indices of frames to play. Defaults to None.
+            animation_fps (int, optional): Playback frame rate. Defaults to 30.
+            oneshot (bool, optional): Loop disable flag. Defaults to False.
+
+        Returns:
+            dict[str, Any]: The registered animation configuration payload.
+        """
+        config = {
+            "id": id,
+            "spritesheet": spritesheet,
+            "animation_frames": animation_frames,
+            "animation_fps": animation_fps,
+            "oneshot": oneshot,
+        }
+        self._animation_resources[id] = config
+        return config
+
+    def get_animation_resource(self, id: str) -> dict[str, Any] | None:
+        """Retrieves a registered animation resource configuration by ID.
+
+        Args:
+            id (str): Unique identifier of the animation resource.
+
+        Returns:
+            dict[str, Any] | None: Animation resource payload or None if not registered.
+        """
+        return self._animation_resources.get(id, None)
+
+    def add_resource(self, category: str, id: str, resource: Any) -> Any:
+        """Registers a custom user asset under a specific resource category.
+
+        Args:
+            category (str): The resource category name.
+            id (str): Unique identifier for the asset.
+            resource (Any): The asset object or dictionary to store.
+
+        Returns:
+            Any: The stored resource object.
+        """
+        if category not in self._custom_resources:
+            self._custom_resources[category] = {}
+        self._custom_resources[category][id] = resource
+        return resource
+
+    def get_resource(self, category: str, id: str) -> Any | None:
+        """Retrieves a registered custom asset by category and ID.
+
+        Args:
+            category (str): The resource category name.
+            id (str): Unique identifier for the asset.
+
+        Returns:
+            Any | None: The stored resource object or None if not found.
+        """
+        cat_dict = self._custom_resources.get(category, None)
+        if cat_dict is None:
+            return None
+        return cat_dict.get(id, None)

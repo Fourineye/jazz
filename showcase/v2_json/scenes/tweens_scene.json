@@ -1,0 +1,70 @@
+{
+  "SceneClass": "Scene",
+  "name": "TweenTestV2",
+  "scripts": {
+    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+  },
+  "Objects": [
+    {
+      "Class": "Label",
+      "options": {
+        "name": "title_label",
+        "text": "Tween Animation Showcase (Deserialized)",
+        "pos": [400, 80],
+        "anchor": [1, 0.5],
+        "fontsize": 24,
+        "text_color": [255, 255, 255]
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "start_mark",
+        "text": "0.0",
+        "pos": [150, 150],
+        "fontsize": 18,
+        "text_color": [200, 200, 200]
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "end_mark",
+        "text": "1.0",
+        "pos": [650, 150],
+        "fontsize": 18,
+        "text_color": [200, 200, 200]
+      }
+    },
+    {
+      "Class": "Sprite",
+      "options": {
+        "name": "moving_ball",
+        "pos": [150, 400],
+        "scale": [3, 3]
+      }
+    },
+    {
+      "Class": "Tween",
+      "options": {
+        "name": "ball_tween",
+        "target_property": "pos",
+        "target_value": [650, 400],
+        "time": 2.5,
+        "loop": true,
+        "play": true
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "hint_label",
+        "text": "Press [Space] to return to Menu",
+        "pos": [400, 720],
+        "anchor": [1, 0.5],
+        "fontsize": 18,
+        "text_color": [160, 160, 160]
+      }
+    }
+  ]
+}

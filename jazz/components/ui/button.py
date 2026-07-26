@@ -1,11 +1,11 @@
 import pygame
 from typing import Callable
 
-from .sprite import Sprite
+from ..sprite import Sprite
 from .label import Label
-from .. import Globals
-from ..primatives import Draw
-from ..utils import Color, Rect, Vec2, Surface
+from ...global_dict import Globals
+from ...primatives import Draw
+from ...utils import Color, Rect, Vec2, Surface
 from pygame._sdl2 import Texture
 
 
@@ -44,7 +44,13 @@ class Button(Sprite):
         super().__init__(name, **kwargs)
         self.screen_space = True
 
-        self._callback = kwargs.get("callback", None)
+        callback_arg = kwargs.get("callback", None)
+        if isinstance(callback_arg, str):
+            self._callback_path = callback_arg
+            from ...engine.serializer import Serializer
+            callback_arg = Serializer.resolve_script(callback_arg)
+
+        self._callback = callback_arg
         self._on_release = kwargs.get("on_release", True)
 
         self._size = Vec2(kwargs.get("size", (10, 10)))
@@ -57,14 +63,18 @@ class Button(Sprite):
         self.last_state = self.UNPRESSED
         self.state = self.UNPRESSED
 
-        self._label = kwargs.get("label", None)
-        if self._label is not None:
+        label_arg = kwargs.get("label", None)
+        if label_arg is not None:
             text_size = kwargs.get("text_size", 12)
             text_color = kwargs.get("text_color", Color("white"))
+            self._label_text = str(label_arg)
             self._label = Label(
-                text=self._label, text_color=text_color, fontsize=text_size
+                text=self._label_text, text_color=text_color, fontsize=text_size
             )
+            self._label.set_anchor("center", "center")
             self.add_child(self._label)
+        else:
+            self._label = None
 
         self._is_styled = False
         if self._unpressed_asset is None:
@@ -105,7 +115,7 @@ class Button(Sprite):
         if self._label is not None:
             self._label.pos = self.rect.center
 
-    def update(self, _delta: float) -> None:
+    def _engine_update(self, delta: float) -> None:
         """Monitors mouse cursor interaction events to resolve button hover and click states.
 
         Args:
@@ -204,7 +214,7 @@ class Button(Sprite):
         else:
             super().render(offset)
 
-    def render_debug(self, offset: Vec2):
+    def render_debug(self, offset: Vec2) -> None:
         """Draws the active bounding box around the button in debug mode.
 
         Args:
@@ -212,3 +222,7 @@ class Button(Sprite):
         """
         super().render_debug(offset)
         Draw.rect(self.rect.move(offset), Color("green"), 3)
+
+from ...engine.serializer import Serializer
+
+Serializer.register_class(Button)

@@ -1,0 +1,31 @@
+{
+  "SceneClass": "Scene",
+  "name": "DrawTestV2",
+  "scripts": {
+    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+  },
+  "Objects": [
+    {
+      "Class": "Label",
+      "options": {
+        "name": "title_label",
+        "text": "Procedural Draw Primitives Showcase (JSON Scene)",
+        "pos": [400, 80],
+        "anchor": [1, 0.5],
+        "fontsize": 24,
+        "text_color": [255, 255, 255]
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "hint_label",
+        "text": "Press [Space] to return to Menu",
+        "pos": [400, 720],
+        "anchor": [1, 0.5],
+        "fontsize": 18,
+        "text_color": [160, 160, 160]
+      }
+    }
+  ]
+}

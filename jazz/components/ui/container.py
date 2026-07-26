@@ -1,9 +1,9 @@
 from typing import TypeVar
-from .. import Globals
-from .sprite import Sprite
-from ..engine.base_object import GameObject
-from ..utils import Vec2, Color, Rect, Texture
-from ..primatives import Draw
+from ...global_dict import Globals
+from ..sprite import Sprite
+from ...engine.base_object import GameObject
+from ...utils import Vec2, Color, Rect, Texture
+from ...primatives import Draw
 
 T = TypeVar("T", bound=GameObject)
 
@@ -428,3 +428,10 @@ class HBox(UIContainer):
         kwargs.setdefault("padding", 5)
         kwargs.setdefault("spacing", 5)
         super().__init__(name, **kwargs)
+
+
+from ...engine.serializer import Serializer
+
+Serializer.register_class(UIContainer)
+Serializer.register_class(VBox)
+Serializer.register_class(HBox)

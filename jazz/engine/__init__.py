@@ -5,3 +5,4 @@ from .input_handler import InputHandler, Mouse, Keyboard
 from .scene import Scene
 from .resource_manager import ResourceManager
 from .sound_manager import SoundManager
+from .serializer import Serializer, register_class

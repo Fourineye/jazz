@@ -1,9 +1,9 @@
 import pygame
 
 
-from .sprite import Sprite
-from ..global_dict import Globals
-from ..utils import Vec2
+from ..sprite import Sprite
+from ...global_dict import Globals
+from ...utils import Vec2
 
 
 class Label(Sprite):
@@ -20,6 +20,7 @@ class Label(Sprite):
             text (str, optional): The initial text content. Defaults to " ".
         """
         font_size = kwargs.get("fontsize", 24)
+        self._font_size = font_size
         self.font = kwargs.get("font", None)
         if self.font is None:
             self.font = Globals.resource.get_font(size=font_size)
@@ -30,6 +31,7 @@ class Label(Sprite):
         self._real_size: Vec2 = Vec2()
 
         super().__init__(name, **kwargs)
+        self._update_text_texture()
 
     def _update_text_texture(self) -> None:
         """Re-renders the font surface to update the underlying texture if marked dirty."""
@@ -104,5 +106,10 @@ class Label(Sprite):
         if self._text_dirty:
             self._update_text_texture()
         super().render(offset)
+
+
+from ...engine.serializer import Serializer
+
+Serializer.register_class(Label)
 
 

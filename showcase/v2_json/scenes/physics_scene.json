@@ -1,0 +1,91 @@
+{
+  "SceneClass": "Scene",
+  "name": "PhysicsTestV2",
+  "scripts": {
+    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+  },
+  "Objects": [
+    {
+      "Class": "Body",
+      "options": {
+        "name": "static_ground",
+        "pos": [400, 700],
+        "static": true
+      },
+      "children": [
+        {
+          "Class": "RectCollider",
+          "options": {
+            "name": "ground_collider",
+            "w": 700,
+            "h": 40
+          }
+        }
+      ]
+    },
+    {
+      "Class": "Body",
+      "options": {
+        "name": "dynamic_hero",
+        "pos": [400, 300],
+        "static": false
+      },
+      "children": [
+        {
+          "Class": "CircleCollider",
+          "options": {
+            "name": "hero_collider",
+            "radius": 35
+          }
+        }
+      ]
+    },
+    {
+      "Class": "Ray",
+      "options": {
+        "name": "downward_ray",
+        "pos": [400, 300],
+        "length": 400
+      }
+    },
+    {
+      "Class": "Area",
+      "options": {
+        "name": "sensor_zone",
+        "pos": [400, 500],
+        "active": true
+      },
+      "children": [
+        {
+          "Class": "RectCollider",
+          "options": {
+            "w": 200,
+            "h": 100
+          }
+        }
+      ]
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "title_label",
+        "text": "Physics Bodies & Colliders (JSON Deserialized)",
+        "pos": [400, 80],
+        "anchor": [1, 0.5],
+        "fontsize": 24,
+        "text_color": [255, 255, 255]
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "hint_label",
+        "text": "Press [Space] to return to Menu",
+        "pos": [400, 750],
+        "anchor": [1, 0.5],
+        "fontsize": 18,
+        "text_color": [160, 160, 160]
+      }
+    }
+  ]
+}

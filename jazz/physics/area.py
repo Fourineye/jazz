@@ -22,8 +22,12 @@ class Area(PhysicsObject):
         self._active = kwargs.get("active", True)
         self._entered_cache = {}
 
-    def update(self, _delta: float) -> None:
-        """Updates and queries overlapping candidates each frame if sensor is active."""
+    def _engine_update(self, delta: float) -> None:
+        """Engine updates and queries overlapping candidates each frame if sensor is active.
+
+        Args:
+            delta (float): Time in seconds since the last frame.
+        """
         if self._active:
             self.entered = self.get_entered()
 
@@ -57,3 +61,8 @@ class Area(PhysicsObject):
         else:
             self._entered_cache.clear()
         return entered
+
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(Area)

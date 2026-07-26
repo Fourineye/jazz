@@ -6,11 +6,11 @@ from .sprite import Sprite
 class AnimatedSprite(Sprite):
     """Component that renders multi-frame spritesheets with playing controls."""
 
-    def __init__(self, name: str = "animated sprite", **kwargs) -> None:
+    def __init__(self, name: str = "AnimatedSprite", **kwargs) -> None:
         """Initializes the AnimatedSprite component.
 
         Args:
-            name (str, optional): The name of the animated sprite object. Defaults to "animated sprite".
+            name (str, optional): The name of the animated sprite object. Defaults to "AnimatedSprite".
             animation_frames (list[int], optional): Sequence indices of frames to play. Defaults to [-1] (plays all).
             spritesheet (str | list, optional): Slices/images source of the frames. Defaults to None.
             sprite_dim (tuple, optional): Dimensions of each frame cell in pixels. Defaults to (0, 0).
@@ -28,7 +28,25 @@ class AnimatedSprite(Sprite):
         self._frame: float = 0
         self.animation_fps: int = kwargs.get("animation_fps", 30)
 
+        anim_id = kwargs.get("animation", None)
+        if anim_id is not None:
+            self._anim_id = anim_id
+            if Globals.resource is not None:
+                anim_config = Globals.resource.get_animation_resource(anim_id)
+                if anim_config:
+                    if kwargs.get("spritesheet") is None and "spritesheet" in anim_config:
+                        kwargs["spritesheet"] = anim_config["spritesheet"]
+                    if self.animation_frames == [-1] and anim_config.get("animation_frames") is not None:
+                        self.animation_frames = list(anim_config["animation_frames"])
+                    if "animation_fps" in anim_config and "animation_fps" not in kwargs:
+                        self.animation_fps = anim_config["animation_fps"]
+                    if "oneshot" in anim_config and "oneshot" not in kwargs:
+                        self._one_shot = anim_config["oneshot"]
+
         spritesheet_arg: str | list[str | Texture | Image | Surface] | None = kwargs.get("spritesheet", None)
+        if isinstance(spritesheet_arg, str):
+            self._spritesheet_key = spritesheet_arg
+
         if spritesheet_arg is None:
             self._sheet: list[Image | Texture] = [self._texture]
         else:
@@ -107,7 +125,7 @@ class AnimatedSprite(Sprite):
         if fps is not None:
             self.set_fps(fps)
 
-    def update(self, delta: float) -> None:
+    def _engine_update(self, delta: float) -> None:
         """Advances active frame index based on delta time and playback FPS.
 
         Args:
@@ -149,3 +167,8 @@ class AnimatedSprite(Sprite):
         if fps < 0:
             raise Exception(f"invalid fps {fps}, fps must be greater than 0")
         self.animation_fps = fps
+
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(AnimatedSprite)

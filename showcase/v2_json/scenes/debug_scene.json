@@ -1,0 +1,68 @@
+{
+  "SceneClass": "Scene",
+  "name": "DebugTestV2",
+  "scripts": {
+    "update": "showcase.v2_json.scripts.showcase_hooks.on_debug_square_update"
+  },
+  "Objects": [
+    {
+      "Class": "Body",
+      "options": {
+        "name": "square",
+        "pos": [400, 400]
+      },
+      "children": [
+        {
+          "Class": "RectCollider",
+          "options": {
+            "w": 100,
+            "h": 100
+          }
+        },
+        {
+          "Class": "Sprite",
+          "options": {
+            "scale": [10, 10]
+          }
+        }
+      ]
+    },
+    {
+      "Class": "Body",
+      "options": {
+        "name": "circle_body",
+        "pos": [150, 150]
+      },
+      "children": [
+        {
+          "Class": "CircleCollider",
+          "options": {
+            "radius": 50
+          }
+        }
+      ]
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "title_label",
+        "text": "Debug Mode Collider Rendering (JSON Scene)",
+        "pos": [400, 80],
+        "anchor": [1, 0.5],
+        "fontsize": 24,
+        "text_color": [255, 255, 255]
+      }
+    },
+    {
+      "Class": "Label",
+      "options": {
+        "name": "hint_label",
+        "text": "Press [Space] to return to Menu",
+        "pos": [400, 720],
+        "anchor": [1, 0.5],
+        "fontsize": 18,
+        "text_color": [160, 160, 160]
+      }
+    }
+  ]
+}

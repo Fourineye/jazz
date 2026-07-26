@@ -67,3 +67,8 @@ class Body(PhysicsObject):
         return precise_collisions
 
 
+from ..engine.serializer import Serializer
+
+Serializer.register_class(Body)
+
+

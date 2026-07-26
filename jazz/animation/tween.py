@@ -10,10 +10,10 @@ class Tween(GameObject):
 
     def __init__(
         self,
-        target_object: GameObject,
-        target_property: str,
-        target_value: Any,
-        time: float,
+        target_object: GameObject = None,
+        target_property: str = "pos",
+        target_value: Any = 0,
+        time: float = 1.0,
         **kwargs,
     ) -> None:
         """An object that moves a property between two numeric values using a given easing function.
@@ -29,6 +29,9 @@ class Tween(GameObject):
             on_end (Callable, optional): A function that will be called when the tween is complete. Default is None
             play (bool, optional): If this is true the tween will start when it is created. Default is False
         """
+        kwargs["target_property"] = target_property
+        kwargs["target_value"] = target_value
+        kwargs["time"] = time
         kwargs.setdefault("name", "Tween")
         super().__init__(**kwargs)
         self.target_object: GameObject = target_object
@@ -96,3 +99,7 @@ class Tween(GameObject):
     def stop(self) -> None:
         """Stops the tween animation"""
         self.playing = False
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(Tween)

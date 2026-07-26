@@ -1,15 +1,15 @@
 import pygame
 
-from .sprite import Sprite
-from ..utils import Vec2, map_range, Rect, Texture
-from ..global_dict import Globals
-from ..primatives import Draw
+from ..sprite import Sprite
+from ...utils import Vec2, map_range, Rect, Texture
+from ...global_dict import Globals
+from ...primatives import Draw
 
 
 class ProgressBar(Sprite):
     """UI Component representing a progress or health bar using target texture drawing."""
 
-    def __init__(self, value: float | int, max_value: float | int, **kwargs) -> None:
+    def __init__(self, value: float | int = 0, max_value: float | int = 100, **kwargs) -> None:
         """Initializes the ProgressBar component.
 
         Args:
@@ -23,6 +23,8 @@ class ProgressBar(Sprite):
             line_width (int, optional): Width of outline border in pixels. Defaults to 3.
         """
         kwargs.setdefault("name", "Progress Bar")
+        kwargs["value"] = value
+        kwargs["max_value"] = max_value
         super().__init__(**kwargs)
         self.size = Vec2(kwargs.get("size", (200, 50)))
         self._size = self.size
@@ -115,3 +117,8 @@ class ProgressBar(Sprite):
         """
         self.max_value = max_value
         self.update_bar()
+
+
+from ...engine.serializer import Serializer
+
+Serializer.register_class(ProgressBar)

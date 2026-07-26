@@ -50,6 +50,7 @@ class Scene:
         self._sprites_dirty: bool = False
         self._moved_objects: set[Any] = set()
         self._timers: list[Timer] = []
+        #TODO: Wrap Scene physics methods and properties into a dynamic PhysicsWorld class
         self._physics_world = {
             0: PhysicsGrid(),
             1: PhysicsGrid(),
@@ -60,6 +61,7 @@ class Scene:
         self._debug = False
         self.running = True
         self._paused = False
+        self.properties: dict[str, Any] = {}
         Globals.resource.clear()
         Globals.sound.clear_sounds()
 
@@ -381,7 +383,19 @@ class Scene:
 
     # Properties and builtins
     def __getitem__(self, key: str) -> "GameObject | None":
+        """Retrieves a GameObject from the scene by ID or name.
+
+        Args:
+            key (str): The object ID or name.
+
+        Returns:
+            GameObject | None: The matching GameObject or None if not found.
+        """
         obj = self._objects.get(key, None)
+        if obj is None:
+            for item in self._objects.values():
+                if item.name == key:
+                    return item
         return obj
 
     def __iter__(self) -> Iterator["GameObject"]:
@@ -423,3 +437,94 @@ class Scene:
             list[Sprite]: List of objects that will get drawn.
         """
         return self._sprites
+
+    def to_dict(self) -> dict[str, Any]:
+        """Serializes the scene and its top-level object graph into a dictionary payload.
+
+        Returns:
+            dict[str, Any]: Dictionary representation of the scene.
+        """
+        top_level_objects = [
+            obj.to_dict()
+            for obj in self._objects.values()
+            if getattr(obj, "_parent", None) is None
+        ]
+        data: dict[str, Any] = {
+            "SceneClass": self.__class__.__name__,
+            "name": self.name,
+            "Objects": top_level_objects,
+        }
+        if self.properties:
+            data["properties"] = dict(self.properties)
+        scripts = getattr(self, "scripts", None)
+        if isinstance(scripts, dict) and scripts:
+            data["scripts"] = dict(scripts)
+        return data
+
+    @classmethod
+    def from_dict(cls: type["Scene"], data: dict[str, Any], base_path: str = "") -> type["Scene"]:
+        """Generates a dynamic Scene subclass from a dictionary payload.
+
+        Args:
+            data (dict[str, Any]): Dictionary payload.
+            base_path (str, optional): Base directory path for relative resource resolution. Defaults to "".
+
+        Returns:
+            type[Scene]: The generated Scene subclass object.
+        """
+        from .serializer import Serializer
+        return Serializer.deserialize_scene(data, base_path=base_path)
+
+    @classmethod
+    def from_json(cls: type["Scene"], filepath_or_json: str) -> "Scene":
+        """Factory method that parses a JSON string or JSON file path and instantiates a populated Scene.
+
+        Args:
+            filepath_or_json (str): File path to a .json scene document or raw JSON string.
+
+        Returns:
+            Scene: The instantiated and populated Scene object.
+
+        Raises:
+            JazzException: If file loading or JSON parsing fails.
+        """
+        import json
+        import os
+        base_path = ""
+        if os.path.exists(filepath_or_json):
+            base_path = os.path.dirname(filepath_or_json)
+            with open(filepath_or_json, "r", encoding="utf-8") as f:
+                data = json.load(f)
+        else:
+            try:
+                data = json.loads(filepath_or_json)
+            except Exception as e:
+                raise JazzException(f"Failed to parse scene JSON string or find JSON file '{filepath_or_json}': {e}") from e
+
+        res = cls.from_dict(data, base_path=base_path)
+        if isinstance(res, type):
+            return res()
+        return res
+
+    def to_json(self, filepath: str | None = None, indent: int = 2) -> str:
+        """Serializes the scene to a JSON string and optionally writes it to a file.
+
+        Args:
+            filepath (str, optional): Destination file path to save the JSON string. Defaults to None.
+            indent (int, optional): Formatting indentation space count. Defaults to 2.
+
+        Returns:
+            str: The serialized JSON string.
+        """
+        import json
+        payload = self.to_dict()
+        json_str = json.dumps(payload, indent=indent)
+        if filepath is not None:
+            with open(filepath, "w", encoding="utf-8") as f:
+                f.write(json_str)
+        return json_str
+
+
+from .serializer import Serializer
+
+Serializer.register_class(Scene)

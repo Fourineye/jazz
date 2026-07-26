@@ -2,9 +2,9 @@ import pygame
 from pygame.locals import *
 
 from .global_dict import SETTINGS, Globals
-from .engine import Application, GameObject, Scene
+from .engine import Application, GameObject, Scene, Serializer, register_class
 from .components import AnimatedSprite, Button, Label, ProgressBar, Sprite, TextBox, VBox, HBox, UIContainer
-from .physics import Area, Body, Ray
+from .physics import Area, Body, CircleCollider, Collider, PhysicsObject, PolyCollider, Ray, RayCollider, RectCollider
 from .animation import *
 from .utils import (
     Rect,

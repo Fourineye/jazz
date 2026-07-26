@@ -136,6 +136,8 @@ class Sprite(GameObject):
         Args:
             new_texture (str | Texture | Image | Surface): Asset key or source image surface.
         """
+        if isinstance(new_texture, str):
+            self._texture_key = new_texture
         if not isinstance(new_texture, (Texture, Image, Surface)):
             new_texture = Globals.resource.get_texture(new_texture)
         if not isinstance(new_texture, (Texture, Image)):
@@ -204,3 +206,8 @@ class Sprite(GameObject):
         return pygame.Rect(
             self.draw_pos, self._size.elementwise() * self._scale
         )
+
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(Sprite)

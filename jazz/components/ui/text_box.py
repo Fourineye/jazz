@@ -1,8 +1,8 @@
 import pygame
-from .sprite import Sprite
+from ..sprite import Sprite
 from .label import Label
-from ..global_dict import Globals
-from ..utils import Color, Rect, Surface, Vec2, Texture
+from ...global_dict import Globals
+from ...utils import Color, Rect, Surface, Vec2, Texture
 
 class TextBox(Sprite):
     """Event-driven interactive input TextBox component supporting keyboard entry and focus toggles."""
@@ -32,6 +32,19 @@ class TextBox(Sprite):
             hover_bg_color (tuple | Color, optional): Background color when hovered/active. Defaults to slightly brightened bg_color.
             hover_border_color (tuple | Color, optional): Border color when hovered/active. Defaults to slightly brightened border_color.
         """
+        self._kwargs = kwargs.copy()
+        on_submit_arg = kwargs.get("on_submit", None)
+        if isinstance(on_submit_arg, str):
+            self._on_submit_path = on_submit_arg
+            from ...engine.serializer import Serializer
+            kwargs["on_submit"] = Serializer.resolve_script(on_submit_arg)
+
+        on_change_arg = kwargs.get("on_change", None)
+        if isinstance(on_change_arg, str):
+            self._on_change_path = on_change_arg
+            from ...engine.serializer import Serializer
+            kwargs["on_change"] = Serializer.resolve_script(on_change_arg)
+
         font = kwargs.get("font", None)
         if font is None:
             font_size = kwargs.get("fontsize", 24)
@@ -178,7 +191,7 @@ class TextBox(Sprite):
                 Globals.key.stop_text_input()
             self.set_text(self._text_content)
 
-    def update(self, delta: float) -> None:
+    def _engine_update(self, delta: float) -> None:
         """Processes time deltas, cursor blinks, keyboard key presses, and focus click selections.
 
         Args:
@@ -277,3 +290,8 @@ class TextBox(Sprite):
             new_text (str): The new text contents.
         """
         self.set_text(new_text)
+
+
+from ...engine.serializer import Serializer
+
+Serializer.register_class(TextBox)

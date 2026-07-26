@@ -29,8 +29,12 @@ class Ray(PhysicsObject):
         self.collision_point = None
         self.collision_object = None
 
-    def update(self, _delta: float) -> None:
-        """Triggers raycast collision check if marked active."""
+    def _engine_update(self, delta: float) -> None:
+        """Triggers raycast collision check if marked active.
+
+        Args:
+            delta (float): Time in seconds since the last frame.
+        """
         if self._active:
             self.collision_object, self.collision_point = self.cast()
 
@@ -96,3 +100,8 @@ class Ray(PhysicsObject):
     @length.setter
     def length(self, length: float | int) -> None:
         self.collider.length = length
+
+
+from ..engine.serializer import Serializer
+
+Serializer.register_class(Ray)
