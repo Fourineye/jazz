@@ -26,16 +26,16 @@ class Label(Sprite):
 
         self.text_color = kwargs.get("text_color", (255, 255, 255))
         self.text_content: str = kwargs.get("text", " ")
-        self._dirty: bool = True
+        self._text_dirty: bool = True
         self._real_size: Vec2 = Vec2()
 
         super().__init__(name, **kwargs)
 
     def _update_text_texture(self) -> None:
         """Re-renders the font surface to update the underlying texture if marked dirty."""
-        if not hasattr(self, "text_content") or not self._dirty or self.font is None:
+        if not hasattr(self, "text_content") or not self._text_dirty or self.font is None:
             return
-        self._dirty = False
+        self._text_dirty = False
         if self.text_content:
             surf = self.font.render(self.text_content, True, self.text_color)
             self.texture = surf
@@ -49,7 +49,7 @@ class Label(Sprite):
     @property
     def _size(self) -> Vec2:
         """Vec2: Gets the size vector of the label sprite, updating if dirty."""
-        if self._dirty:
+        if self._text_dirty:
             self._update_text_texture()
         return self._real_size
 
@@ -60,7 +60,7 @@ class Label(Sprite):
     @property
     def texture(self):
         """Texture | Image: Gets the active text texture asset, re-rendering if dirty."""
-        if self._dirty:
+        if self._text_dirty:
             self._update_text_texture()
         return super().texture
 
@@ -85,7 +85,7 @@ class Label(Sprite):
             text = str(text)
         if self.text_content != text:
             self.text_content = text
-            self._dirty = True
+            self._text_dirty = True
 
     def append_text(self, text: str) -> None:
         """Appends text to the existing content and updates the label.
@@ -101,7 +101,7 @@ class Label(Sprite):
         Args:
             offset (Vec2): Viewport rendering offset to apply.
         """
-        if self._dirty:
+        if self._text_dirty:
             self._update_text_texture()
         super().render(offset)
 

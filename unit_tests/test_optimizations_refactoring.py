@@ -80,17 +80,17 @@ class TestOptimizationsAndRefactoring(unittest.TestCase):
     def test_label_lazy_rendering(self):
         lbl = Label(text="Initial")
         _ = lbl.texture
-        self.assertFalse(lbl._dirty)
+        self.assertFalse(lbl._text_dirty)
 
         lbl.set_text("Updated 1")
         lbl.set_text("Updated 2")
         self.assertEqual(lbl.text_content, "Updated 2")
-        self.assertTrue(lbl._dirty)
+        self.assertTrue(lbl._text_dirty)
 
         # Reading texture triggers lazy render
         tex = lbl.texture
         self.assertIsNotNone(tex)
-        self.assertFalse(lbl._dirty)
+        self.assertFalse(lbl._text_dirty)
 
 
     def test_animated_sprite_parser_helper(self):

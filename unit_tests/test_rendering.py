@@ -47,6 +47,11 @@ class TestRendering(unittest.TestCase):
         self.assertEqual(lbl._size.x, 0)
         self.assertEqual(lbl.text_content, "")
 
+    def test_label_pos_and_draw_pos(self):
+        lbl = Label(text="Hello World", pos=(100, 100))
+        self.assertEqual(lbl.pos, (100, 100))
+        self.assertEqual(lbl.draw_pos, lbl.pos + lbl._draw_offset)
+
 
 if __name__ == "__main__":
     unittest.main()
