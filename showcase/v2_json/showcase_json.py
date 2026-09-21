@@ -45,7 +45,6 @@ class MenuV2(Scene):
             ("Render Scene (JSON)", "render_scene.json"),
             ("Debug Scene (JSON)", "debug_scene.json"),
             ("Draw Scene (JSON)", "draw_scene.json"),
-            ("Particles Scene (JSON)", "particles_scene.json"),
         ]
 
         pos = Vec2(400, 120)

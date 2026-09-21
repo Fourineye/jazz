@@ -12,10 +12,24 @@
       "Class": "VBox",
       "options": {
         "name": "title_box",
-        "pos": [400, 40],
-        "anchor": [1, 0],
-        "bg_color": [128, 0, 0],
-        "border_color": [128, 128, 128],
+        "pos": [
+          400,
+          40
+        ],
+        "anchor": [
+          1,
+          0
+        ],
+        "bg_color": [
+          128,
+          0,
+          0
+        ],
+        "border_color": [
+          128,
+          128,
+          128
+        ],
         "border_width": 3,
         "radius": 5,
         "padding": 10
@@ -27,7 +41,11 @@
             "name": "title_label",
             "text": "UI Components (JSON Serialized)",
             "fontsize": 28,
-            "text_color": [255, 255, 255]
+            "text_color": [
+              255,
+              255,
+              255
+            ]
           }
         }
       ]
@@ -36,10 +54,23 @@
       "Class": "VBox",
       "options": {
         "name": "main_panel",
-        "pos": [150, 120],
-        "size": [500, 520],
-        "bg_color": [40, 40, 45],
-        "anchor": [0, 0],
+        "pos": [
+          150,
+          120
+        ],
+        "size": [
+          500,
+          520
+        ],
+        "bg_color": [
+          40,
+          40,
+          45
+        ],
+        "anchor": [
+          0,
+          0
+        ],
         "padding": 25,
         "spacing": 20,
         "align": "center",
@@ -52,7 +83,11 @@
             "name": "header_label",
             "text": "DESERIALIZED FORM INPUTS",
             "fontsize": 22,
-            "text_color": [255, 165, 0]
+            "text_color": [
+              255,
+              165,
+              0
+            ]
           }
         },
         {
@@ -60,7 +95,10 @@
           "options": {
             "name": "user_input",
             "text": "JazzPlayer",
-            "size": [300, 40],
+            "size": [
+              300,
+              40
+            ],
             "fontsize": 18,
             "on_submit": "showcase.v2_json.scripts.showcase_hooks.on_form_submit"
           }
@@ -71,17 +109,34 @@
             "name": "hp_bar",
             "value": 85,
             "max_value": 100,
-            "size": [300, 30],
-            "color": [50, 200, 50],
-            "bg_color": [60, 60, 60],
+            "size": [
+              300,
+              30
+            ],
+            "color": [
+              50,
+              200,
+              50
+            ],
+            "bg_color": [
+              60,
+              60,
+              60
+            ],
             "radius": 5
+          },
+          "scripts": {
+            "update": "showcase.v2_json.scripts.showcase_hooks.move_bar"
           }
         },
         {
           "Class": "Button",
           "options": {
             "name": "submit_btn",
-            "size": [200, 45],
+            "size": [
+              200,
+              45
+            ],
             "label": "Submit Form",
             "text_size": 16,
             "callback": "showcase.v2_json.scripts.showcase_hooks.return_to_menu"
@@ -93,7 +148,11 @@
             "name": "status_label",
             "text": "Status: Ready",
             "fontsize": 16,
-            "text_color": [200, 200, 200]
+            "text_color": [
+              200,
+              200,
+              200
+            ]
           }
         }
       ]
@@ -103,10 +162,20 @@
       "options": {
         "name": "hint_label",
         "text": "Press [Space] or click Submit to return to Menu",
-        "pos": [400, 720],
-        "anchor": [1, 0.5],
+        "pos": [
+          400,
+          720
+        ],
+        "anchor": [
+          1,
+          0.5
+        ],
         "fontsize": 18,
-        "text_color": [160, 160, 160]
+        "text_color": [
+          160,
+          160,
+          160
+        ]
       }
     }
   ]

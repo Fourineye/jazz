@@ -1,3 +1,5 @@
+"""BaseObject and GameObject: the scene-graph node, lifecycle hooks, and transforms."""
+
 from abc import ABC
 from typing import Any
 import uuid
@@ -130,19 +132,21 @@ class BaseObject(ABC):
             + children
         )
 
-    def assign_script(self, hook: str, path: str) -> None:
-        """Assigns a script path to a specific hook method on the game object.
+    def assign_script(self, hook: str, path: Any) -> None:
+        """Assigns a script path or callable to a specific hook method on the game object.
 
         Args:
             hook (str): The hook method name (e.g., 'update', 'on_load').
-            path (str): The script file path or function reference string.
+            path (Any): The script file path, function reference string, or callable.
         """
         from .serializer import Serializer
         if hasattr(self, "_scripts"):
             self._scripts[hook] = path
         else:
             self._scripts = {hook: path}
-        setattr(self, hook, Serializer.resolve_script(path))
+
+        resolved = Serializer.resolve_script(path) if isinstance(path, str) else path
+        setattr(self, hook, Serializer.make_script_wrapper(self, resolved))
 
     # Base Methods
     def on_load(self) -> None:
@@ -171,13 +175,20 @@ class BaseObject(ABC):
 
     # Engine called methods that allow object nesting
     def _update(self, delta: float) -> None:
-        """Engine method that propogates the update call to it's children
+        """Engine method that propogates the update call to it's children.
+
+        Children marked for deletion are handed to the scene to be killed at the end
+        of the frame, and children with game_process disabled are skipped. Pause
+        behaviour is inherited from the top-level object.
 
         Args:
             delta (float): Time in seconds since the last frame.
         """
-        for child in self._children.values():
-            child._update(delta)
+        for child in list(self._children.values()):
+            if child._kill:
+                Globals.scene.queue_object_kill(child)
+            elif child._game_process:
+                child._update(delta)
         self._engine_update(delta)
         self.update(delta)
 
@@ -194,8 +205,11 @@ class BaseObject(ABC):
         Args:
             delta (float): Time in seconds since the last frame.
         """
-        for child in self._children.values():
-            child._late_update(delta)
+        for child in list(self._children.values()):
+            if child._kill:
+                Globals.scene.queue_object_kill(child)
+            elif child._game_process:
+                child._late_update(delta)
         self._engine_late_update(delta)
         self.late_update(delta)
 
@@ -279,7 +293,6 @@ class BaseObject(ABC):
         """Marks the object for destruction at the end of the frame."""
         self._game_process = False
         self._pause_process = False
-        self._game_input = False
         self._kill = True
 
     def kill(self) -> None:

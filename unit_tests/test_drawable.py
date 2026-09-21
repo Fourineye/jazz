@@ -70,9 +70,11 @@ class TestDrawableObject(unittest.TestCase):
         obj = DrawableObject(pos=(100, 200))
         obj._size = Vec2(40, 20)
         obj.set_anchor("center", "center")
+        obj._hardware_offset()
         self.assertEqual(obj.draw_pos, Vec2(80, 190))
 
         obj.set_anchor("left", "top")
+        obj._hardware_offset()
         self.assertEqual(obj.draw_pos, Vec2(100, 200))
 
     def test_scene_registration_and_kill(self):

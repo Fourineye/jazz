@@ -1,3 +1,5 @@
+"""ProgressBar UI component for progress and health bars."""
+
 import pygame
 
 from ..sprite import Sprite
@@ -30,6 +32,7 @@ class ProgressBar(Sprite):
         self._hardware_offset()
         self.value = value
         self.max_value = max_value
+        self._value_dirty = True
         self.bg_color = kwargs.get("bg_color", (100, 100, 100))
         self.color = kwargs.get("color", (100, 100, 200))
         self.line_color = kwargs.get("line_color", (50, 50, 50))
@@ -106,7 +109,7 @@ class ProgressBar(Sprite):
             value (float | int): New current progress value.
         """
         self.value = value
-        self.update_bar()
+        self._value_dirty = True
 
     def update_max_value(self, max_value: float | int) -> None:
         """Updates the maximum limit value and re-renders the bar.
@@ -115,7 +118,13 @@ class ProgressBar(Sprite):
             max_value (float | int): New maximum limit value.
         """
         self.max_value = max_value
-        self.update_bar()
+        self._value_dirty = True
+
+    def pre_render(self) -> None:
+        """Re-renders the bar texture before drawing if the value or max value changed."""
+        if self._value_dirty:
+            self.update_bar()
+            self._value_dirty = False
 
 
 from ...engine.serializer import Serializer

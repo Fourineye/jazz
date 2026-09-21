@@ -1,3 +1,5 @@
+"""Camera that renders the active scene's draw list with follow, bounds, and shake support."""
+
 from typing import Type, TYPE_CHECKING, Tuple
 
 from random import randint
@@ -80,9 +82,9 @@ class Camera:
         for obj in draw_objects:
             if obj.visible:
                 if obj.screen_space:
-                    obj.render(Vec2())
+                    obj._render(Vec2())
                 else:
-                    obj.render(self.offset + self.shake)
+                    obj._render(self.offset + self.shake)
 
     def render_debug(self) -> None:
         """Renders debug information about visible objects."""
@@ -143,7 +145,13 @@ class Camera:
 
         Args:
             target (GameObject, Vec2): The target to follow.
+
+        Raises:
+            JazzException: If target is not a GameObject or Vec2.
         """
+        # Imported here to avoid a circular import (engine.scene imports camera)
+        from .engine.base_object import GameObject
+
         if isinstance(target, (GameObject, Vec2)):
             self.target = target
         else:

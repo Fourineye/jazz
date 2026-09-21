@@ -6,3 +6,4 @@ jazz.egg-info
 uv.lock
 docs/_build/
 dist/
+CLAUDE.md

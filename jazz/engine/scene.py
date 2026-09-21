@@ -50,6 +50,7 @@ class Scene:
         self._sprites_dirty: bool = False
         self._moved_objects: set[Any] = set()
         self._timers: list[Timer] = []
+        self._kill_queue: set["BaseObject"] = set()
         #TODO: Wrap Scene physics methods and properties into a dynamic PhysicsWorld class
         self._physics_world = {
             0: PhysicsGrid(),
@@ -105,6 +106,16 @@ class Scene:
             obj (Any): The object that moved.
         """
         self._moved_objects.add(obj)
+
+    def queue_object_kill(self, obj: "BaseObject") -> None:
+        """Registers an object to be killed at the end of the current frame.
+
+        Used by the engine for child objects marked with queue_kill().
+
+        Args:
+            obj (BaseObject): The object to kill.
+        """
+        self._kill_queue.add(obj)
 
     def _sync_sprites(self) -> None:
         """Filters removed sprites and sorts active sprites by Z-index if dirty."""
@@ -371,7 +382,9 @@ class Scene:
         if not self._paused:
             self.camera.update(delta)
 
-        # delete objects queued for deletion
+        # delete objects queued for deletion, including child objects found during updates
+        kill_items |= self._kill_queue
+        self._kill_queue.clear()
         for obj in kill_items:
             obj.kill()
 
@@ -444,8 +457,10 @@ class Scene:
         Returns:
             dict[str, Any]: Dictionary representation of the scene.
         """
+        from .serializer import Serializer
+
         top_level_objects = [
-            obj.to_dict()
+            Serializer.serialize_object(obj)
             for obj in self._objects.values()
             if getattr(obj, "_parent", None) is None
         ]

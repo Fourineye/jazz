@@ -1,3 +1,5 @@
+"""PhysicsObject base class that owns a collider and registers with the scene's physics grids."""
+
 from typing import Any
 
 from .colliders import CircleCollider, PolyCollider, RayCollider, RectCollider, Collider
@@ -50,12 +52,16 @@ class PhysicsObject(GameObject):
         super().on_transform_change()
         self._moved_this_frame = True
 
-    def on_load(self) -> None:
-        """Mounts and registers this object with the active scene's physics simulation grids.
+    def _on_load(self) -> None:
+        """Engine hook. Registers this object with the active scene's physics grids.
+
+        Registration runs after on_load so colliders can be added there. It is kept
+        out of on_load so subclasses can override on_load without calling super().
 
         Raises:
-            JazzException: If the object is loaded without registering a collider.
+            JazzException: If the object has no collider once on_load has run.
         """
+        super()._on_load()
         Globals.scene.mark_moved(self)
         if self.collider is None:
             raise (JazzException("Physics Object does not have collider"))

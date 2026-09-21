@@ -1,3 +1,5 @@
+"""TextBox UI component for single-line text input."""
+
 import pygame
 from ..sprite import Sprite
 from .label import Label
@@ -32,7 +34,8 @@ class TextBox(Sprite):
             hover_bg_color (tuple | Color, optional): Background color when hovered/active. Defaults to slightly brightened bg_color.
             hover_border_color (tuple | Color, optional): Border color when hovered/active. Defaults to slightly brightened border_color.
         """
-        self._kwargs = kwargs.copy()
+        # Keep the unresolved kwargs (script paths as strings) for serialization
+        original_kwargs = kwargs.copy()
         on_submit_arg = kwargs.get("on_submit", None)
         if isinstance(on_submit_arg, str):
             self._on_submit_path = on_submit_arg
@@ -83,6 +86,7 @@ class TextBox(Sprite):
             )
             
         super().__init__(name, **kwargs)
+        self._kwargs = original_kwargs
         self.font = font
         
         # Compile hover texture

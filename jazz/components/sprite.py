@@ -1,3 +1,5 @@
+"""Sprite component that draws a single texture."""
+
 import pygame
 
 from .drawable import DrawableObject
@@ -22,8 +24,11 @@ class Sprite(DrawableObject):
         """
         super().__init__(name, **kwargs)
 
-        self._texture: Texture | Image = None
-        self.texture = kwargs.get("texture", "default")
+        texture_arg = kwargs.get("texture", "default")
+        if isinstance(texture_arg, (Texture, Image, Surface)):
+            self.texture = texture_arg
+        else:
+            self._texture = texture_arg
 
     def render(self, offset: Vec2) -> None:
         """Draws the sprite texture onto the screen/canvas.
@@ -31,6 +36,8 @@ class Sprite(DrawableObject):
         Args:
             offset (Vec2): Viewport rendering offset to apply.
         """
+        if self._texture is None or isinstance(self._texture, str):
+            return
         dest = Rect(
             self.draw_pos + offset, self._size.elementwise() * self._scale
         )
@@ -50,14 +57,21 @@ class Sprite(DrawableObject):
             self._texture.alpha = self._alpha
             self._texture.draw(None, dest)
 
+    def _on_load(self) -> None:
+        """Engine hook. Resolves a deferred texture key before the object's on_load runs."""
+        if isinstance(self._texture, str):
+            self.texture = self._texture
+        super()._on_load()
+
     def kill(self) -> None:
         """Kills the game object, purges dynamic textures, and removes the sprite from the draw list."""
         super().kill()
         Globals.resource.purge_sprite_textures(self.id)
 
     @property
-    def texture(self):
-        """Texture | Image: Gets the active Texture or Image asset."""
+    def texture(self) -> Texture | Image | str | None:
+        """Texture | Image | str | None: Gets the active Texture or Image asset, a texture key
+        not yet resolved (before the sprite is loaded), or None if cleared."""
         return self._texture
 
     @texture.setter
@@ -65,10 +79,12 @@ class Sprite(DrawableObject):
         """Sets the texture asset, refreshing dimensions and offsets.
 
         Args:
-            new_texture (str | Texture | Image | Surface): Asset key or source image surface.
+            new_texture (str | Texture | Image | Surface | None): Asset key, source image surface,
+                or None to clear the texture (the logical size is kept).
         """
-        if isinstance(new_texture, str):
-            self._texture_key = new_texture
+        if new_texture is None:
+            self._texture = None
+            return
         if not isinstance(new_texture, (Texture, Image, Surface)):
             new_texture = Globals.resource.get_texture(new_texture)
         if not isinstance(new_texture, (Texture, Image)):

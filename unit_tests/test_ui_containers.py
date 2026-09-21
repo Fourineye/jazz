@@ -246,15 +246,16 @@ class TestUIContainers(unittest.TestCase):
         
         tb = TextBox(size=(100, 30), font=MockFont(), text="1234567890123")
         
+        # Focused should show suffix: "67890123" (80px < 88px available)
+        tb.active = True
+        self.assertEqual(tb.text, "1234567890123")
+        self.assertEqual(tb._text.text_content, "67890123")
+        
         # Unfocused should show prefix: "12345678" (80px < 88px available)
         tb.active = False
         self.assertEqual(tb.text, "1234567890123")
         self.assertEqual(tb._text.text_content, "12345678")
         
-        # Focused should show suffix: "67890123" (80px < 88px available)
-        tb.active = True
-        self.assertEqual(tb.text, "1234567890123")
-        self.assertEqual(tb._text.text_content, "67890123")
 
 if __name__ == "__main__":
     unittest.main()

@@ -150,13 +150,49 @@ class Serializer:
         props = getattr(obj, "properties", getattr(obj, "_properties", {}))
         props_dict = dict(props) if isinstance(props, dict) else {}
 
+        # Only script paths can be serialized; callables assigned at runtime are skipped
+        scripts = {
+            hook: path
+            for hook, path in getattr(obj, "_scripts", {}).items()
+            if isinstance(path, str)
+        }
+
         return {
             "Class": obj.__class__.__name__,
             "options": options,
             "properties": props_dict,
-            "scripts": getattr(obj, "_scripts", {}),
+            "scripts": scripts,
             "children": children_list,
         }
+
+    @classmethod
+    def make_script_wrapper(cls, obj: Any, fn: Any) -> Any:
+        """Wraps a resolved script function to automatically supply instance context if required by signature.
+
+        Args:
+            obj (Any): Target instance object context.
+            fn (Any): Function or callable to wrap.
+
+        Returns:
+            Any: Wrapped function or original asset.
+        """
+        if not callable(fn):
+            return fn
+        import inspect
+        try:
+            sig = inspect.signature(fn)
+            num_params = len(sig.parameters)
+        except (ValueError, TypeError):
+            return fn
+
+        def wrapper(*args, **kwargs):
+            if num_params == 0:
+                return fn()
+            if len(args) < num_params:
+                return fn(obj, *args, **kwargs)
+            return fn(*args, **kwargs)
+
+        return wrapper
 
     @classmethod
     def deserialize_object(cls, data: dict[str, Any], target_cls: type | None = None) -> Any:
@@ -186,11 +222,12 @@ class Serializer:
 
         if isinstance(scripts, dict):
             for hook, script_path in scripts.items():
-                if isinstance(script_path, str):
-                    if hasattr(obj, "assign_script"):
-                        obj.assign_script(hook, script_path)
-                    else:
-                        setattr(obj, hook, cls.resolve_script(script_path))
+                if hasattr(obj, "assign_script"):
+                    # Pass the raw path so it is kept in _scripts for re-serialization
+                    obj.assign_script(hook, script_path)
+                else:
+                    resolved_script = cls.resolve_script(script_path) if isinstance(script_path, str) else script_path
+                    setattr(obj, hook, cls.make_script_wrapper(obj, resolved_script))
 
         children = data.get("children", [])
         for child_data in children:
@@ -361,8 +398,8 @@ def _handle_sound(data: dict[str, Any]) -> Any:
     """
     path = data.get("path")
     res_id = data.get("id", path)
-    if Globals.sound is not None:
-        return Globals.sound.load_sound(res_id, path)
+    if Globals.sound is not None and path:
+        return Globals.sound.load_sound(path, res_id)
     return None
 
 

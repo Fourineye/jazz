@@ -1,3 +1,5 @@
+"""Shared constants, math helpers, file loaders, and pygame type re-exports for Jazz Engine."""
+
 import importlib.resources
 import math
 from configparser import ConfigParser
@@ -379,3 +381,119 @@ def angle_from_vec(vector: Vec2) -> float:
     """
     return _AXIS_X.angle_to(vector)
 
+def generate_styled_texture(
+    size: tuple[int, int] | Vec2,
+    color: Color | tuple | str,
+    radius: int = 0,
+    shadow_offset: tuple[int, int] = (0, 0),
+    shadow_color: Color | tuple | str = Color(0, 0, 0, 80),
+    shadow_blur: int = 0,
+    style: str = "flat",
+    border_color: Color | tuple | str | None = None,
+    border_width: int = 0,
+) -> Surface:
+    """Generates and returns a styled UI container background Surface.
+
+    Args:
+        size (tuple[int, int] | Vec2): Dimensions of the main container.
+        color (Color | tuple | str): Base fill color.
+        radius (int, optional): Corner rounding radius. Defaults to 0.
+        shadow_offset (tuple[int, int], optional): X and Y offset for the drop shadow. Defaults to (0, 0).
+        shadow_color (Color | tuple | str, optional): Color of the drop shadow. Defaults to black with alpha 80.
+        shadow_blur (int, optional): Soft blur step size of the drop shadow. Defaults to 0.
+        style (str, optional): Styling paradigm: "flat", "skeuomorphic", "gradient", "glossy". Defaults to "flat".
+        border_color (Color | tuple | str | None, optional): Border outline color. Defaults to None.
+        border_width (int, optional): Border stroke thickness. Defaults to 0.
+
+    Returns:
+        Surface: The rendered Pygame Surface asset.
+    """
+    w, h = int(size[0]), int(size[1])
+    color = Color(color)
+    shadow_color = Color(shadow_color)
+    
+    pad_x = abs(shadow_offset[0]) + shadow_blur * 2
+    pad_y = abs(shadow_offset[1]) + shadow_blur * 2
+    
+    canvas_w = w + pad_x * 2
+    canvas_h = h + pad_y * 2
+    canvas = Surface((canvas_w, canvas_h), pygame.SRCALPHA)
+    
+    rect_x = pad_x
+    rect_y = pad_y
+    if shadow_offset[0] < 0:
+        rect_x -= shadow_offset[0]
+    if shadow_offset[1] < 0:
+        rect_y -= shadow_offset[1]
+        
+    rect = Rect(rect_x, rect_y, w, h)
+    
+    # 1. Draw shadow first
+    if shadow_color.a > 0 and (shadow_offset != (0, 0) or shadow_blur > 0):
+        shadow_rect = Rect(rect.x + shadow_offset[0], rect.y + shadow_offset[1], w, h)
+        if shadow_blur > 0:
+            steps = shadow_blur
+            for i in range(steps, 0, -1):
+                alpha = int(shadow_color.a * (1.0 - (i / (steps + 1))))
+                c = Color(shadow_color.r, shadow_color.g, shadow_color.b, alpha)
+                r = shadow_rect.inflate(i * 2, i * 2)
+                pygame.draw.rect(canvas, c, r, border_radius=radius + i)
+        else:
+            pygame.draw.rect(canvas, shadow_color, shadow_rect, border_radius=radius)
+            
+    # 2. Draw background
+    temp_surf = Surface((w, h), pygame.SRCALPHA)
+    
+    if style in ["skeuomorphic", "gradient", "glossy"] and h > 1:
+        shift = 15 if style == "gradient" else 25
+        color_light = Color(
+            min(255, color.r + shift),
+            min(255, color.g + shift),
+            min(255, color.b + shift),
+            color.a
+        )
+        color_dark = Color(
+            max(0, color.r - shift),
+            max(0, color.g - shift),
+            max(0, color.b - shift),
+            color.a
+        )
+        
+        for y in range(h):
+            ratio = y / (h - 1)
+            r = int(color_light.r + (color_dark.r - color_light.r) * ratio)
+            g = int(color_light.g + (color_dark.g - color_light.g) * ratio)
+            b = int(color_light.b + (color_dark.b - color_light.b) * ratio)
+            pygame.draw.line(temp_surf, Color(r, g, b, color.a), (0, y), (w, y))
+            
+        if style == "skeuomorphic":
+            bevel_light = Color(255, 255, 255, 60)
+            bevel_dark = Color(0, 0, 0, 80)
+            
+            pygame.draw.line(temp_surf, bevel_light, (0, 0), (w, 0), 1)
+            pygame.draw.line(temp_surf, bevel_light, (0, 0), (0, h), 1)
+            pygame.draw.line(temp_surf, bevel_dark, (0, h - 1), (w, h - 1), 1)
+            pygame.draw.line(temp_surf, bevel_dark, (w - 1, 0), (w - 1, h), 1)
+        elif style == "glossy":
+            gloss_h = h // 2
+            gloss_surf = Surface((w, gloss_h), pygame.SRCALPHA)
+            gloss_surf.fill((255, 255, 255, 25))
+            temp_surf.blit(gloss_surf, (0, 0))
+            
+            pygame.draw.rect(temp_surf, (255, 255, 255, 50), (0, 0, w, h), 1)
+    else:
+        temp_surf.fill(color)
+        
+    if radius > 0:
+        mask = Surface((w, h), pygame.SRCALPHA)
+        pygame.draw.rect(mask, (255, 255, 255, 255), (0, 0, w, h), border_radius=radius)
+        temp_surf.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MIN)
+        
+    canvas.blit(temp_surf, (rect.x, rect.y))
+    
+    # 3. Draw border
+    if border_color is not None and border_width > 0:
+        pygame.draw.rect(canvas, Color(border_color), rect, border_width, border_radius=radius)
+        
+    return canvas
+    

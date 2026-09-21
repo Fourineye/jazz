@@ -1,3 +1,5 @@
+"""DrawableObject base class for renderable objects: scale, alpha, anchors, flips, and draw-list registration."""
+
 import pygame
 
 from ..engine.base_object import GameObject
@@ -18,6 +20,7 @@ class DrawableObject(GameObject):
             scale (Vec2, optional): Initial scaling factor. Defaults to Vec2(1, 1).
             alpha (int, optional): Initial opacity transparency (0 to 255). Defaults to 255.
             anchor (tuple, optional): Horizontal and vertical alignment values (e.g. ("center", "center")). Defaults to None.
+            size (tuple | Vec2, optional): Initial bounds size. Defaults to (0, 0).
         """
         super().__init__(name, **kwargs)
         self._flip_x: bool = kwargs.get("flip_x", False)
@@ -26,8 +29,8 @@ class DrawableObject(GameObject):
         self._alpha: int = kwargs.get("alpha", 255)
         self._anchor: list[int] = [1, 1]
         self._draw_offset: Vec2 = Vec2(0, 0)
-        self._real_size: Vec2 = Vec2(0, 0)
-        self._img_updated: bool = False
+        self._real_size: Vec2 = Vec2(kwargs.get("size", (0, 0)))
+        self._img_dirty: bool = False
 
         anchor: list[int] | tuple | None = kwargs.get("anchor", None)
         if anchor is not None:
@@ -42,15 +45,34 @@ class DrawableObject(GameObject):
     def _size(self, val: Vec2) -> None:
         self._real_size = Vec2(val)
 
-    def on_load(self) -> None:
-        """Registers the drawable object to the active scene's draw list on mount."""
+    def _on_load(self) -> None:
+        """Engine hook. Registers the drawable object to the active scene's draw list on mount.
+
+        Kept out of on_load so subclasses can override on_load without calling super().
+        """
         Globals.scene.add_sprite(self)
+        super()._on_load()
 
     def kill(self) -> None:
         """Kills the game object and removes it from the scene draw list."""
         super().kill()
         Globals.scene.remove_sprite(self)
 
+    def _render(self, offset: Vec2) -> None:
+        """Engine hook. Runs pre_render, refreshes draw offsets if dirty, then calls render.
+
+        Args:
+            offset (Vec2): Viewport rendering offset to apply.
+        """
+        self.pre_render()
+        if self._img_dirty:
+            self._hardware_offset()
+        self._img_dirty = False
+        self.render(offset)
+
+    def pre_render(self) -> None:
+        """Pre-render logic for the drawable object."""
+        
     def render(self, offset: Vec2) -> None:
         """Draws the object onto the screen/canvas.
 
@@ -91,7 +113,7 @@ class DrawableObject(GameObject):
             self._anchor[0] = 1
         elif horizontal in ["right", 2]:
             self._anchor[0] = 2
-        self._hardware_offset()
+        self._img_dirty = True
 
     @property
     def draw_pos(self) -> Vec2:
@@ -115,7 +137,7 @@ class DrawableObject(GameObject):
     @flip_x.setter
     def flip_x(self, flip_x: bool) -> None:
         self._flip_x = flip_x
-        self._img_updated = False
+        self._img_dirty = True
 
     @property
     def flip_y(self) -> bool:
@@ -125,7 +147,7 @@ class DrawableObject(GameObject):
     @flip_y.setter
     def flip_y(self, flip_y: bool) -> None:
         self._flip_y = flip_y
-        self._img_updated = False
+        self._img_dirty = True
 
     @property
     def scale(self) -> Vec2:
@@ -135,8 +157,7 @@ class DrawableObject(GameObject):
     @scale.setter
     def scale(self, scale: Vec2 | tuple[float, float]) -> None:
         self._scale = Vec2(scale)
-        self._img_updated = False
-        self._hardware_offset()
+        self._img_dirty = True
 
     @property
     def alpha(self) -> int:
@@ -147,13 +168,13 @@ class DrawableObject(GameObject):
     def alpha(self, new_alpha: int) -> None:
         if 0 <= new_alpha <= 255:
             self._alpha = new_alpha
-            self._img_updated = False
+            self._img_dirty = True
         else:
             raise Exception("Invalid alpha value")
 
     def on_transform_change(self) -> None:
         """Clears rendering cache triggers on coordinate updates."""
-        self._img_updated = False
+        self._img_dirty = True
 
     @property
     def rect(self) -> pygame.Rect:

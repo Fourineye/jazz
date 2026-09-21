@@ -1,3 +1,5 @@
+"""SoundManager for music playback, cached sound effects, and volume settings."""
+
 import pygame.mixer as mix
 
 from .. import SETTINGS
@@ -44,7 +46,7 @@ class SoundManager:
         """
         self._master_volume = clamp(float(volume), 0.0, 1.0)
         music.set_volume(self._volume_m * self._master_volume)
-        for sound in self._sounds:
+        for sound in self._sounds.values():
             sound.set_volume(self._volume_s * self._master_volume)
 
     def play_music(self, file: str | None = None, loops: int = 0, start: float = 0.0, fade_ms: int = 0) -> None:
@@ -134,11 +136,13 @@ class SoundManager:
         self._volume_m = clamp(volume, 0.0, 1.0)
         music.set_volume(self._volume_m * self._master_volume)
 
-    def load_sound(self, file: str) -> mix.Sound:
+    def load_sound(self, file: str, id: str | None = None) -> mix.Sound:
         """Loads and caches a sound effect from the filesystem.
 
         Args:
             file (str): File path of the sound effect.
+            id (str, optional): Alias key to also cache the sound under, usable
+                with play_sound. Defaults to None.
 
         Returns:
             Sound: The cached or loaded Pygame Sound object.
@@ -147,6 +151,8 @@ class SoundManager:
         if sound is None:
             sound = mix.Sound(file)
             self._sounds[file] = sound
+        if id is not None:
+            self._sounds[id] = sound
         return sound
 
     def clear_sounds(self) -> None:
@@ -175,5 +181,5 @@ class SoundManager:
             volume (float): Volume factor between 0.0 and 1.0.
         """
         self._volume_s = clamp(volume, 0.0, 1.0)
-        for sound in self._sounds:
+        for sound in self._sounds.values():
             sound.set_volume(self._volume_s * self._master_volume)

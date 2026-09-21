@@ -96,10 +96,10 @@ class TestTransforms(unittest.TestCase):
             jazz.global_dict.Globals.resource = MockResource()
             
             sprite = Sprite(pos=(0, 0))
-            sprite._img_updated = True
+            sprite._img_dirty = False
             
             sprite.local_pos = Vec2(10, 10)
-            self.assertFalse(sprite._img_updated)
+            self.assertTrue(sprite._img_dirty)
             
         finally:
             jazz.global_dict.Globals.resource = old_resource
