@@ -1,19 +1,6 @@
-import os
-import sys
 import unittest
 
-# Set SDL to use dummy video driver for headless testing
-os.environ["SDL_VIDEODRIVER"] = "dummy"
-
-# Add parent directory to path to import jazz
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-import pygame
-pygame.init()
-
 from jazz import (
-    Application,
-    Globals,
     Label,
     AnimatedSprite,
     Vec2,
@@ -26,20 +13,16 @@ from jazz.utils import (
     unit_from_angle,
     angle_from_vec,
 )
+from unit_tests.support import APP_SIZE, JazzTestCase
 
 
-
-class TestOptimizationsAndRefactoring(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.app = Application(800, 600)
-        Globals.app = cls.app
-
+class TestOptimizationsAndRefactoring(JazzTestCase):
     def test_camera_display_caching_and_shake(self):
+        width, height = APP_SIZE
         cam = Camera()
-        self.assertEqual(cam._display_width, 800)
-        self.assertEqual(cam._display_height, 600)
-        self.assertEqual(cam.display_center, (400.0, 300.0))
+        self.assertEqual(cam._display_width, width)
+        self.assertEqual(cam._display_height, height)
+        self.assertEqual(cam.display_center, (width / 2, height / 2))
 
         cam.add_shake(10.0)
         self.assertEqual(cam.magnitude, 10.0)

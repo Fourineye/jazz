@@ -1,35 +1,10 @@
-import os
-import sys
 import unittest
 
-# Set SDL to use dummy video driver for headless testing
-os.environ["SDL_VIDEODRIVER"] = "dummy"
-
-# Add parent directory to path to import jazz
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-import pygame
-
-pygame.init()
-
-from jazz import Application, DrawableObject, GameObject, Globals, Scene, Sprite, Vec2
+from jazz import DrawableObject, GameObject, Globals, Sprite, Vec2
+from unit_tests.support import JazzTestCase
 
 
-class TestDrawableObject(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        cls.app = Application(800, 800)
-
-        class DummyScene(Scene):
-            name = "Dummy"
-
-            def on_load(self, _):
-                pass
-
-        cls.app.add_scene(DummyScene)
-        cls.app._active_scene = DummyScene()
-        Globals.scene = cls.app._active_scene
-
+class TestDrawableObject(JazzTestCase):
     def test_drawable_init_defaults(self):
         obj = DrawableObject(name="TestDrawable")
         self.assertEqual(obj.name, "TestDrawable")

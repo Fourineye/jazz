@@ -8,9 +8,12 @@ def run_all_tests():
     if root_dir not in sys.path:
         sys.path.insert(0, root_dir)
 
-    # Discover and run tests in the 'unit_tests' directory
+    # Discover tests as the 'unit_tests' package so script paths like
+    # "unit_tests.test_x.func" resolve to the same module the test runs in
     loader = unittest.TestLoader()
-    suite = loader.discover(start_dir=os.path.join(root_dir, "unit_tests"), pattern="test_*.py")
+    suite = loader.discover(
+        start_dir=os.path.join(root_dir, "unit_tests"), pattern="test_*.py", top_level_dir=root_dir
+    )
 
     runner = unittest.TextTestRunner(verbosity=2)
     result = runner.run(suite)

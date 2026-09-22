@@ -1,19 +1,17 @@
 import os
-import sys
 import tempfile
 import unittest
-
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 import pygame
 from jazz import GameObject
 from jazz.animation import Tween
 from jazz.engine.resource_manager import ResourceManager
 from jazz.global_dict import SETTINGS
-from jazz.utils import load_ini, save_ini
+from jazz.utils import load_ini
+from unit_tests.support import JazzTestCase
 
 
-class TestMinorImprovements(unittest.TestCase):
+class TestMinorImprovements(JazzTestCase):
     def test_load_ini_with_open_file(self):
         with tempfile.NamedTemporaryFile(mode="w+", delete=False, suffix=".ini") as tmp:
             tmp.write("[DISPLAY]\nwidth = 800\nheight = 600\n")
@@ -31,7 +29,6 @@ class TestMinorImprovements(unittest.TestCase):
         res = object.__new__(ResourceManager)
         res._surfaces = {}
         res._textures = {}
-        pygame.init()
         surf = pygame.Surface((10, 10))
         returned_surf = res.add_surface(surf, "test_surf")
         self.assertIs(returned_surf, surf)

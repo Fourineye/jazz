@@ -1,10 +1,5 @@
 import unittest
 import pygame
-import sys
-import os
-
-# Add parent directory to path to import jazz
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from jazz.physics.physics import PhysicsGrid
 

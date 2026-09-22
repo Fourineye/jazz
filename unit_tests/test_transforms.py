@@ -1,14 +1,10 @@
 import unittest
-import sys
-import os
-
-# Add parent directory to path to import jazz
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from jazz import GameObject, Vec2
 from jazz.components.sprite import Sprite
+from unit_tests.support import JazzTestCase, MockResource
 
-class TestTransforms(unittest.TestCase):
+class TestTransforms(JazzTestCase):
     def test_flat_coordinates(self):
         obj = GameObject(pos=(100, 200), rotation=45)
         self.assertEqual(obj.local_pos, Vec2(100, 200))
@@ -79,30 +75,13 @@ class TestTransforms(unittest.TestCase):
         self.assertAlmostEqual(child.local_pos.y, 0, places=2)
 
     def test_sprite_hook(self):
-        class MockResource:
-            def get_texture(self, name):
-                return MockTexture()
-            def add_texture(self, text, id, b):
-                return MockTexture()
-        class MockTexture:
-            width = 32
-            height = 32
-            def draw(self, *args): pass
-        
-        import jazz.global_dict
-        old_resource = jazz.global_dict.Globals.resource
-        
-        try:
-            jazz.global_dict.Globals.resource = MockResource()
-            
-            sprite = Sprite(pos=(0, 0))
-            sprite._img_dirty = False
-            
-            sprite.local_pos = Vec2(10, 10)
-            self.assertTrue(sprite._img_dirty)
-            
-        finally:
-            jazz.global_dict.Globals.resource = old_resource
+        self.patch_globals(resource=MockResource())
+
+        sprite = Sprite(pos=(0, 0))
+        sprite._img_dirty = False
+
+        sprite.local_pos = Vec2(10, 10)
+        self.assertTrue(sprite._img_dirty)
 
 if __name__ == "__main__":
     unittest.main()

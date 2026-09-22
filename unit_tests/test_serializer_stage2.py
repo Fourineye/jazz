@@ -3,50 +3,42 @@ Unit tests for Stage 2 Component & UI Serialization in Jazz Engine.
 """
 
 import json
-import tempfile
 import unittest
 
 from jazz import (
     AnimatedSprite,
-    Application,
     Button,
-    Globals,
-    HBox,
     Label,
     ProgressBar,
     Scene,
     Serializer,
     Sprite,
     TextBox,
-    UIContainer,
     VBox,
     Vec2,
 )
+from unit_tests.support import JazzTestCase
+
+# Names of the sample callbacks that have run, cleared before each test
+callback_calls: list[str] = []
 
 
 def sample_button_click() -> None:
     """Sample callback for button press."""
-    Globals._button_clicked = True
+    callback_calls.append("button_click")
 
 
 def sample_text_submit(text: str) -> None:
     """Sample callback for text box submit."""
-    Globals._text_submitted = text
+    callback_calls.append(f"text_submit:{text}")
 
 
-class TestSerializerStage2(unittest.TestCase):
+class TestSerializerStage2(JazzTestCase):
     """Test suite for Stage 2 Component & UI serialization."""
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        if Application.instance is None:
-            cls.app = Application(200, 200, "Serializer Stage 2 Test")
-
     def setUp(self) -> None:
-        Globals._button_clicked = False
-        Globals._text_submitted = ""
-        self.scene = Scene()
-        Globals.scene = self.scene
+        super().setUp()
+        callback_calls.clear()
 
     def test_sprite_serialization(self) -> None:
         """Verifies Sprite serialization round-trip."""
@@ -109,7 +101,7 @@ class TestSerializerStage2(unittest.TestCase):
         self.assertIsInstance(restored, Button)
         self.assertIsNotNone(restored._callback)
         restored._callback()
-        self.assertTrue(getattr(Globals, "_button_clicked", False))
+        self.assertEqual(callback_calls, ["button_click"])
 
     def test_ui_containers_serialization(self) -> None:
         """Verifies UIContainer, VBox, and HBox serialization round-trip."""

@@ -1,67 +1,13 @@
 import unittest
-import sys
-import os
+from unittest import mock
 
-# Add parent directory to path to import jazz
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from jazz import Sprite, Vec2, VBox, HBox, UIContainer
+from unit_tests.support import JazzTestCase, MockFont, MockResource
 
-from jazz import Sprite, Vec2, VBox, HBox, UIContainer, Globals
-
-class MockResource:
-    def get_texture(self, name):
-        if isinstance(name, MockTexture):
-            return name
-        return MockTexture()
-    def add_texture(self, texture, id, b):
-        if isinstance(texture, MockTexture):
-            return texture
-        if hasattr(texture, "get_size"):
-            return MockTexture(texture.get_size())
-        return MockTexture()
-    def get_color(self, color):
-        return MockTexture()
-    def get_font(self, size=24):
-        return MockFontObject()
-    def get_styled_texture(self, size, color, radius=0, shadow_offset=(0, 0), shadow_color=None, shadow_blur=0, style="flat", border_color=None, border_width=0):
-        return MockTexture(size)
-
-class MockFontObject:
-    def render(self, *args, **kwargs):
-        return MockTexture()
-    def size(self, text):
-        return (len(text) * 10, 20)
-    def get_height(self):
-        return 20
-
-class MockTexture:
-    def __init__(self, size=(32, 32)):
-        self.width = size[0]
-        self.height = size[1]
-    def draw(self, *args):
-        pass
-    def get_rect(self):
-        return MockRect(self.width, self.height)
-
-class MockRect:
-    def __init__(self, w, h):
-        self.size = (w, h)
-
-class MockInputHandler:
-    def start_text_input(self):
-        pass
-    def stop_text_input(self):
-        pass
-
-class TestUIContainers(unittest.TestCase):
+class TestUIContainers(JazzTestCase):
     def setUp(self):
-        self.old_resource = Globals.resource
-        self.old_key = Globals.key
-        Globals.resource = MockResource()
-        Globals.key = MockInputHandler()
-
-    def tearDown(self):
-        Globals.resource = self.old_resource
-        Globals.key = self.old_key
+        super().setUp()
+        self.patch_globals(resource=MockResource(), key=mock.Mock())
 
     def test_vbox_vertical_stacking(self):
         # Create a vertical container with spacing 5, padding 10
@@ -236,15 +182,8 @@ class TestUIContainers(unittest.TestCase):
 
     def test_textbox_scroll_bounds(self):
         from jazz.components import TextBox
-        class MockFont:
-            def size(self, text):
-                return (len(text) * 10, 20)
-            def get_height(self):
-                return 20
-            def render(self, text, antialias, color):
-                return MockTexture()
-        
-        tb = TextBox(size=(100, 30), font=MockFont(), text="1234567890123")
+
+        tb =TextBox(size=(100, 30), font=MockFont(), text="1234567890123")
         
         # Focused should show suffix: "67890123" (80px < 88px available)
         tb.active = True

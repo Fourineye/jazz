@@ -6,17 +6,13 @@ import json
 import unittest
 
 from jazz import (
-    Application,
     Area,
     Body,
     CircleCollider,
-    Collider,
     GameObject,
-    Globals,
     PhysicsObject,
     PolyCollider,
     Ray,
-    RayCollider,
     RectCollider,
     Scene,
     Serializer,
@@ -24,25 +20,23 @@ from jazz import (
     Tween,
     Vec2,
 )
+from unit_tests.support import JazzTestCase
+
+# Names of the sample callbacks that have run, cleared before each test
+callback_calls: list[str] = []
 
 
 def sample_timer_callback() -> None:
     """Sample callback for timer expiration."""
-    Globals._timer_expired = True
+    callback_calls.append("timer_expired")
 
 
-class TestSerializerStage3(unittest.TestCase):
+class TestSerializerStage3(JazzTestCase):
     """Test suite for Stage 3 Physics & Animation serialization."""
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        if Application.instance is None:
-            cls.app = Application(200, 200, "Serializer Stage 3 Test")
-
     def setUp(self) -> None:
-        Globals._timer_expired = False
-        self.scene = Scene()
-        Globals.scene = self.scene
+        super().setUp()
+        callback_calls.clear()
 
     def test_physics_object_serialization(self) -> None:
         """Verifies PhysicsObject layers serialization round-trip."""
@@ -134,7 +128,7 @@ class TestSerializerStage3(unittest.TestCase):
         self.assertEqual(restored.time_left, 5.0)
         self.assertTrue(restored._pause_process)
         restored.callback()
-        self.assertTrue(getattr(Globals, "_timer_expired", False))
+        self.assertEqual(callback_calls, ["timer_expired"])
 
     def test_tween_serialization(self) -> None:
         """Verifies Tween component serialization round-trip."""

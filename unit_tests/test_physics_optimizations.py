@@ -1,41 +1,15 @@
 import unittest
-import pygame
-import sys
-import os
 
-# Add parent directory to path to import jazz
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-from jazz.physics.colliders import RectCollider, Collider
+from jazz.physics.colliders import RectCollider
 from jazz.physics._physics_object import PhysicsObject
 from jazz.physics.body import Body
 from jazz.physics.area import Area
-from jazz.physics.ray import Ray
-from jazz.engine.scene import Scene
 from jazz.global_dict import Globals
 from jazz.utils import Vec2
+from unit_tests.support import JazzTestCase
 
-class MockApplication:
-    def __init__(self):
-        pass
 
-class TestPhysicsOptimizations(unittest.TestCase):
-    def setUp(self):
-        # Setup clean globals
-        class MockResource:
-            def clear(self): pass
-        class MockSound:
-            def clear_sounds(self): pass
-        class MockDisplay:
-            def get_width(self): return 800
-            def get_height(self): return 600
-            
-        Globals.resource = MockResource()
-        Globals.sound = MockSound()
-        Globals.display = MockDisplay()
-        Globals.scene = Scene()
-        Globals.app = MockApplication()
-
+class TestPhysicsOptimizations(JazzTestCase):
     def test_collider_caching(self):
         # Create a collider
         collider = RectCollider(10, 10, pos=(0, 0))

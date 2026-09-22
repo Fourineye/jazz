@@ -1,47 +1,29 @@
 """Regression tests for bugs found in the September 2026 codebase review."""
 
 import json
-import os
 import sys
 import types
 import unittest
 from unittest import mock
 
-os.environ.setdefault("SDL_VIDEODRIVER", "dummy")
-os.environ.setdefault("SDL_AUDIODRIVER", "dummy")
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-
-import pygame
-pygame.init()
-
-from jazz import Application, Body, GameObject, Globals, Label, Scene, Sprite, TextBox, VBox, Vec2
+from jazz import Application, Body, GameObject, Label, Scene, Sprite, TextBox, VBox, Vec2
 from jazz.engine.serializer import Serializer
 from jazz.engine.sound_manager import SoundManager
+from jazz.utils import JazzException
+from unit_tests.support import JazzTestCase
 
 
-class TestRegressions(unittest.TestCase):
-    @classmethod
-    def setUpClass(cls):
-        # Other test modules leave mocks in Globals, so save it and use a real Application
-        cls._saved_globals = {k: v for k, v in vars(Globals).items() if not k.startswith("_")}
-        app = Globals.app
-        if not isinstance(app, Application):
-            app = Application(200, 200)
-        cls.app = app
+class TestRegressions(JazzTestCase):
+    # Application singleton
+    def test_second_application_is_rejected(self):
+        self.assertIs(Application.instance, self.app)
+        with self.assertRaises(JazzException):
+            Application(100, 100)
 
-    @classmethod
-    def tearDownClass(cls):
-        for key, value in cls._saved_globals.items():
-            setattr(Globals, key, value)
-
-    def setUp(self):
-        Globals.app = self.app
-        Globals.resource = self.app._resource
-        Globals.sound = self.app._sound
-        Globals.renderer = self.app._renderer
-        Globals.display = self.app._display
-        self.scene = Scene()
-        Globals.scene = self.scene
+    def test_run_without_scenes_raises(self):
+        self.enterContext(mock.patch.object(self.app, "_next_scene", ""))
+        with self.assertRaises(JazzException):
+            self.app.run()
 
     # Serializer round trip
     def test_scene_to_json_with_objects(self):
@@ -58,37 +40,33 @@ class TestRegressions(unittest.TestCase):
         calls = []
         hooks = types.ModuleType("regression_hooks")
         hooks.upd = lambda obj, delta: calls.append((obj.name, delta))
-        sys.modules["regression_hooks"] = hooks
-        try:
-            data = {
-                "SceneClass": "Scene",
-                "name": "ScriptScene",
-                "Objects": [
-                    {"Class": "GameObject", "options": {"name": "a"}, "scripts": {"update": "regression_hooks.upd"}}
-                ],
-            }
-            scene = Scene.from_dict(data)()
-            obj = scene["a"]
-            obj.update(0.5)
-            self.assertEqual(calls, [("a", 0.5)])
+        self.enterContext(mock.patch.dict(sys.modules, regression_hooks=hooks))
 
-            out = json.loads(scene.to_json())
-            self.assertEqual(out["Objects"][0]["scripts"], {"update": "regression_hooks.upd"})
-        finally:
-            del sys.modules["regression_hooks"]
+        data = {
+            "SceneClass": "Scene",
+            "name": "ScriptScene",
+            "Objects": [
+                {"Class": "GameObject", "options": {"name": "a"}, "scripts": {"update": "regression_hooks.upd"}}
+            ],
+        }
+        scene = Scene.from_dict(data)()
+        obj = scene["a"]
+        obj.update(0.5)
+        self.assertEqual(calls, [("a", 0.5)])
+
+        out = json.loads(scene.to_json())
+        self.assertEqual(out["Objects"][0]["scripts"], {"update": "regression_hooks.upd"})
 
     def test_textbox_callback_path_survives_serialization(self):
         hooks = types.ModuleType("regression_hooks")
         hooks.submit = lambda text: None
-        sys.modules["regression_hooks"] = hooks
-        try:
-            box = TextBox(size=(100, 30), on_submit="regression_hooks.submit")
-            self.assertIs(box._on_submit, hooks.submit)
-            options = Serializer.serialize_object(box)["options"]
-            self.assertEqual(options["on_submit"], "regression_hooks.submit")
-            json.dumps(options)
-        finally:
-            del sys.modules["regression_hooks"]
+        self.enterContext(mock.patch.dict(sys.modules, regression_hooks=hooks))
+
+        box = TextBox(size=(100, 30), on_submit="regression_hooks.submit")
+        self.assertIs(box._on_submit, hooks.submit)
+        options = Serializer.serialize_object(box)["options"]
+        self.assertEqual(options["on_submit"], "regression_hooks.submit")
+        json.dumps(options)
 
     def test_runtime_callable_scripts_are_not_serialized(self):
         obj = GameObject("a")
@@ -112,15 +90,11 @@ class TestRegressions(unittest.TestCase):
 
     def test_sound_resource_handler_registers_alias(self):
         sm = SoundManager()
-        old_sound = Globals.sound
-        Globals.sound = sm
-        try:
-            with mock.patch("jazz.engine.sound_manager.mix.Sound") as sound_cls:
-                Serializer.process_resources([{"type": "sound", "id": "jump", "path": "jump.wav"}])
-            sound_cls.assert_called_once_with("jump.wav")
-            self.assertIs(sm._sounds["jump"], sm._sounds["jump.wav"])
-        finally:
-            Globals.sound = old_sound
+        self.patch_globals(sound=sm)
+        with mock.patch("jazz.engine.sound_manager.mix.Sound") as sound_cls:
+            Serializer.process_resources([{"type": "sound", "id": "jump", "path": "jump.wav"}])
+        sound_cls.assert_called_once_with("jump.wav")
+        self.assertIs(sm._sounds["jump"], sm._sounds["jump.wav"])
 
     # UI containers
     def test_bg_container_survives_losing_last_child(self):

@@ -1,23 +1,28 @@
-from typing import Type, Any
 from collections.abc import KeysView
+from typing import Any, Type
 
 import pygame
 
+from ..global_dict import Globals
+from ..primatives import Draw
+from ..utils import JazzException, Surface, load_ini
 from .input_handler import InputHandler
+from .resource_manager import ResourceManager
 from .scene import Scene
 from .sound_manager import SoundManager
-from .resource_manager import ResourceManager
-from ..global_dict import Globals
-from ..utils import load_ini, JazzException, Surface
-from ..primatives import Draw
 
 
 class Application:
     """Manages the main game loop, window initialization, and active scenes.
 
-    Only a single instance of Application can be initialized.
+    Only a single instance of Application can exist at a time. The instance is
+    released when `run()` returns, so a new Application can be created after the
+    previous one has shut down.
+
+    Attributes:
+        instance (Application | None): The live Application, or None if there is none.
     """
-    instance: "Application" = None
+    instance: "Application | None" = None
 
     def __init__(
         self,
@@ -40,9 +45,15 @@ class Application:
             fps_max (int, optional): Sets the max fps that the window will be limited to. Defaults to 60.
             vsync (bool, optional): Controls if the window will try to use vsync. Defaults to False.
             experimental (bool, optional): Unused experimental parameter kept for compatibility. Defaults to False.
+
+        Raises:
+            JazzException: If an Application instance already exists.
         """
-        if self.instance is not None:
+        if Application.instance is not None:
             raise JazzException("Application has already been initialized.")
+
+        # Re-initialize in case a previous Application called pygame.quit()
+        pygame.init()
 
         load_ini()
 
@@ -82,6 +93,8 @@ class Application:
         Globals.resource = self._resource
 
         Draw.init()
+        Application.instance = self
+
 
     def add_scene(self, scene: Type[Scene] | Scene) -> None:
         """Adds a scene class or instance reference to the application.
@@ -119,12 +132,14 @@ class Application:
     def run(self) -> None:
         """Starts the main game loop of the application.
 
+        Releases `Application.instance` once the loop has shut down.
+
         Raises:
-            Exception: If no scenes have been added to the application
+            JazzException: If no scenes have been added to the application
         """
 
         # Check that app has scenes before running
-        if self._next_scene is None:
+        if not self._next_scene:
             raise JazzException("No scenes have been added to the game")
 
         scene_transfer_data = {}
@@ -158,6 +173,8 @@ class Application:
 
         self._window.destroy()
         pygame.quit()
+        Application.instance = None
+        Application.instance = None
 
     def stop(self) -> None:
         """Sets the neccessary flags to stop the main game loop"""

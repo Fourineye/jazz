@@ -8,7 +8,6 @@ import tempfile
 import unittest
 
 from jazz import (
-    Application,
     GameObject,
     Globals,
     Scene,
@@ -17,16 +16,20 @@ from jazz import (
     register_class,
 )
 from jazz.utils import JazzException
+from unit_tests.support import JazzTestCase
+
+# Names of the sample hooks that have run, cleared before each test
+hook_calls: list[str] = []
 
 
 def sample_on_load_hook() -> None:
     """Sample hook function to verify script resolution without subclassing."""
-    Globals._hook_executed = True
+    hook_calls.append("object_on_load")
 
 
 def sample_scene_on_load(data=None) -> None:
     """Sample scene on_load hook accepting data dict."""
-    Globals._scene_hook_executed = True
+    hook_calls.append("scene_on_load")
 
 
 @register_class
@@ -38,18 +41,12 @@ class CustomTestObject(GameObject):
         self.custom_val = kwargs.get("custom_val", 42)
 
 
-class TestSerializerStage1(unittest.TestCase):
+class TestSerializerStage1(JazzTestCase):
     """Test suite for Stage 1 Serializer architecture."""
 
-    @classmethod
-    def setUpClass(cls) -> None:
-        if Application.instance is None:
-            cls.app = Application(100, 100, "Serializer Test")
-
     def setUp(self) -> None:
-        Globals._hook_executed = False
-        self.scene = Scene()
-        Globals.scene = self.scene
+        super().setUp()
+        hook_calls.clear()
 
     def test_class_registration(self) -> None:
         """Verifies explicit class registration and retrieval."""
@@ -95,7 +92,7 @@ class TestSerializerStage1(unittest.TestCase):
         }
         obj = Serializer.deserialize_object(data)
         obj._on_load()
-        self.assertTrue(getattr(Globals, "_hook_executed", False))
+        self.assertEqual(hook_calls, ["object_on_load"])
 
     def test_animation_resource_handler(self) -> None:
         """Verifies registering and loading animation resources."""
@@ -245,7 +242,7 @@ class TestSerializerStage1(unittest.TestCase):
         loaded_scene = Scene.from_dict(scene_data)
         self.assertTrue(hasattr(loaded_scene, "on_load"))
         loaded_scene.on_load(data={})
-        self.assertTrue(getattr(Globals, "_scene_hook_executed", False))
+        self.assertEqual(hook_calls, ["scene_on_load"])
 
 
 if __name__ == "__main__":
