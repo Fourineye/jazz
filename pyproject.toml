@@ -7,8 +7,16 @@ name = "jazz"
 dynamic = ["version"]
 description = "A pygame wrapper that provides tools to quickly build games."
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.10"
 license = { text = "GPLv3" }
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 authors = [
     { name = "Paul Smith", email = "paulsmith8812@gmail.com" }
 ]
@@ -28,7 +36,8 @@ extra-paths = ["./examples/showcase"]
 
 [dependency-groups]
 dev = [
-    "myst-parser>=5.1.0",
-    "sphinx>=9.1.0",
-    "sphinx-rtd-theme>=3.1.0",
+    # Docs tooling only; Sphinx 9.1 needs Python 3.12+
+    "myst-parser>=5.1.0; python_version >= '3.12'",
+    "sphinx>=9.1.0; python_version >= '3.12'",
+    "sphinx-rtd-theme>=3.1.0; python_version >= '3.12'",
 ]

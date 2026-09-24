@@ -21,7 +21,7 @@ class TestRegressions(JazzTestCase):
             Application(100, 100)
 
     def test_run_without_scenes_raises(self):
-        self.enterContext(mock.patch.object(self.app, "_next_scene", ""))
+        self.enter_patch(mock.patch.object(self.app, "_next_scene", ""))
         with self.assertRaises(JazzException):
             self.app.run()
 
@@ -40,7 +40,7 @@ class TestRegressions(JazzTestCase):
         calls = []
         hooks = types.ModuleType("regression_hooks")
         hooks.upd = lambda obj, delta: calls.append((obj.name, delta))
-        self.enterContext(mock.patch.dict(sys.modules, regression_hooks=hooks))
+        self.enter_patch(mock.patch.dict(sys.modules, regression_hooks=hooks))
 
         data = {
             "SceneClass": "Scene",
@@ -60,7 +60,7 @@ class TestRegressions(JazzTestCase):
     def test_textbox_callback_path_survives_serialization(self):
         hooks = types.ModuleType("regression_hooks")
         hooks.submit = lambda text: None
-        self.enterContext(mock.patch.dict(sys.modules, regression_hooks=hooks))
+        self.enter_patch(mock.patch.dict(sys.modules, regression_hooks=hooks))
 
         box = TextBox(size=(100, 30), on_submit="regression_hooks.submit")
         self.assertIs(box._on_submit, hooks.submit)

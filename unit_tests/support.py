@@ -7,6 +7,7 @@ stand in for GPU resources when a test only needs sizes and draw calls.
 
 import copy
 import unittest
+from typing import Any
 from unittest import mock
 
 import pygame
@@ -87,6 +88,21 @@ class JazzTestCase(unittest.TestCase):
         self.scene = Scene()
         Globals.scene = self.scene
 
+    def enter_patch(self, patcher: Any) -> Any:
+        """Starts a ``mock.patch`` patcher and stops it when the test ends.
+
+        Works like ``TestCase.enterContext``, which needs Python 3.11 or newer.
+
+        Args:
+            patcher (Any): A patcher returned by ``mock.patch``, ``mock.patch.object`` or ``mock.patch.dict``.
+
+        Returns:
+            Any: The value returned by ``patcher.start()``.
+        """
+        result = patcher.start()
+        self.addCleanup(patcher.stop)
+        return result
+
     def patch_globals(self, **values: object) -> None:
         """Replaces ``Globals`` attributes for the rest of the test.
 
@@ -94,9 +110,7 @@ class JazzTestCase(unittest.TestCase):
             **values: Attribute names on ``Globals`` mapped to their replacements.
         """
         for name, value in values.items():
-            patcher = mock.patch.object(Globals, name, value)
-            patcher.start()
-            self.addCleanup(patcher.stop)
+            self.enter_patch(mock.patch.object(Globals, name, value))
 
 
 class MockTexture:
