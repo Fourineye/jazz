@@ -2,13 +2,13 @@
   "SceneClass": "Scene",
   "name": "AnimationTestV2",
   "scripts": {
-    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+    "update": "examples.showcase_json.scripts.showcase_hooks.check_space_return"
   },
   "Resources": [
     {
       "type": "sprite_sheet",
       "id": "idle_sheet",
-      "path": "showcase/assets/IDLE.png",
+      "path": "examples/showcase/assets/IDLE.png",
       "sprite_dim": [96, 96]
     },
     {

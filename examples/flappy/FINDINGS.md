@@ -1,0 +1,61 @@
+# Engine Findings
+
+Engine issues found while building the Flappy Bird example, checked against jazz 1.2.0 at commit `9cf9d4d`.
+
+## 1. `Group.add()` crashes on every GameObject
+
+- **Where:** `jazz/engine/group.py`, `Group.add` / `Group.remove`
+- **What:** `add()` reads `entity.groups` and calls `entity.add_group(self)`, but `GameObject` has neither. `BaseObject.__getattr__` raises `AttributeError: 'GameObject' object has no attribute 'groups'`. `remove()` has the same problem.
+- **Impact:** `Group` can't hold anything, so `Area(target_group=...)` can't be used either. `Group` is also missing from the top-level `jazz` exports (it's only in `jazz.engine`).
+- **Repro:**
+  ```python
+  from jazz.engine.group import Group
+  from jazz import GameObject
+  Group().add(GameObject())  # AttributeError
+  ```
+
+## 2. `alpha` is ignored for Sprites backed by a plain `Texture`
+
+- **Where:** `jazz/components/sprite.py`, `Sprite.render`
+- **What:** The `Image` branch sets `self._texture.alpha = self._alpha` before drawing, but the `Texture` branch never applies alpha. A Sprite loaded from a file path (a `Texture`) with `alpha=0` still draws fully opaque.
+- **Impact:** You can't fade sprites loaded from disk (fade-ins, flashes, fading overlays). Sprites using spritesheet frames (`Image`) fade correctly.
+
+## 3. Rotation direction differs between `Texture` and `Image` sprites
+
+- **Where:** `jazz/components/sprite.py`, `Sprite.render` (also `Button.render`)
+- **What:** The `Texture` branch passes `self.rotation` to `Texture.draw`, while the `Image` branch sets `Image.angle = -self.rotation`. At `rotation=90`, a Sprite loaded from a file turns clockwise but an `AnimatedSprite` frame turns counter-clockwise.
+- **Impact:** The same `rotation` value turns an `AnimatedSprite` the opposite way from a plain `Sprite`.
+
+## 4. Rotated spritesheet frames show pixels from neighbouring frames
+
+- **Where:** `jazz/engine/resource_manager.py`, `ResourceManager.make_sprite_sheet`
+- **What:** Frames are sliced as `Image` sub-regions of one shared texture, with no inset on the sampling area. When a frame is rotated and scaled, SDL's nearest-neighbour sampling can read the texel column just outside the frame, which belongs to the adjacent frame.
+- **Impact:** A tightly packed sheet shows thin stray lines along the edges of rotated `AnimatedSprite` frames. Here, the dying bird (rotated to 90°) showed the previous frame's beak column as a line beside its tail. Frames that aren't rotated are unaffected.
+- **Suggested engine fix:** Inset the sampling rect slightly, or document that sheets used with rotation need padding between frames.
+
+## Workarounds used in the game
+
+jazz itself was left unchanged. Each bug is worked around in the example code:
+
+| Bug | Workaround | Where |
+|---|---|---|
+| #1 Group | Pipes are tracked in a plain list. Hits are told apart by a custom `kind` property (`properties={"kind": "pipe"}`), not by Group membership. | `scenes/game.py`, `objects/pipes.py` |
+| #2 alpha | The hit-flash overlay wraps its texture in `Image(...)`, so `alpha` is applied and can be tweened. | `objects/ui.py` `add_flash` |
+| #3 rotation | The bird's tilt is negated before it's applied to its `AnimatedSprite`. | `objects/bird.py` `set_tilt` |
+| #4 frame bleeding | Each bird frame sits in a 19x14 cell with a 1px transparent border. | `generate_assets.py` `make_bird`, `objects/bird.py` |
+
+## API notes (not bugs, but easy to trip on)
+
+- **`Area.entered` is a frame behind for anything moved in `Scene.update`.** The engine refreshes `entered` in each object's `_engine_update`, which runs before the scene's `update` hook. Objects moved in `Scene.update` are tested at last frame's position; a fast-falling bird was caught ~29px inside the ground. The game sets `active=False` on the bird and calls `get_entered()` right after moving it.
+- **`Scene.create_timer` returns `None`**, so a repeating timer made with it can't be cancelled. The game builds a `Timer` itself with `add_object(Timer(...))` so it keeps a reference and can `queue_kill()` it.
+- **Every `Scene.__init__` calls `Globals.sound.clear_sounds()`**, which stops any sound still playing. A transition sound played just before switching scenes gets cut off, so the game plays its swoosh from the new scene's `on_load`.
+- **`Tween` loops restart from the start value** rather than ping-ponging. A custom easing callable (`sin(2πt)`) makes a looping bob that returns to its start.
+
+## Working correctly
+
+- Nearest-neighbour upscaling: pixel art scaled with `scale=(3, 3)` stays crisp.
+- Scene switching and data passing (`set_next_scene` + `stop`, `on_unload` → `on_load`), repeated across menu → game → game over → game/menu.
+- Static `Body` rect colliders on one layer and sensor `Area`s on another, queried from a circle-collider `Area` through `collision_layers`. Pipe, ground and score-gate overlaps were all detected correctly.
+- Moving a parent `GameObject` carries its child Bodies, Areas and Sprites with it, and the physics grid follows.
+- `AnimatedSprite` spritesheet slicing and playback, `Button` with custom textures, `Label`, `Tween` with `EASE_OUT_BACK` and `on_end`, camera shake, `SoundManager`.
+- Performance: a steady ~60 FPS (vsync cap) through a scripted playthrough of all three scenes.

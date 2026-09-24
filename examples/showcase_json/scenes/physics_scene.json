@@ -2,7 +2,7 @@
   "SceneClass": "Scene",
   "name": "PhysicsTestV2",
   "scripts": {
-    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+    "update": "examples.showcase_json.scripts.showcase_hooks.check_space_return"
   },
   "properties": {
     "debug": true

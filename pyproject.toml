@@ -24,7 +24,7 @@ path = "jazz/__init__.py"
 packages = ["jazz"]
 
 [tool.pyrefly]
-extra-paths = ["./showcase"]
+extra-paths = ["./examples/showcase"]
 
 [dependency-groups]
 dev = [

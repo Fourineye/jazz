@@ -6,8 +6,8 @@ import os
 import sys
 
 # Ensure project root is in sys.path when executed directly
-SHOWCASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-PROJECT_ROOT = os.path.dirname(SHOWCASE_DIR)
+EXAMPLES_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+PROJECT_ROOT = os.path.dirname(EXAMPLES_DIR)
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 

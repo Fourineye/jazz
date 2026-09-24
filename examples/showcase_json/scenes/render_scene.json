@@ -2,7 +2,7 @@
   "SceneClass": "Scene",
   "name": "RenderTestV2",
   "scripts": {
-    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+    "update": "examples.showcase_json.scripts.showcase_hooks.check_space_return"
   },
   "Objects": [
     {
@@ -41,7 +41,7 @@
         "rotation": 15
       },
       "scripts": {
-        "update": "showcase.v2_json.scripts.showcase_hooks.rotate_object"
+        "update": "examples.showcase_json.scripts.showcase_hooks.rotate_object"
       }
     },
     {

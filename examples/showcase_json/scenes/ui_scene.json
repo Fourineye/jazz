@@ -5,7 +5,7 @@
     "title": "JSON-Serialized UI Showcase"
   },
   "scripts": {
-    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+    "update": "examples.showcase_json.scripts.showcase_hooks.check_space_return"
   },
   "Objects": [
     {
@@ -100,7 +100,7 @@
               40
             ],
             "fontsize": 18,
-            "on_submit": "showcase.v2_json.scripts.showcase_hooks.on_form_submit"
+            "on_submit": "examples.showcase_json.scripts.showcase_hooks.on_form_submit"
           }
         },
         {
@@ -126,7 +126,7 @@
             "radius": 5
           },
           "scripts": {
-            "update": "showcase.v2_json.scripts.showcase_hooks.move_bar"
+            "update": "examples.showcase_json.scripts.showcase_hooks.move_bar"
           }
         },
         {
@@ -139,7 +139,7 @@
             ],
             "label": "Submit Form",
             "text_size": 16,
-            "callback": "showcase.v2_json.scripts.showcase_hooks.return_to_menu"
+            "callback": "examples.showcase_json.scripts.showcase_hooks.return_to_menu"
           }
         },
         {

@@ -2,7 +2,7 @@
   "SceneClass": "Scene",
   "name": "DebugTestV2",
   "scripts": {
-    "update": "showcase.v2_json.scripts.showcase_hooks.check_space_return"
+    "update": "examples.showcase_json.scripts.showcase_hooks.check_space_return"
   },
   "Objects": [
     {
@@ -15,7 +15,7 @@
         ]
       },
       "scripts": {
-        "update": "showcase.v2_json.scripts.showcase_hooks.on_debug_square_update"
+        "update": "examples.showcase_json.scripts.showcase_hooks.on_debug_square_update"
       },
       "children": [
         {
