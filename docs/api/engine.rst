@@ -5,8 +5,14 @@ Engine Module
    :members:
    :undoc-members:
    :show-inheritance:
+   :exclude-members: instance
 
 .. automodule:: jazz.engine.scene
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: jazz.engine.serializer
    :members:
    :undoc-members:
    :show-inheritance:

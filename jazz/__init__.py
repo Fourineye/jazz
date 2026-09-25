@@ -52,7 +52,7 @@ from .utils import Surface as Surface
 from .utils import Texture as Texture
 from .utils import Vec2 as Vec2
 
-__version__ = "1.2.0"
+__version__ = "1.3.0"
 
 pygame.init()
 print(f"Thank you for using jazz {__version__}")

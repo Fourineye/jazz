@@ -1,6 +1,11 @@
 Components Module
 =================
 
+.. automodule:: jazz.components.drawable
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 .. automodule:: jazz.components.sprite
    :members:
    :undoc-members:
@@ -11,27 +16,27 @@ Components Module
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: jazz.components.button
+.. automodule:: jazz.components.ui.button
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: jazz.components.label
+.. automodule:: jazz.components.ui.label
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: jazz.components.progress_bar
+.. automodule:: jazz.components.ui.progress_bar
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: jazz.components.text_box
+.. automodule:: jazz.components.ui.text_box
    :members:
    :undoc-members:
    :show-inheritance:
 
-.. automodule:: jazz.components.ui_container
+.. automodule:: jazz.components.ui.container
    :members:
    :undoc-members:
    :show-inheritance:
