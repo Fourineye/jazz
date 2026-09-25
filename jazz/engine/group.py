@@ -1,6 +1,8 @@
-from typing import Iterator
-from .base_object import GameObject
+"""Group: a list-backed container of GameObjects. Currently non-functional; see the roadmap."""
 
+from collections.abc import Iterator
+
+from .base_object import GameObject
 
 # TODO Rework "Group" into some other tag type system
 
@@ -43,10 +45,13 @@ class Group:
         in the entity's groups attribute.
 
         Args:
-            entity (Entity): The entity to be added to the group.
+            entity (GameObject): The entity to be added to the group.
+
+        Raises:
+            TypeError: If entity is not a GameObject.
         """
         if not isinstance(entity, GameObject):
-            raise ValueError("Only Entity objects may be added to an EntityGroup")
+            raise TypeError("Only GameObjects may be added to a Group")
         if entity not in self._entities:
             self._entities.append(entity)
             if self not in entity.groups:

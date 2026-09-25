@@ -155,10 +155,17 @@ class SoundManager:
             self._sounds[id] = sound
         return sound
 
-    def clear_sounds(self) -> None:
-        """Stops and clears all cached sound effects."""
-        for sound in self._sounds.values():
-            sound.stop()
+    def clear_sounds(self, stop: bool = True) -> None:
+        """Clears all cached sound effects.
+
+        Args:
+            stop (bool, optional): Whether to stop the cached sounds that are
+                still playing. When False, those sounds finish playing.
+                Defaults to True.
+        """
+        if stop:
+            for sound in self._sounds.values():
+                sound.stop()
         self._sounds = {}
 
     def play_sound(self, file: str, loops: int = 0, maxtime: int = 0, fade_ms: int = 0) -> None:

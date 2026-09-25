@@ -3,30 +3,24 @@ Scene class
 
 """
 
-from typing import TYPE_CHECKING, Callable, Any, Iterable, Type, Iterator, TypeVar
-from dataclasses import dataclass
+from collections.abc import Callable, Iterable, Iterator
+from typing import TYPE_CHECKING, Any, TypeVar
 
+from ..animation import Timer
 from ..camera import Camera
 from ..global_dict import Globals
-from ..physics import Ray, PhysicsGrid
-from ..animation import Timer
+from ..physics import PhysicsGrid, Ray
 from ..utils import (
-    dist_to,
-    direction_to,
-    SPRITE_SHEET,
-    SURFACE,
-    TEXTURE,
-    Surface,
-    Texture,
-    Image,
     JazzException,
     Vec2,
+    direction_to,
+    dist_to,
 )
 
 if TYPE_CHECKING:
-    from .base_object import GameObject, BaseObject
+    from ..components import DrawableObject
     from ..physics._physics_object import PhysicsObject
-    from ..components import DrawableObject, Sprite
+    from .base_object import BaseObject, GameObject
 
 
 T = TypeVar("T", bound="BaseObject")
@@ -44,13 +38,13 @@ class Scene:
         and allocates a default 4-layer physics partitioning grid.
         """
         self.camera = Camera()
-        self._objects: dict[str, "BaseObject"] = {}
-        self._sprites: list["DrawableObject"] = []
-        self._sprites_set: set["DrawableObject"] = set()
+        self._objects: dict[str, BaseObject] = {}
+        self._sprites: list[DrawableObject] = []
+        self._sprites_set: set[DrawableObject] = set()
         self._sprites_dirty: bool = False
         self._moved_objects: set[Any] = set()
         self._timers: list[Timer] = []
-        self._kill_queue: set["BaseObject"] = set()
+        self._kill_queue: set[BaseObject] = set()
         #TODO: Wrap Scene physics methods and properties into a dynamic PhysicsWorld class
         self._physics_world = {
             0: PhysicsGrid(),
@@ -63,8 +57,6 @@ class Scene:
         self.running = True
         self._paused = False
         self.properties: dict[str, Any] = {}
-        Globals.resource.clear()
-        Globals.sound.clear_sounds()
 
     def on_load(self, data: dict[Any, Any]) -> None:
         """Base method that gets called once when the scene is loaded.
@@ -76,8 +68,8 @@ class Scene:
 
     def on_unload(self) -> dict[Any, Any]:
         """Base method that gets called once when the scene is unloaded.
-        Passes Data to the next scene. By Default it clears any loaded
-        resources.
+        Passes Data to the next scene. The Application clears cached resources
+        and sounds before it instantiates the next scene class.
 
         Returns:
             dict[Any, Any]: Any data that needs to be passed to the next scene.
@@ -165,23 +157,38 @@ class Scene:
     def create_timer(
         self,
         time: float,
-        callback: Callable,
-        args: tuple[Any],
-        pause_process=False,
-        one_shot=True,
-    ) -> None:
+        callback: Callable[..., Any],
+        args: tuple[Any, ...] = (),
+        pause_process: bool = False,
+        one_shot: bool = True,
+    ) -> Timer:
         """Creates a timer that will call the provided callback function
         when it expires.
 
         Args:
             time (float): The time in seconds before the timer expires.
-            callback (Callable): The callback function to call when the timer
+            callback (Callable[..., Any]): The callback function to call when the timer
                 expires.
-            args (tuple[Any]): Arguments to provide to the callback function.
+            args (tuple[Any, ...], optional): Arguments to provide to the callback
+                function. Defaults to ().
             pause_process (bool, optional): Whether the timer should count
                 down when the scene is paused. Defaults to False.
+            one_shot (bool, optional): Whether the timer is removed after it
+                fires once. If False, it restarts until killed. Defaults to True.
+
+        Returns:
+            Timer: The timer added to the scene. Call `queue_kill()` on it to
+                cancel it.
         """
-        self.add_object(Timer(time_left=time, callback=callback, args=args, pause_process=pause_process, one_shot=one_shot))
+        return self.add_object(
+            Timer(
+                time_left=time,
+                callback=callback,
+                args=args,
+                pause_process=pause_process,
+                one_shot=one_shot,
+            )
+        )
 
     def get_layer_collisions(self, collider: "PhysicsObject", layer: int = 0) -> list["PhysicsObject"]:
         """Retrieves candidate colliders from a specific physics layer using AABB overlaps.
@@ -240,21 +247,23 @@ class Scene:
             self._sprites.append(sprite)
             self._sprites_dirty = True
 
-    def remove_object(self, obj: "GameObject") -> None:
+    def remove_object(self, obj: "BaseObject") -> None:
         """Removes an object and its children from the scene, cleaning up sprites and physics layers.
 
-        Args:
-            obj (GameObject): The object to remove.
-        """
-        if obj.id in self._objects:
-            self._objects.pop(obj.id)
-            self._cleanup_object(obj)
+        Child objects are not stored in the scene's object list, but their sprites
+        and physics entries are still cleaned up.
 
-    def _cleanup_object(self, obj: "GameObject") -> None:
+        Args:
+            obj (BaseObject): The object to remove.
+        """
+        self._objects.pop(obj.id, None)
+        self._cleanup_object(obj)
+
+    def _cleanup_object(self, obj: "BaseObject") -> None:
         """Recursively purges sprite, physics, and texture references for an object and its hierarchy.
 
         Args:
-            obj (GameObject): The object to recursively purge references for.
+            obj (BaseObject): The object to recursively purge references for.
         """
         from ..components import DrawableObject, Sprite
         from ..physics._physics_object import PhysicsObject
@@ -275,7 +284,7 @@ class Scene:
         Args:
             obj (PhysicsObject): The object to remove
         """
-        for layer, grid in self._physics_world.items():
+        for grid in self._physics_world.values():
             grid.remove_object(obj)
 
     def remove_sprite(self, sprite: "DrawableObject") -> None:
@@ -327,9 +336,10 @@ class Scene:
             blacklist (list[PhysicsObject], optional): List of physics objects to ignore during queries. Defaults to None.
 
         Returns:
-            list[tuple]: List of hit tuples detailing collision points and distances.
+            tuple[GameObject | None, Vec2 | None]: The closest object hit and the
+                hit point, or (None, None) if nothing was hit.
         """
-        ray_cast = Ray(pos=start, length=dist_to(start, end), layers=layers)
+        ray_cast = Ray(pos=start, length=dist_to(start, end), collision_layers=layers)
         ray_cast.facing = direction_to(start, end)
         return ray_cast.cast(blacklist)
 
@@ -352,13 +362,12 @@ class Scene:
             if getattr(obj, "_kill", False):
                 kill_items.add(obj)
                 continue
-            if hasattr(obj, "_update"):
-                if obj._game_process:
-                    if self._paused:
-                        if obj._pause_process:
-                            obj._update(delta)
-                    else:
+            if hasattr(obj, "_update") and obj._game_process:
+                if self._paused:
+                    if obj._pause_process:
                         obj._update(delta)
+                else:
+                    obj._update(delta)
 
         # call scene process hook
         self.update(delta)
@@ -368,13 +377,12 @@ class Scene:
             if getattr(obj, "_kill", False):
                 kill_items.add(obj)
                 continue
-            if hasattr(obj, "_late_update"):
-                if obj._game_process:
-                    if self._paused:
-                        if obj._pause_process:
-                            obj._late_update(delta)
-                    else:
+            if hasattr(obj, "_late_update") and obj._game_process:
+                if self._paused:
+                    if obj._pause_process:
                         obj._late_update(delta)
+                else:
+                    obj._late_update(delta)
 
         self.late_update(delta)
 
@@ -395,14 +403,14 @@ class Scene:
         self._moved_objects.clear()
 
     # Properties and builtins
-    def __getitem__(self, key: str) -> "GameObject | None":
-        """Retrieves a GameObject from the scene by ID or name.
+    def __getitem__(self, key: str) -> "BaseObject | None":
+        """Retrieves a top-level object from the scene by ID or name.
 
         Args:
             key (str): The object ID or name.
 
         Returns:
-            GameObject | None: The matching GameObject or None if not found.
+            BaseObject | None: The matching object or None if not found.
         """
         obj = self._objects.get(key, None)
         if obj is None:
@@ -411,7 +419,12 @@ class Scene:
                     return item
         return obj
 
-    def __iter__(self) -> Iterator["GameObject"]:
+    def __iter__(self) -> Iterator["BaseObject"]:
+        """Iterates over the scene's top-level objects.
+
+        Returns:
+            Iterator[BaseObject]: An iterator over the top-level objects.
+        """
         return iter(self._objects.values())
 
     def __len__(self) -> int:
@@ -423,8 +436,8 @@ class Scene:
         return self._objects.keys()
 
     @property
-    def objects(self) -> Iterable["GameObject"]:
-        """Returns items obect of _objects attribute."""
+    def objects(self) -> Iterable["BaseObject"]:
+        """Returns the values view of the scene's top-level objects."""
         return self._objects.values()
 
     @property

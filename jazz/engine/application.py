@@ -1,7 +1,9 @@
+"""Application: the window, renderer, main game loop, and scene switching."""
+
 from collections.abc import KeysView
-from typing import Any, Type
 
 import pygame
+from pygame._sdl2 import Renderer
 
 from ..global_dict import Globals
 from ..primatives import Draw
@@ -58,7 +60,7 @@ class Application:
         load_ini()
 
         self._window = pygame.Window(name, (width, height))
-        self._renderer = pygame._sdl2.Renderer(self._window, vsync=vsync)
+        self._renderer = Renderer(self._window, vsync=vsync)
         try:
             self._display = self._window.get_surface()
         except pygame.error:
@@ -73,8 +75,8 @@ class Application:
 
         self._sound.load_settings()
 
-        self._scenes: dict[str, Type[Scene]] = {}
-        self._active_scene: str = ""
+        self._scenes: dict[str, type[Scene] | Scene] = {}
+        self._active_scene: Scene | None = None
         self._next_scene: str = ""
         self._delta: float = 0
 
@@ -96,7 +98,7 @@ class Application:
         Application.instance = self
 
 
-    def add_scene(self, scene: Type[Scene] | Scene) -> None:
+    def add_scene(self, scene: type[Scene] | Scene) -> None:
         """Adds a scene class or instance reference to the application.
 
         Args:
@@ -107,7 +109,7 @@ class Application:
         if self._next_scene == "":
             self._next_scene = name
 
-    def set_next_scene(self, scene: str | Type[Scene] | Scene) -> None:
+    def set_next_scene(self, scene: str | type[Scene] | Scene) -> None:
         """Sets the active scene for the application.
 
         Args:
@@ -116,10 +118,7 @@ class Application:
         Raises:
             JazzException: If the scene is not registered and not a Scene instance.
         """
-        if isinstance(scene, Scene):
-            name = scene.name
-            self._scenes[name] = scene
-        elif isinstance(scene, type) and issubclass(scene, Scene):
+        if isinstance(scene, Scene) or (isinstance(scene, type) and issubclass(scene, Scene)):
             name = scene.name
             self._scenes[name] = scene
         else:
@@ -147,21 +146,23 @@ class Application:
         # Main app loop
         while self.running:
             # Load next scene
-            self._active_scene = self._load_scene(self._next_scene)
-            Globals.scene = self._active_scene
-            self._active_scene.on_load(scene_transfer_data)
+            scene = self._load_scene(self._next_scene)
+            self._active_scene = scene
+            Globals.scene = scene
+            scene.on_load(scene_transfer_data)
 
             # Main scene loop
-            while self._active_scene.running:
-                # Handle window events
-                self._quit_check()
+            while scene.running:
+                # Poll events once; this also handles the window close event
+                self._input.update()
+                if self._input.quit_requested:
+                    self.stop()
 
                 # call hook functions
-                self._input.update()
-                self._active_scene._game_update(self._delta)
+                scene._game_update(self._delta)
 
                 # render game window
-                self._active_scene.render()
+                scene.render()
                 self._renderer.present()
 
                 # Control fps and record delta time
@@ -169,7 +170,7 @@ class Application:
                 self._delta = min(self._delta, self.max_frame_time)
 
             # Allow for transfer of data between scenes
-            scene_transfer_data = self._active_scene.on_unload()
+            scene_transfer_data = scene.on_unload()
 
         self._window.destroy()
         pygame.quit()
@@ -184,27 +185,28 @@ class Application:
     def _load_scene(self, name: str) -> Scene:
         """Returns a new or pre-instantiated scene from the _scenes attribute.
 
+        Before a scene class is instantiated, the previous scene's cached resources
+        and sounds are cleared. Sounds that are still playing keep playing. A
+        pre-instantiated scene keeps the cache as is, because it loaded its
+        resources when it was built.
+
         Args:
             name (str): Name of the scene to retrieve.
 
         Returns:
             Scene: Active scene instance.
+
+        Raises:
+            JazzException: If no scene is registered under the name.
         """
         scene_entry = self._scenes.get(name)
         if isinstance(scene_entry, Scene):
             return scene_entry
-        elif callable(scene_entry):
+        if scene_entry is not None:
+            self._resource.clear()
+            self._sound.clear_sounds(stop=False)
             return scene_entry()
-        else:
-            raise JazzException(f"Could not load scene: {name}")
-
-    def _quit_check(self) -> None:
-        """
-        Gets events from pygame.event.get() and manages the QUIT event,
-        it then passes the event to the handle_event() method.
-        """
-        if pygame.event.get(pygame.QUIT):
-            self.stop()
+        raise JazzException(f"Could not load scene: {name}")
 
     def set_caption(self, text: str) -> None:
         """Sets the caption on the application window

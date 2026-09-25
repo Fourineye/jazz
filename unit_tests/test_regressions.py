@@ -6,10 +6,14 @@ import types
 import unittest
 from unittest import mock
 
-from jazz import Application, Area, Body, GameObject, Label, Scene, Sprite, TextBox, VBox, Vec2
+import pygame
+
+from jazz import Application, Area, Body, Button, GameObject, Label, Ray, Scene, Sprite, TextBox, Timer, VBox, Vec2
+from jazz.engine.input_handler import InputHandler, Keyboard
+from jazz.engine.resource_manager import ResourceManager
 from jazz.engine.serializer import Serializer
 from jazz.engine.sound_manager import SoundManager
-from jazz.utils import JazzException
+from jazz.utils import Color, JazzException, Surface, Texture
 from unit_tests.support import JazzTestCase
 
 
@@ -175,6 +179,124 @@ class TestRegressions(JazzTestCase):
         self.scene._game_update(0.016)
         self.assertEqual(active.count, 1)
         self.assertEqual(inactive.count, 0)
+
+    # Engine bug fixes from the roadmap
+    def _fresh_resource(self) -> ResourceManager:
+        resource = ResourceManager(self.app._renderer)
+        self.patch_globals(resource=resource)
+        return resource
+
+    def test_texture_resource_alias_is_a_texture(self):
+        resource = self._fresh_resource()
+        tex = Texture.from_surface(self.app._renderer, Surface((4, 4)))
+        with mock.patch("jazz.engine.resource_manager.load_texture", return_value=tex) as load:
+            Serializer.process_resources([{"type": "texture", "id": "hero", "path": "hero.png"}])
+            self.assertIs(resource.get_texture("hero"), tex)
+        load.assert_called_once_with("hero.png")
+
+    def test_constructor_children_are_not_serialized(self):
+        box = TextBox(size=(100, 30))
+        data = Serializer.serialize_object(box)
+        self.assertEqual(data["children"], [])
+        json.dumps(data)
+
+        for obj in (Button(text="go"), Ray(length=5)):
+            loaded = Serializer.deserialize_object(json.loads(json.dumps(Serializer.serialize_object(obj))))
+            self.assertEqual(len(loaded._children), len(obj._children))
+
+    def test_children_added_after_construction_are_serialized(self):
+        parent = GameObject("parent")
+        parent.add_child(GameObject("child"))
+        self.assertEqual(len(Serializer.serialize_object(parent)["children"]), 1)
+
+    def test_deserializer_does_not_retry_failing_constructor(self):
+        calls = []
+
+        class Exploding(GameObject):
+            def __init__(self, **kwargs):
+                calls.append(kwargs)
+                super().__init__(**kwargs)
+                raise TypeError("real error")
+
+        self.enter_patch(mock.patch.dict(Serializer._class_registry, Exploding=Exploding))
+        with self.assertRaisesRegex(TypeError, "real error"):
+            Serializer.deserialize_object({"Class": "Exploding", "options": {"name": "x"}})
+        self.assertEqual(len(calls), 1)
+
+    def test_physics_raycast_uses_layers(self):
+        body = Body(pos=(50, 0), layers="0010", collision_layers="0000")
+        body.add_collider(0, w=10, h=10)
+        self.scene.add_object(body)
+        self.scene._game_update(0)
+
+        hit, _ = self.scene.physics_raycast(Vec2(0, 0), Vec2(100, 0), layers="0010")
+        self.assertIs(hit, body)
+        miss, _ = self.scene.physics_raycast(Vec2(0, 0), Vec2(100, 0), layers="0001")
+        self.assertIsNone(miss)
+
+    def test_scene_constructor_keeps_resources(self):
+        resource = self._fresh_resource()
+        resource.add_surface(Surface((1, 1)), "kept")
+        Scene()
+        self.assertIn("kept", resource._surfaces)
+
+    def test_loading_scene_class_clears_cache_without_stopping_sounds(self):
+        resource = self.app._resource
+        resource.add_surface(Surface((1, 1)), "old")
+        sound = mock.Mock()
+        self.app._sound._sounds["old"] = sound
+
+        class NextScene(Scene):
+            name = "next"
+
+        self.enter_patch(mock.patch.dict(self.app._scenes, next=NextScene))
+        self.assertIsInstance(self.app._load_scene("next"), NextScene)
+        self.assertNotIn("old", resource._surfaces)
+        self.assertNotIn("old", self.app._sound._sounds)
+        sound.stop.assert_not_called()
+
+    def test_create_timer_returns_cancellable_timer(self):
+        timer = self.scene.create_timer(1.0, lambda: None, one_shot=False)
+        self.assertIsInstance(timer, Timer)
+        timer.queue_kill()
+        self.scene._game_update(0.016)
+        self.assertNotIn(timer.id, self.scene._objects)
+
+    def test_text_input_keeps_every_character(self):
+        keyboard = Keyboard()
+        events = [pygame.event.Event(pygame.TEXTINPUT, text=c) for c in "abc"]
+        keyboard.update(events)
+        self.assertEqual(keyboard.text, "abc")
+
+    def test_event_handler_sees_keyboard_and_mouse_events(self):
+        handler = InputHandler()
+        seen = []
+        handler.set_event_handler(lambda event: seen.append(event.type))
+        pygame.event.clear()
+        pygame.event.post(pygame.event.Event(pygame.KEYDOWN, key=pygame.K_a, mod=0, unicode="a", scancode=0))
+        pygame.event.post(pygame.event.Event(pygame.MOUSEBUTTONDOWN, button=1, pos=(0, 0)))
+        handler.update()
+        self.assertIn(pygame.KEYDOWN, seen)
+        self.assertIn(pygame.MOUSEBUTTONDOWN, seen)
+        self.assertTrue(handler.key.press("a"))
+        self.assertTrue(handler.mouse.click("left"))
+
+    def test_base_object_repr(self):
+        timer = Timer(time_left=1, callback=lambda: None, name="t")
+        self.assertIn("t", repr(timer))
+        self.assertIn("at 1.0, 2.0", repr(GameObject(pos=(1, 2))))
+
+    def test_resource_clear_empties_styled_textures(self):
+        resource = self._fresh_resource()
+        resource.get_styled_texture((4, 4), Color("red"))
+        resource.clear()
+        self.assertEqual(resource._styled_textures, {})
+
+    def test_sprite_sheet_spacing(self):
+        resource = self._fresh_resource()
+        resource.add_texture(Surface((34, 16)), "sheet")
+        frames = resource.make_sprite_sheet("sheet", (16, 16), spacing=(2, 0))
+        self.assertEqual([frame.srcrect.x for frame in frames], [0, 18])
 
 
 if __name__ == "__main__":

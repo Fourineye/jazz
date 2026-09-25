@@ -1,6 +1,8 @@
 """Module that holds The input wrappers"""
 
-from typing import Callable, Any
+from collections.abc import Callable, Iterable
+from typing import ClassVar
+
 import pygame
 
 from ..global_dict import Globals
@@ -8,14 +10,21 @@ from ..utils import Vec2, key_from_value
 
 
 class InputHandler:
-    """Dispatches pygame input events to Keyboard and Mouse helper classes."""
+    """Dispatches pygame input events to Keyboard and Mouse helper classes.
+
+    Attributes:
+        user_events (list[pygame.event.Event]): The `pygame.USEREVENT` events
+            received this frame.
+        quit_requested (bool): Whether a `pygame.QUIT` event was received this frame.
+    """
 
     def __init__(self) -> None:
         """Initializes the InputHandler wrapping Keyboard and Mouse sub-handlers."""
         self.mouse = Mouse()
         self.key = Keyboard()
-        self.user_events = []
-        self.event_handler = None
+        self.user_events: list[pygame.event.Event] = []
+        self.quit_requested = False
+        self.event_handler: Callable[[pygame.event.Event], None] | None = None
 
     def set_event_handler(self, method: Callable[[pygame.event.Event], None]) -> None:
         """Registers a custom callback function for processing raw Pygame events.
@@ -28,17 +37,20 @@ class InputHandler:
 
 
     def update(self) -> None:
-        """Called every frame to update user input."""
-        self.user_events = []
-        self.mouse.update()
-        self.key.update()
-        
+        """Called every frame to update user input.
 
-        for event in pygame.event.get(pygame.USEREVENT):
-            self.user_events.append(event)
+        Reads the event queue once and passes the events to the Mouse and
+        Keyboard. Every event, including keyboard, mouse, and quit events, is
+        then passed to the custom event handler if one is set.
+        """
+        events = pygame.event.get()
+        self.user_events = [e for e in events if e.type == pygame.USEREVENT]
+        self.quit_requested = any(e.type == pygame.QUIT for e in events)
+        self.mouse.update(events)
+        self.key.update(events)
 
-        for event in pygame.event.get():
-            if self.event_handler is not None:
+        if self.event_handler is not None:
+            for event in events:
                 self.event_handler(event)
 
 
@@ -48,7 +60,7 @@ class Mouse:
     LEFT = 0
     MIDDLE = 1
     RIGHT = 2
-    BUTTONS = [
+    BUTTONS: ClassVar[list[str]] = [
         "left",
         "middle",
         "right",
@@ -63,25 +75,43 @@ class Mouse:
         self._world_offset = Vec2()
         self.rel = Vec2()
 
-    def update(self) -> None:
-        """Called every frame to update mouse inputs."""
+    def update(self, events: Iterable[pygame.event.Event] | None = None) -> None:
+        """Called every frame to update mouse inputs.
+
+        Args:
+            events (Iterable[pygame.event.Event], optional): This frame's events.
+                If None, mouse button events are taken from the pygame event
+                queue. Defaults to None.
+        """
         self._just_pressed = {}
         self._just_released = {}
         self._pos = Vec2(pygame.mouse.get_pos())
         self.rel = Vec2(pygame.mouse.get_rel())
         if Globals.scene is not None:
             self._world_offset = Globals.scene.camera_offset
-        for event in pygame.event.get(pygame.MOUSEBUTTONDOWN):
-            button = event.button - 1
-            if button < len(Mouse.BUTTONS):
-                button = Mouse.BUTTONS[button]
-            self._just_pressed[button] = True
-        for event in pygame.event.get(pygame.MOUSEBUTTONUP):
-            button = event.button - 1
-            if button < len(Mouse.BUTTONS):
-                button = Mouse.BUTTONS[button]
-            self._just_released[button] = True
+        if events is None:
+            events = pygame.event.get((pygame.MOUSEBUTTONDOWN, pygame.MOUSEBUTTONUP))
+        for event in events:
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                self._just_pressed[self._button_name(event.button)] = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                self._just_released[self._button_name(event.button)] = True
         self._pressed = pygame.mouse.get_pressed()
+
+    @staticmethod
+    def _button_name(button: int) -> str | int:
+        """Converts a pygame mouse button number to the name used as a state key.
+
+        Args:
+            button (int): The 1-based pygame button number.
+
+        Returns:
+            str | int: The button name, or the 0-based index for extra buttons.
+        """
+        index = button - 1
+        if index < len(Mouse.BUTTONS):
+            return Mouse.BUTTONS[index]
+        return index
 
     def click(self, key: str | int, consume: bool = False) -> bool:
         """Checks if a mouse button was clicked (pressed down) in the current frame.
@@ -93,9 +123,8 @@ class Mouse:
         Returns:
             bool: True if clicked, otherwise False.
         """
-        if isinstance(key, int):
-            if key < len(Mouse.BUTTONS):
-                key = Mouse.BUTTONS[key]
+        if isinstance(key, int) and key < len(Mouse.BUTTONS):
+            key = Mouse.BUTTONS[key]
         click = self._just_pressed.get(key, False)
         if click and consume:
             self._just_pressed[key] = False
@@ -110,9 +139,8 @@ class Mouse:
         Returns:
             bool: True if released, otherwise False.
         """
-        if isinstance(key, int):
-            if key < len(Mouse.BUTTONS):
-                key = Mouse.BUTTONS[key]
+        if isinstance(key, int) and key < len(Mouse.BUTTONS):
+            key = Mouse.BUTTONS[key]
         return self._just_released.get(key, False)
 
     def held(self, key: str | int) -> bool:
@@ -180,7 +208,7 @@ class Mouse:
 class Keyboard:
     """Wrapper for keyboard inputs."""
 
-    ALLOWED_TEXT_INPUT_KEYS = {
+    ALLOWED_TEXT_INPUT_KEYS: ClassVar[set[str]] = {
         "backspace",
         "enter",
         "num enter",
@@ -212,23 +240,33 @@ class Keyboard:
         pygame.key.stop_text_input()
         self._text_input = False
 
-    def update(self) -> None:
-        """Called every frame to update keyboard inputs."""
+    def update(self, events: Iterable[pygame.event.Event] | None = None) -> None:
+        """Called every frame to update keyboard inputs.
+
+        `text` holds all text typed this frame, in order.
+
+        Args:
+            events (Iterable[pygame.event.Event], optional): This frame's events.
+                If None, keyboard and text events are taken from the pygame event
+                queue. Defaults to None.
+        """
         self._just_pressed = {}
         self._just_released = {}
         self.text = ""
 
-        for event in pygame.event.get(pygame.TEXTINPUT):
-            self.text = event.text
-
-        for event in pygame.event.get(pygame.KEYDOWN):
-            key = Keyboard.KEYS.get(event.key, False)
-            if key:
-                self._just_pressed[key] = True
-        for event in pygame.event.get(pygame.KEYUP):
-            key = Keyboard.KEYS.get(event.key, False)
-            if key:
-                self._just_released[key] = True
+        if events is None:
+            events = pygame.event.get((pygame.TEXTINPUT, pygame.KEYDOWN, pygame.KEYUP))
+        for event in events:
+            if event.type == pygame.TEXTINPUT:
+                self.text += event.text
+            elif event.type == pygame.KEYDOWN:
+                key = Keyboard.KEYS.get(event.key, False)
+                if key:
+                    self._just_pressed[key] = True
+            elif event.type == pygame.KEYUP:
+                key = Keyboard.KEYS.get(event.key, False)
+                if key:
+                    self._just_released[key] = True
         self._pressed = pygame.key.get_pressed()
         self._mods = pygame.key.get_mods()
 
@@ -241,9 +279,8 @@ class Keyboard:
         Returns:
             bool: True if pressed, otherwise False.
         """
-        if isinstance(key, int):
-            if key in Keyboard.KEYS:
-                key = Keyboard.KEYS[key]
+        if isinstance(key, int) and key in Keyboard.KEYS:
+            key = Keyboard.KEYS[key]
         if not self._text_input or key in self.ALLOWED_TEXT_INPUT_KEYS:
             return self._just_pressed.get(key, False)
         return False
@@ -257,9 +294,7 @@ class Keyboard:
         Returns:
             bool: True if active, otherwise False.
         """
-        if self._mods & self.MODS.get(key, 0):
-            return True
-        return False
+        return bool(self._mods & self.MODS.get(key, 0))
 
     def release(self, key: str | int) -> bool:
         """Checks if a key was released in the current frame.
@@ -270,9 +305,8 @@ class Keyboard:
         Returns:
             bool: True if released, otherwise False.
         """
-        if isinstance(key, int):
-            if key in Keyboard.KEYS:
-                key = Keyboard.KEYS[key]
+        if isinstance(key, int) and key in Keyboard.KEYS:
+            key = Keyboard.KEYS[key]
         if not self._text_input or key in self.ALLOWED_TEXT_INPUT_KEYS:
             return self._just_released.get(key, False)
         return False
@@ -284,7 +318,7 @@ class Keyboard:
             key (str): Key name string.
 
         Raises:
-            ValueError: If input is not a string.
+            TypeError: If input is not a string.
 
         Returns:
             bool: True if held, otherwise False.
@@ -298,16 +332,16 @@ class Keyboard:
             else:
                 return False
         else:
-            raise ValueError("Expected a valid string")
+            raise TypeError("Expected a valid string")
 
-    MODS = {
+    MODS: ClassVar[dict[str, int]] = {
         "shift": pygame.KMOD_SHIFT,
         "control": pygame.KMOD_CTRL,
         "alt": pygame.KMOD_ALT,
         "meta": pygame.KMOD_META,
     }
 
-    KEYS = {
+    KEYS: ClassVar[dict[int, str]] = {
         pygame.K_BACKSPACE: "backspace",
         pygame.K_TAB: "tab",
         pygame.K_CLEAR: "clear",

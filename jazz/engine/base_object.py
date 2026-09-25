@@ -1,14 +1,13 @@
 """BaseObject and GameObject: the scene-graph node, lifecycle hooks, and transforms."""
 
-from abc import ABC
-from typing import Any
+import functools
 import uuid
-from typing import TypeVar
+from abc import ABC
+from typing import Any, TypeVar
 
 from ..global_dict import Globals
-from ..utils import Color, Vec2, angle_from_vec, unit_from_angle, JazzException
 from ..primatives import Draw
-
+from ..utils import Color, JazzException, Vec2, angle_from_vec, unit_from_angle
 
 T = TypeVar("T", bound="GameObject")
 
@@ -26,6 +25,7 @@ class BaseObject(ABC):
         if "__init__" in cls.__dict__:
             orig_init = cls.__init__
 
+            @functools.wraps(orig_init)
             def wrapped_init(self, *args, **kwargs):
                 depth = self.__dict__.get("_init_depth", 0)
                 object.__setattr__(self, "_init_depth", depth + 1)
@@ -54,6 +54,9 @@ class BaseObject(ABC):
             self._children: dict[str, Any] = {}
             self._parent: BaseObject | None = None
             self._depth = 0
+            # True when the parent's constructor added this object, so the
+            # serializer skips it and the constructor recreates it on load
+            self._internal = False
 
             # Custom Properties dict
             raw_props = kwargs.get("properties", {})
@@ -123,14 +126,23 @@ class BaseObject(ABC):
         )
 
     def __repr__(self) -> str:
+        """Returns a tree view of this object and its children, indented by depth.
+
+        Returns:
+            str: One line per object, built from `_repr_label()`.
+        """
         children = ""
-        for _, child in self._children.items():
+        for child in self._children.values():
             children += f" {child}"
-        return (
-            "-" * self._depth
-            + f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}\n"
-            + children
-        )
+        return "-" * self._depth + f"{self._repr_label()}\n" + children
+
+    def _repr_label(self) -> str:
+        """Returns the one-line description of this object used by __repr__.
+
+        Returns:
+            str: The object's name.
+        """
+        return self.name
 
     def assign_script(self, hook: str, path: Any) -> None:
         """Assigns a script path or callable to a specific hook method on the game object.
@@ -245,6 +257,10 @@ class BaseObject(ABC):
     def add_child(self, obj: T) -> T:
         """Adds an object to the child tree.
 
+        A child added while this object's constructor is running is marked as
+        internal and is not serialized, because the constructor creates it again
+        when the object is loaded.
+
         Args:
             obj (T): Object to add
 
@@ -254,9 +270,10 @@ class BaseObject(ABC):
         Returns:
             T: obj to allow for chaining
         """
-        if obj.id not in self._children.keys():
+        if obj.id not in self._children:
             obj._parent = self
             obj._depth = self._depth + 1
+            obj._internal = self.__dict__.get("_init_depth", 0) > 0
             self._children[obj.id] = obj
             obj._on_tree_change()
             if getattr(self, "_loaded", False):
@@ -298,7 +315,6 @@ class BaseObject(ABC):
     def kill(self) -> None:
         """Destroys the object and any children."""
 
-        Globals.scene.remove_physics_object(self)
         Globals.scene.remove_object(self)
         if self._parent is not None:
             self._parent.remove_child(self, False)
@@ -382,6 +398,14 @@ class GameObject(BaseObject):
             movement (Vector2, tuple): The amount to move
         """
         self.pos += movement
+
+    def _repr_label(self) -> str:
+        """Returns the object's name and global position for __repr__.
+
+        Returns:
+            str: The object's name and position.
+        """
+        return f"{self.name} at {round(self.x, 2)}, {round(self.y, 2)}"
 
     def rotate(self, degrees: float) -> None:
         """Rotates the object by the given amount.

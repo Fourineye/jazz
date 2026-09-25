@@ -1,20 +1,21 @@
 """ResourceManager that loads and caches textures, surfaces, fonts, sprite sheets, and custom resources."""
 
-import pygame
 from typing import Any
 
-from pygame._sdl2 import Texture, Image, Renderer
+import pygame
+from pygame._sdl2 import Image, Renderer, Texture
+
 from ..global_dict import Globals
 from ..utils import (
     INTERNAL_PATH,
+    Color,
+    JazzException,
     Rect,
     Surface,
     Vec2,
+    generate_styled_texture,
     load_image,
     load_texture,
-    Color,
-    JazzException,
-    generate_styled_texture
 )
 
 
@@ -29,6 +30,9 @@ def _default() -> Surface:
     pygame.draw.rect(default, "gray", (5, 0, 5, 5))
     pygame.draw.rect(default, "gray", (0, 5, 5, 5))
     return default
+
+
+_DEFAULT_SHADOW_COLOR = Color(0, 0, 0, 80)
 
 
 class ResourceManager:
@@ -50,13 +54,14 @@ class ResourceManager:
         }
         self._colors: dict[tuple[int, int, int], Texture] = {}
         self._styled_textures: dict[tuple, Texture] = {}
-        self._sprite_sheets: dict[str, list[Image] | list[Texture]] = {}
+        self._sprite_sheets: dict[str, list[Image | Texture]] = {}
         self._fonts: dict[str, dict[int, pygame.Font]] = {}
         self._animation_resources: dict[str, dict[str, Any]] = {}
         self._custom_resources: dict[str, dict[str, Any]] = {}
 
     def clear(self) -> None:
-        """Destroys any loaded images, fonts, and spritesheets."""
+        """Destroys any loaded images, colors, styled textures, fonts, spritesheets,
+        animations, and custom resources."""
         self._surfaces.clear()
         self._textures.clear()
         self._surfaces = {"default": _default()}
@@ -64,6 +69,7 @@ class ResourceManager:
             "default": Texture.from_surface(Globals.renderer, _default())
         }
         self._colors.clear()
+        self._styled_textures.clear()
         self._sprite_sheets.clear()
         self._fonts.clear()
         self._animation_resources.clear()
@@ -79,7 +85,7 @@ class ResourceManager:
         Returns:
             Font: The cached or loaded Pygame Font object.
         """
-        if id not in self._fonts.keys():
+        if id not in self._fonts:
             self._fonts[id] = {}
         font = self._fonts[id].get(size, None)
         if font is None:
@@ -115,7 +121,7 @@ class ResourceManager:
         Returns:
             Texture | Image: The registered Texture object.
         """
-        if force or id not in self._textures.keys():
+        if force or id not in self._textures:
             if isinstance(texture, (Texture, Image)):
                 self._textures[id] = texture
             else:
@@ -138,21 +144,13 @@ class ResourceManager:
         Args:
             sprite_id (str): The sprite object ID whose textures should be purged.
         """
-        keys_to_remove = set([
+        prefix = f"{sprite_id}:"
+        keys_to_remove = {
             k
-            for k in self._textures
-            if k == sprite_id or k.startswith(f"{sprite_id}:")
-        ])
-        keys_to_remove |= set([
-            k
-            for k in self._surfaces
-            if k == sprite_id or k.startswith(f"{sprite_id}:")
-        ])
-        keys_to_remove |= set([
-            k
-            for k in self._sprite_sheets
-            if k == sprite_id or k.startswith(f"{sprite_id}:")
-        ])
+            for cache in (self._textures, self._surfaces, self._sprite_sheets)
+            for k in cache
+            if k == sprite_id or k.startswith(prefix)
+        }
         for k in keys_to_remove:
             self._textures.pop(k, None)
             self._surfaces.pop(k, None)
@@ -183,7 +181,7 @@ class ResourceManager:
         Returns:
             Surface: The registered Pygame Surface.
         """
-        if id not in self._surfaces.keys():
+        if id not in self._surfaces:
             self._surfaces[id] = texture
         return self._surfaces[id]
 
@@ -213,12 +211,13 @@ class ResourceManager:
         Returns:
             Texture: The single-pixel colored Texture.
         """
-        resource = self._colors.get(color.rgb, None)
+        key = (color.r, color.g, color.b)
+        resource = self._colors.get(key, None)
         if resource is None:
             colorSwatch = Surface((1, 1))
             colorSwatch.fill(color)
             resource = Texture.from_surface(Globals.renderer, colorSwatch)
-            self._colors.setdefault(color.rgb, resource)
+            self._colors.setdefault(key, resource)
 
         return resource
 
@@ -228,7 +227,7 @@ class ResourceManager:
         color: Color,
         radius: int = 0,
         shadow_offset: tuple[int, int] = (0, 0),
-        shadow_color: Color = Color(0, 0, 0, 80),
+        shadow_color: Color = _DEFAULT_SHADOW_COLOR,
         shadow_blur: int = 0,
         style: str = "flat",
         border_color: Color | None = None,
@@ -280,13 +279,21 @@ class ResourceManager:
         id: str,
         dimensions: Vec2 | tuple[int, int],
         offset: tuple[int, int] | Vec2 = (0, 0),
+        spacing: tuple[int, int] | Vec2 = (0, 0),
     ) -> list[Image | Texture]:
         """Loads, slices, and registers a grid-aligned sprite sheet of textures.
+
+        Frames are sub-regions of one texture. When a frame is drawn rotated or
+        scaled, the renderer can sample texels just outside it, which shows the
+        edge of the neighbouring frame as a thin line. Sheets used that way need
+        transparent gaps between frames, sliced with `spacing`.
 
         Args:
             id (str): The texture path/id to load and slice.
             dimensions (Vec2 | tuple[int, int]): The width and height of each individual frame cell.
             offset (tuple[int, int] | Vec2, optional): Top-left start padding offset. Defaults to (0, 0).
+            spacing (tuple[int, int] | Vec2, optional): Horizontal and vertical gap in pixels
+                between neighbouring frames. Defaults to (0, 0).
 
         Returns:
             list[Image | Texture]: Sliced list of Image sub-textures.
@@ -302,9 +309,9 @@ class ResourceManager:
                 while x < size[0] - 1:
                     sprite = Image(sheet, Rect((x, y), dimensions))
                     sprite_sheet.append(sprite)
-                    x += dimensions[0]
+                    x += dimensions[0] + spacing[0]
                 x = offset[0]
-                y += dimensions[1]
+                y += dimensions[1] + spacing[1]
             self._sprite_sheets[id] = sprite_sheet
         return sprite_sheet
 

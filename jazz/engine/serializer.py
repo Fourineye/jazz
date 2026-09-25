@@ -5,9 +5,11 @@ Provides class registration, modular resource loading, and scene/object JSON fac
 """
 
 import importlib
+import inspect
 import json
 import os
-from typing import Any, Callable, Type, TypeVar
+from collections.abc import Callable
+from typing import Any, ClassVar, TypeVar
 
 from ..global_dict import Globals
 from ..utils import JazzException
@@ -15,14 +17,32 @@ from ..utils import JazzException
 T = TypeVar("T")
 
 
+def _accepts_name(target_cls: type) -> bool:
+    """Checks whether a class constructor accepts a `name` keyword argument.
+
+    Args:
+        target_cls (type): The class to inspect.
+
+    Returns:
+        bool: True if `__init__` has a `name` parameter or takes `**kwargs`.
+    """
+    try:
+        params = inspect.signature(target_cls.__init__).parameters
+    except (TypeError, ValueError):
+        return True
+    return "name" in params or any(
+        p.kind is inspect.Parameter.VAR_KEYWORD for p in params.values()
+    )
+
+
 class Serializer:
     """Registry and serialization engine for game objects, scenes, and resources."""
 
-    _class_registry: dict[str, Type] = {}
-    _resource_handlers: dict[str, Callable[[dict[str, Any]], Any]] = {}
+    _class_registry: ClassVar[dict[str, type]] = {}
+    _resource_handlers: ClassVar[dict[str, Callable[[dict[str, Any]], Any]]] = {}
 
     @classmethod
-    def register_class(cls, target_cls: Type[T]) -> Type[T]:
+    def register_class(cls, target_cls: type[T]) -> type[T]:
         """Registers a Python class for dynamic deserialization by class name.
 
         Can be used as a decorator `@register_class` or called directly `Serializer.register_class(MyClass)`.
@@ -38,7 +58,7 @@ class Serializer:
         return target_cls
 
     @classmethod
-    def get_class(cls, class_name: str) -> Type:
+    def get_class(cls, class_name: str) -> type:
         """Retrieves a registered Python class by name.
 
         Args:
@@ -122,6 +142,9 @@ class Serializer:
     def serialize_object(cls, obj: Any) -> dict[str, Any]:
         """Serializes an object and its children into a dictionary payload.
 
+        Children added by the object's own constructor are skipped, since the
+        constructor creates them again when the object is loaded.
+
         Args:
             obj (Any): The object to serialize.
 
@@ -143,7 +166,11 @@ class Serializer:
 
         children = getattr(obj, "_children", {})
         if isinstance(children, dict) and children:
-            children_list = [cls.serialize_object(child) for child in children.values()]
+            children_list = [
+                cls.serialize_object(child)
+                for child in children.values()
+                if not getattr(child, "_internal", False)
+            ]
         else:
             children_list = []
 
@@ -198,6 +225,9 @@ class Serializer:
     def deserialize_object(cls, data: dict[str, Any], target_cls: type | None = None) -> Any:
         """Instantiates and restores a GameObject hierarchy from a dictionary payload.
 
+        The name is passed to the constructor when it accepts one; otherwise it is
+        assigned after construction. Errors raised by the constructor propagate.
+
         Args:
             data (dict[str, Any]): Dict payload containing object properties.
             target_cls (type, optional): Specific class to instantiate. Defaults to None.
@@ -213,9 +243,9 @@ class Serializer:
         name = options.pop("name", "Object")
         scripts = data.get("scripts", options.pop("scripts", None))
 
-        try:
+        if _accepts_name(target_cls):
             obj = target_cls(name=name, **options)
-        except TypeError:
+        else:
             obj = target_cls(**options)
             if hasattr(obj, "name"):
                 obj.name = name
@@ -315,7 +345,7 @@ class Serializer:
         return DynamicScene
 
 
-def register_class(target_cls: Type[T]) -> Type[T]:
+def register_class(target_cls: type[T]) -> type[T]:
     """Decorator helper for registering classes with Serializer.
 
     Args:
@@ -336,13 +366,18 @@ def _handle_texture(data: dict[str, Any]) -> Any:
 
     Returns:
         Any: Loaded texture or None.
+
+    Raises:
+        JazzException: If the declaration has no `path`.
     """
     path = data.get("path")
+    if not path:
+        raise JazzException("Texture resource entry missing required 'path' field.")
     res_id = data.get("id", path)
     if Globals.resource is not None:
         tex = Globals.resource.get_texture(path)
         if res_id and res_id != path:
-            Globals.resource.add_resource("textures", res_id, tex)
+            Globals.resource.add_texture(tex, res_id, force=True)
         return tex
     return None
 
@@ -359,8 +394,9 @@ def _handle_sprite_sheet(data: dict[str, Any]) -> Any:
     path = data.get("path") or data.get("id")
     dim = data.get("sprite_dim", (0, 0))
     offset = data.get("sprite_offset", (0, 0))
+    spacing = data.get("sprite_spacing", (0, 0))
     if Globals.resource is not None and path:
-        sheet = Globals.resource.make_sprite_sheet(path, dim, offset)
+        sheet = Globals.resource.make_sprite_sheet(path, dim, offset, spacing)
         res_id = data.get("id")
         if res_id and res_id != path:
             Globals.resource._sprite_sheets[res_id] = sheet
@@ -376,9 +412,14 @@ def _handle_animation(data: dict[str, Any]) -> Any:
 
     Returns:
         Any: Registered animation resource dictionary or None.
+
+    Raises:
+        JazzException: If the declaration has no `id` or `spritesheet`.
     """
     res_id = data.get("id")
     sheet = data.get("spritesheet")
+    if not res_id or not sheet:
+        raise JazzException("Animation resource entry requires 'id' and 'spritesheet' fields.")
     frames = data.get("animation_frames", None)
     fps = data.get("animation_fps", 30)
     oneshot = data.get("oneshot", False)
