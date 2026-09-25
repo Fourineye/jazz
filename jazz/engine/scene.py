@@ -1,12 +1,8 @@
-"""
-Scene class
-
-"""
+"""Scene: the object graph, draw list, physics layers, and per-frame update loop for one game screen."""
 
 from collections.abc import Callable, Iterable, Iterator
 from typing import TYPE_CHECKING, Any, TypeVar
 
-from ..animation import Timer
 from ..camera import Camera
 from ..global_dict import Globals
 from ..physics import PhysicsGrid, Ray
@@ -18,6 +14,7 @@ from ..utils import (
 )
 
 if TYPE_CHECKING:
+    from ..animation import Timer
     from ..components import DrawableObject
     from ..physics._physics_object import PhysicsObject
     from .base_object import BaseObject, GameObject
@@ -34,7 +31,7 @@ class Scene:
     def __init__(self) -> None:
         """Initializes the Scene instance.
 
-        Sets up the default Camera, collections for objects, sprites, timers,
+        Sets up the default Camera, collections for objects and sprites,
         and allocates a default 4-layer physics partitioning grid.
         """
         self.camera = Camera()
@@ -43,7 +40,6 @@ class Scene:
         self._sprites_set: set[DrawableObject] = set()
         self._sprites_dirty: bool = False
         self._moved_objects: set[Any] = set()
-        self._timers: list[Timer] = []
         self._kill_queue: set[BaseObject] = set()
         #TODO: Wrap Scene physics methods and properties into a dynamic PhysicsWorld class
         self._physics_world = {
@@ -161,7 +157,7 @@ class Scene:
         args: tuple[Any, ...] = (),
         pause_process: bool = False,
         one_shot: bool = True,
-    ) -> Timer:
+    ) -> "Timer":
         """Creates a timer that will call the provided callback function
         when it expires.
 
@@ -180,6 +176,9 @@ class Scene:
             Timer: The timer added to the scene. Call `queue_kill()` on it to
                 cancel it.
         """
+        # Imported here because jazz.animation imports the engine
+        from ..animation import Timer
+
         return self.add_object(
             Timer(
                 time_left=time,
@@ -428,6 +427,11 @@ class Scene:
         return iter(self._objects.values())
 
     def __len__(self) -> int:
+        """Returns the number of top-level objects in the scene.
+
+        Returns:
+            int: The top-level object count.
+        """
         return len(self._objects)
 
     @property

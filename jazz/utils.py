@@ -2,13 +2,16 @@
 
 import importlib.resources
 import math
+import os
+import sys
 from configparser import ConfigParser
 from csv import reader
 from random import randint
+from typing import Any
 
 import pygame
 from pygame import Color, Rect, Surface
-from pygame._sdl2 import Image, Texture
+from pygame._sdl2 import Image, Texture  # noqa: F401  (Image is re-exported)
 
 from .global_dict import SETTINGS, Globals
 
@@ -29,53 +32,85 @@ SPRITE_SHEET = 1
 TEXTURE = 2
 
 
-from typing import Any
-
 class JazzException(Exception):
     """Custom exception class for the Jazz Engine."""
 
 
-def load_ini(path: str = "./.jini") -> None:
-    """Loads configuration settings from an INI file into the global settings.
+def default_ini_path() -> str:
+    """Returns the default settings file path: `.jini` next to the game's main script.
+
+    Falls back to the working directory when there is no main script file,
+    e.g. in an interactive session.
+
+    Returns:
+        str: Absolute path of the default `.jini` file.
+    """
+    script = sys.argv[0] if sys.argv else ""
+    if script and os.path.isfile(script):
+        game_dir = os.path.dirname(os.path.abspath(script))
+    else:
+        game_dir = os.getcwd()
+    return os.path.join(game_dir, ".jini")
+
+
+def _parse_ini_value(raw: str) -> Any:
+    """Converts an INI string value back to an int, float, or bool where possible.
 
     Args:
-        path (str, optional): The file path to the configuration INI. Defaults to "./.jini".
+        raw (str): The value as stored in the INI file.
+
+    Returns:
+        Any: The int, float, or bool the string represents, or the string itself.
     """
+    for convert in (int, float):
+        try:
+            return convert(raw)
+        except ValueError:
+            pass
+    if raw.lower() in ("true", "false"):
+        return raw.lower() == "true"
+    return raw
+
+
+def load_ini(path: str | None = None) -> None:
+    """Loads configuration settings from an INI file into the global settings.
+
+    Each section is merged into `SETTINGS`, so keys missing from the file keep
+    their defaults. Numbers and booleans are converted back from strings. If the
+    file does not exist, the current settings are written to it.
+
+    Args:
+        path (str, optional): The file path to the configuration INI. Defaults to
+            None, which uses `default_ini_path()`.
+    """
+    if path is None:
+        path = default_ini_path()
     settings = ConfigParser()
     try:
-        with open(path, "r") as ini:
+        with open(path) as ini:
             settings.read_file(ini)
-        for key, value in settings.items():
-            SETTINGS[key] = value
     except FileNotFoundError:
-        save_ini()
+        save_ini(path)
+        return
+    for section in settings.sections():
+        values = SETTINGS.setdefault(section, {})
+        for key, raw in settings.items(section):
+            values[key] = _parse_ini_value(raw)
 
 
-def save_ini(path: str = "./.jini") -> None:
+def save_ini(path: str | None = None) -> None:
     """Saves current global settings dict into an INI file.
 
     Args:
-        path (str, optional): The target file path to save the INI. Defaults to "./.jini".
+        path (str, optional): The target file path to save the INI. Defaults to
+            None, which uses `default_ini_path()`.
     """
+    if path is None:
+        path = default_ini_path()
     settings = ConfigParser()
     settings.read_dict(SETTINGS)
     with open(path, "w") as ini:
         settings.write(ini)
-
-
-# def load_ini(path="./.jini"):
-#     try:
-#         with open(path, "r") as ini:
-#             data = json.load(ini)
-#         for key, value in data.items():
-#             SETTINGS[key] = value
-#     except:
-#         save_ini()
-
-
-# def save_ini(path="./.jini"):
-#     with open(path, "w") as ini:
-#         json.dump(SETTINGS, ini)
 
 
 def import_csv_layout(path: str) -> list[list[str]]:
@@ -123,13 +158,13 @@ def load_texture(path: str) -> Texture:
     return Texture.from_surface(Globals.renderer, load_image(path))
 
 
-def clamp(n: float | int, smallest: float | int, largest: float | int) -> float | int:
+def clamp(n: float, smallest: float, largest: float) -> float | int:
     """Clamps a numeric value between a minimum and maximum bound.
 
     Args:
-        n (float | int): The number to clamp.
-        smallest (float | int): The lower bound.
-        largest (float | int): The upper bound.
+        n (float): The number to clamp.
+        smallest (float): The lower bound.
+        largest (float): The upper bound.
 
     Returns:
         float | int: The clamped value.
@@ -137,15 +172,15 @@ def clamp(n: float | int, smallest: float | int, largest: float | int) -> float 
     return max(smallest, min(n, largest))
 
 
-def map_range(x: float | int, a: float | int, b: float | int, c: float | int, d: float | int) -> float:
+def map_range(x: float, a: float, b: float, c: float, d: float) -> float:
     """Maps a value x from range [a, b] linearily to range [c, d].
 
     Args:
-        x (float | int): Value to map.
-        a (float | int): Lower bound of the source range.
-        b (float | int): Upper bound of the source range.
-        c (float | int): Lower bound of the target range.
-        d (float | int): Upper bound of the target range.
+        x (float): Value to map.
+        a (float): Lower bound of the source range.
+        b (float): Upper bound of the source range.
+        c (float): Lower bound of the target range.
+        d (float): Upper bound of the target range.
 
     Returns:
         float: The mapped value.
@@ -154,11 +189,11 @@ def map_range(x: float | int, a: float | int, b: float | int, c: float | int, d:
     return y
 
 
-def sign(x: float | int) -> float | int:
+def sign(x: float) -> float | int:
     """Returns the mathematical sign of a number (-1, 0, or 1).
 
     Args:
-        x (float | int): Numeric value.
+        x (float): Numeric value.
 
     Returns:
         float | int: -1 if negative, 1 if positive, 0 if zero.
@@ -168,14 +203,14 @@ def sign(x: float | int) -> float | int:
     return x / abs(x)
 
 
-def build_rect(x1: float | int, y1: float | int, x2: float | int, y2: float | int) -> Rect:
+def build_rect(x1: float, y1: float, x2: float, y2: float) -> Rect:
     """Builds a Rect object from any two corner coordinates.
 
     Args:
-        x1 (float | int): X coordinate of first point.
-        y1 (float | int): Y coordinate of first point.
-        x2 (float | int): X coordinate of second point.
-        y2 (float | int): Y coordinate of second point.
+        x1 (float): X coordinate of first point.
+        y1 (float): Y coordinate of first point.
+        x2 (float): X coordinate of second point.
+        y2 (float): Y coordinate of second point.
 
     Returns:
         Rect: The constructed Rect object.
@@ -187,18 +222,18 @@ def build_rect(x1: float | int, y1: float | int, x2: float | int, y2: float | in
     return Rect(left, top, width, height)
 
 
-def color_mult(color: Color | tuple[int, int, int], mult: float) -> tuple[int, int, int]:
-    """Multiplies RGB channels of a color by a multiplier.
+def color_mult(color: Color | tuple[int, ...], mult: float) -> tuple[int, ...]:
+    """Multiplies each channel of a color by a multiplier, clamped to 0-255.
 
     Args:
-        color (tuple[int, int, int] | Color): Source color.
+        color (Color | tuple[int, ...]): Source color. Every channel is multiplied,
+            including alpha when present.
         mult (float): Multiplier factor.
 
     Returns:
-        tuple[int, int, int]: The modified RGB color tuple.
+        tuple[int, ...]: The modified color, with as many channels as the input.
     """
-    new_color = map(lambda x: clamp(x * mult, 0, 255), color)
-    return tuple(new_color)
+    return tuple(int(clamp(channel * mult, 0, 255)) for channel in color)
 
 
 _AXIS_X = Vec2(1, 0)
@@ -313,14 +348,14 @@ def line_intersection(p_0: Vec2 | tuple[float, float], p_1: Vec2 | tuple[float, 
         return None
 
 
-def line_circle(a: Vec2 | tuple[float, float], b: Vec2 | tuple[float, float], c: Vec2 | tuple[float, float], r: float | int) -> Vec2 | None:
+def line_circle(a: Vec2 | tuple[float, float], b: Vec2 | tuple[float, float], c: Vec2 | tuple[float, float], r: float) -> Vec2 | None:
     """Finds the point on line segment a-b closest to circle c, resolving penetration.
 
     Args:
         a (Vec2 | tuple): Start of line segment.
         b (Vec2 | tuple): End of line segment.
         c (Vec2 | tuple): Center of circle.
-        r (float | int): Radius of circle.
+        r (float): Radius of circle.
 
     Returns:
         Vec2 | None: The corrected intersection point resolving penetration, or None if no collision.
@@ -341,12 +376,12 @@ def line_circle(a: Vec2 | tuple[float, float], b: Vec2 | tuple[float, float], c:
         return a + ab * t + pen * direction_to(c + h, a)
 
 
-def rotated_pos(point: Vec2, angle: float | int) -> Vec2:
+def rotated_pos(point: Vec2, angle: float) -> Vec2:
     """Rotates a coordinate point around the origin (0, 0) by a given angle in degrees.
 
     Args:
         point (Vec2): The coordinate point to rotate.
-        angle (float | int): The angle in degrees.
+        angle (float): The angle in degrees.
 
     Returns:
         Vec2: The rotated coordinate vector.
@@ -358,11 +393,11 @@ def rotated_pos(point: Vec2, angle: float | int) -> Vec2:
     )
 
 
-def unit_from_angle(angle: float | int) -> Vec2:
+def unit_from_angle(angle: float) -> Vec2:
     """Calculates a unit direction vector pointing in a given angle direction.
 
     Args:
-        angle (float | int): The direction angle in degrees.
+        angle (float): The direction angle in degrees.
 
     Returns:
         Vec2: The normalized unit direction vector.
@@ -381,12 +416,15 @@ def angle_from_vec(vector: Vec2) -> float:
     """
     return _AXIS_X.angle_to(vector)
 
+_DEFAULT_SHADOW_COLOR = Color(0, 0, 0, 80)
+
+
 def generate_styled_texture(
     size: tuple[int, int] | Vec2,
     color: Color | tuple | str,
     radius: int = 0,
     shadow_offset: tuple[int, int] = (0, 0),
-    shadow_color: Color | tuple | str = Color(0, 0, 0, 80),
+    shadow_color: Color | tuple | str = _DEFAULT_SHADOW_COLOR,
     shadow_blur: int = 0,
     style: str = "flat",
     border_color: Color | tuple | str | None = None,
@@ -411,23 +449,23 @@ def generate_styled_texture(
     w, h = int(size[0]), int(size[1])
     color = Color(color)
     shadow_color = Color(shadow_color)
-    
+
     pad_x = abs(shadow_offset[0]) + shadow_blur * 2
     pad_y = abs(shadow_offset[1]) + shadow_blur * 2
-    
+
     canvas_w = w + pad_x * 2
     canvas_h = h + pad_y * 2
     canvas = Surface((canvas_w, canvas_h), pygame.SRCALPHA)
-    
+
     rect_x = pad_x
     rect_y = pad_y
     if shadow_offset[0] < 0:
         rect_x -= shadow_offset[0]
     if shadow_offset[1] < 0:
         rect_y -= shadow_offset[1]
-        
+
     rect = Rect(rect_x, rect_y, w, h)
-    
+
     # 1. Draw shadow first
     if shadow_color.a > 0 and (shadow_offset != (0, 0) or shadow_blur > 0):
         shadow_rect = Rect(rect.x + shadow_offset[0], rect.y + shadow_offset[1], w, h)
@@ -440,10 +478,10 @@ def generate_styled_texture(
                 pygame.draw.rect(canvas, c, r, border_radius=radius + i)
         else:
             pygame.draw.rect(canvas, shadow_color, shadow_rect, border_radius=radius)
-            
+
     # 2. Draw background
     temp_surf = Surface((w, h), pygame.SRCALPHA)
-    
+
     if style in ["skeuomorphic", "gradient", "glossy"] and h > 1:
         shift = 15 if style == "gradient" else 25
         color_light = Color(
@@ -458,18 +496,18 @@ def generate_styled_texture(
             max(0, color.b - shift),
             color.a
         )
-        
+
         for y in range(h):
             ratio = y / (h - 1)
             r = int(color_light.r + (color_dark.r - color_light.r) * ratio)
             g = int(color_light.g + (color_dark.g - color_light.g) * ratio)
             b = int(color_light.b + (color_dark.b - color_light.b) * ratio)
             pygame.draw.line(temp_surf, Color(r, g, b, color.a), (0, y), (w, y))
-            
+
         if style == "skeuomorphic":
             bevel_light = Color(255, 255, 255, 60)
             bevel_dark = Color(0, 0, 0, 80)
-            
+
             pygame.draw.line(temp_surf, bevel_light, (0, 0), (w, 0), 1)
             pygame.draw.line(temp_surf, bevel_light, (0, 0), (0, h), 1)
             pygame.draw.line(temp_surf, bevel_dark, (0, h - 1), (w, h - 1), 1)
@@ -479,21 +517,20 @@ def generate_styled_texture(
             gloss_surf = Surface((w, gloss_h), pygame.SRCALPHA)
             gloss_surf.fill((255, 255, 255, 25))
             temp_surf.blit(gloss_surf, (0, 0))
-            
+
             pygame.draw.rect(temp_surf, (255, 255, 255, 50), (0, 0, w, h), 1)
     else:
         temp_surf.fill(color)
-        
+
     if radius > 0:
         mask = Surface((w, h), pygame.SRCALPHA)
         pygame.draw.rect(mask, (255, 255, 255, 255), (0, 0, w, h), border_radius=radius)
         temp_surf.blit(mask, (0, 0), special_flags=pygame.BLEND_RGBA_MIN)
-        
+
     canvas.blit(temp_surf, (rect.x, rect.y))
-    
+
     # 3. Draw border
     if border_color is not None and border_width > 0:
         pygame.draw.rect(canvas, Color(border_color), rect, border_width, border_radius=radius)
-        
+
     return canvas
-    

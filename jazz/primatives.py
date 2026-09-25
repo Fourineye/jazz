@@ -1,13 +1,14 @@
-from contextlib import contextmanager
-
-import pygame
-from pygame._sdl2 import Texture
-
-from .global_dict import Globals
-from .utils import Rect, Color, Vec2, Surface
-
+"""Draw: primitive drawing helpers for the SDL2 renderer or a software Surface."""
 
 from collections.abc import Generator
+from contextlib import contextmanager
+from typing import ClassVar
+
+import pygame
+
+from .global_dict import Globals
+from .utils import Color, Rect, Surface, Texture, Vec2
+
 
 class Draw:
     """Helper class for drawing geometric primitives.
@@ -15,7 +16,7 @@ class Draw:
     Supports hardware-accelerated drawing via SDL2 Renderer or software drawing
     via pygame.draw on Pygame Surfaces.
     """
-    CIRCLE = [Vec2(1, 0).rotate(i * 10) for i in range(36)]
+    CIRCLE: ClassVar[list[Vec2]] = [Vec2(1, 0).rotate(i * 10) for i in range(36)]
     target_surface: Surface = Surface((1, 1))
     hardware_draw: bool = False
 

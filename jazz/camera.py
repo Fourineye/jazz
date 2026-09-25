@@ -1,20 +1,19 @@
 """Camera that renders the active scene's draw list with follow, bounds, and shake support."""
 
-from typing import Type, TYPE_CHECKING, Tuple
-
 from random import randint
+from typing import TYPE_CHECKING
 
 import pygame
 
 from .global_dict import Globals
 from .utils import (
+    FOLLOW_SMOOTH,
+    FOLLOW_STRICT,
+    Color,
+    JazzException,
     Rect,
     Vec2,
-    Color,
     clamp,
-    FOLLOW_STRICT,
-    FOLLOW_SMOOTH,
-    JazzException,
 )
 
 if TYPE_CHECKING:
@@ -30,7 +29,7 @@ class Camera:
         Sets default values for background color, centering, target, tracking bounds,
         shake parameters, and display dimensions.
         """
-        self._bg_color: Color | Tuple[int, int, int] | str = (0, 0, 0)
+        self._bg_color: Color | tuple[int, int, int] | str = (0, 0, 0)
         self._blanking: bool = True
         self.target: GameObject | Vec2 | None = None
         self.bounds: Rect | None = None
@@ -45,6 +44,7 @@ class Camera:
             self._display_width / 2,
             self._display_height / 2,
         )
+        # Reserved for a future zoom feature; rendering does not use it yet
         self.zoom: float = 1.0
 
     def update(self, _delta: float) -> None:
@@ -184,10 +184,13 @@ class Camera:
     def add_shake(self, magnitude: float) -> None:
         """Adds magnitude to the Camera shake.
 
+        Repeated calls stack: the new magnitude is added to what is left of the
+        current shake, which then decays by `damping` each frame.
+
         Args:
             magnitude (float): The magnitude of the shake to add.
         """
-        self.magnitude = magnitude
+        self.magnitude += magnitude
 
     @property
     def pos(self) -> Vec2:

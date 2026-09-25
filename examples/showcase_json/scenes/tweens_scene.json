@@ -48,6 +48,7 @@
       "Class": "Tween",
       "options": {
         "name": "ball_tween",
+        "target_object": "moving_ball",
         "target_property": "pos",
         "target_value": [650, 400],
         "time": 2.5,

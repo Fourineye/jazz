@@ -2,7 +2,7 @@
 
 import pygame.mixer as mix
 
-from .. import SETTINGS
+from ..global_dict import SETTINGS
 from ..utils import clamp, save_ini
 
 music = mix.music

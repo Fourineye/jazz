@@ -1,7 +1,9 @@
 """Regression tests for bugs found in the September 2026 codebase review."""
 
 import json
+import os
 import sys
+import tempfile
 import types
 import unittest
 from unittest import mock
@@ -22,14 +24,17 @@ from jazz import (
     Sprite,
     TextBox,
     Timer,
+    Tween,
     VBox,
     Vec2,
 )
+from jazz.camera import Camera
 from jazz.engine.input_handler import InputHandler, Keyboard
 from jazz.engine.resource_manager import ResourceManager
 from jazz.engine.serializer import Serializer
 from jazz.engine.sound_manager import SoundManager
-from jazz.utils import Color, Image, JazzException, Surface, Texture
+from jazz.global_dict import SETTINGS
+from jazz.utils import Color, Image, JazzException, Surface, Texture, color_mult, default_ini_path, load_ini
 from unit_tests.support import JazzTestCase
 
 
@@ -364,6 +369,82 @@ class TestRegressions(JazzTestCase):
             ProgressBar(value=5, max_value=0)
         self.assertEqual(mapped.call_count, 1)
         self.assertEqual(mapped.call_args.args[0], 100)
+
+    # Animation and top-level module fixes from the roadmap
+    def test_tween_plays_from_json_with_named_target(self):
+        data = {
+            "SceneClass": "Scene",
+            "name": "TweenScene",
+            "Objects": [
+                {"Class": "GameObject", "options": {"name": "ball", "pos": [0, 0]}},
+                {
+                    "Class": "Tween",
+                    "options": {
+                        "name": "t",
+                        "target_object": "ball",
+                        "target_value": [100, 0],
+                        "time": 1.0,
+                        "play": True,
+                    },
+                },
+            ],
+        }
+        scene = Scene.from_dict(data)()
+        tween = scene["t"]
+        assert isinstance(tween, Tween)
+        self.assertIs(tween.target_object, scene["ball"])
+        self.assertTrue(tween.playing)
+
+    def test_tween_defaults_to_parent_and_waits_for_load(self):
+        parent = GameObject(pos=(0, 0))
+        tween = parent.add_child(Tween(target_value=Vec2(10, 0), time=1.0, play=True))
+        self.assertFalse(tween.playing)
+        self.scene.add_object(parent)
+        self.assertIs(tween.target_object, parent)
+        self.assertTrue(tween.playing)
+
+    def test_tween_with_missing_target_raises(self):
+        tween = self.scene.add_object(Tween("nowhere", play=True))
+        with self.assertRaises(JazzException):
+            tween.update(0.1)
+
+    def test_tween_serializes_target_by_name(self):
+        target = GameObject("hero")
+        data = Serializer.serialize_object(Tween(target, "pos", Vec2(5, 5)))
+        self.assertEqual(data["options"]["target_object"], "hero")
+
+    def test_load_ini_restores_types_without_default_section(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, ".jini")
+            with open(path, "w") as ini:
+                ini.write("[AUDIO]\nmaster_volume = 0.5\n[DISPLAY]\nwidth = 800\nfullscreen = True\nname = x\n")
+            load_ini(path)
+        self.assertEqual(SETTINGS["AUDIO"]["master_volume"], 0.5)
+        self.assertEqual(SETTINGS["AUDIO"]["music_volume"], 1.0)
+        self.assertEqual(SETTINGS["DISPLAY"], {"width": 800, "fullscreen": True, "name": "x"})
+        self.assertNotIn("DEFAULT", SETTINGS)
+
+    def test_load_ini_creates_missing_file_at_given_path(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = os.path.join(tmp, "settings.jini")
+            load_ini(path)
+            self.assertTrue(os.path.exists(path))
+
+    def test_default_ini_path_is_next_to_main_script(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            script = os.path.join(tmp, "game.py")
+            open(script, "w").close()
+            with mock.patch.object(sys, "argv", [script]):
+                self.assertEqual(default_ini_path(), os.path.join(tmp, ".jini"))
+
+    def test_camera_shake_stacks(self):
+        camera = Camera()
+        camera.add_shake(2.0)
+        camera.add_shake(3.0)
+        self.assertEqual(camera.magnitude, 5.0)
+
+    def test_color_mult_returns_ints(self):
+        self.assertEqual(color_mult((100, 200, 250), 1.1), (110, 220, 255))
 
 
 if __name__ == "__main__":

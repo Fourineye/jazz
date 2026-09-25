@@ -1,8 +1,10 @@
-from typing import Callable, Any
-import uuid
+"""Timer: a countdown that calls a function when it expires."""
 
-from ..global_dict import Globals
+from collections.abc import Callable
+from typing import Any
+
 from ..engine.base_object import BaseObject
+from ..global_dict import Globals
 
 
 class Timer(BaseObject):

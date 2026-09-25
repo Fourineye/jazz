@@ -1,3 +1,5 @@
+"""Animation package: easing functions, Tween, and Timer."""
+
 from .easing import *
-from .tween import Tween
-from .timer import Timer
+from .timer import Timer as Timer
+from .tween import Tween as Tween

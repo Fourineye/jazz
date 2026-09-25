@@ -1,16 +1,19 @@
-from typing import TYPE_CHECKING
+"""Global engine references (Globals) and the settings dictionary (SETTINGS)."""
+
+from typing import TYPE_CHECKING, Any, cast
 
 if TYPE_CHECKING:
     from pygame import Window
     from pygame._sdl2 import Renderer
+
     from .engine import (
         Application,
-        Scene,
         InputHandler,
         Keyboard,
         Mouse,
-        SoundManager,
         ResourceManager,
+        Scene,
+        SoundManager,
     )
     from .utils import Surface
 
@@ -31,18 +34,20 @@ class Globals:
         resource (ResourceManager): Manages texture, surface, and font assets.
     """
 
-    app: "Application" = None
-    scene: "Scene" = None
-    input: "InputHandler" = None
-    key: "Keyboard" = None
-    mouse: "Mouse" = None
-    display: "Surface" = None
-    renderer: "Renderer" = None
-    window: "Window" = None
-    sound: "SoundManager" = None
-    resource: "ResourceManager" = None
+    # Set by Application.__init__. They are None until an Application exists,
+    # but are typed as always present because the engine only runs after that.
+    app: "Application" = cast("Application", None)
+    scene: "Scene" = cast("Scene", None)
+    input: "InputHandler" = cast("InputHandler", None)
+    key: "Keyboard" = cast("Keyboard", None)
+    mouse: "Mouse" = cast("Mouse", None)
+    display: "Surface" = cast("Surface", None)
+    renderer: "Renderer" = cast("Renderer", None)
+    window: "Window" = cast("Window", None)
+    sound: "SoundManager" = cast("SoundManager", None)
+    resource: "ResourceManager" = cast("ResourceManager", None)
 
 
-SETTINGS = {
+SETTINGS: dict[str, dict[str, Any]] = {
     "AUDIO": {"master_volume": 1.0, "music_volume": 1.0, "sound_volume": 1.0}
 }
