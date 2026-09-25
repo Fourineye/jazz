@@ -1,11 +1,8 @@
 """Label UI component that renders text with lazy re-rendering."""
 
-import pygame
-
-
-from ..sprite import Sprite
 from ...global_dict import Globals
-from ...utils import Image, Texture, Vec2
+from ...utils import Image, Surface, Texture, Vec2
+from ..sprite import Sprite
 
 
 class Label(Sprite):
@@ -66,13 +63,13 @@ class Label(Sprite):
         return self._texture
 
     @texture.setter
-    def texture(self, new_texture) -> None:
+    def texture(self, new_texture: str | Texture | Image | Surface | None) -> None:
         """Sets the texture asset, refreshing dimensions and offsets.
 
         Args:
             new_texture (str | Texture | Image | Surface | None): Asset key, source image surface, or None.
         """
-        Sprite.texture.fset(self, new_texture)
+        Sprite.texture.__set__(self, new_texture)
 
     def set_text(self, text: str) -> None:
         """Updates the text content and marks the label dirty.

@@ -3,7 +3,7 @@
 import math
 from typing import Callable
 
-from jazz import Button, GameObject, Globals, Image, Label, Scene, Sprite, Tween, Vec2
+from jazz import Button, GameObject, Globals, Label, Scene, Sprite, Tween, Vec2
 
 from config import HEIGHT, PIXEL_SCALE, WIDTH, Z_BACKGROUND, Z_FLASH, Z_UI, asset
 
@@ -113,9 +113,6 @@ def make_button(name: str, pos: tuple[float, float], callback: Callable[[], None
 def add_flash(scene: Scene) -> Sprite:
     """Adds a full-screen white overlay, fully transparent until its alpha is raised.
 
-    The texture is wrapped in an Image because jazz only applies Sprite.alpha to
-    Image-backed sprites, see FINDINGS.md #2.
-
     Args:
         scene (Scene): The scene to add it to.
 
@@ -124,7 +121,7 @@ def add_flash(scene: Scene) -> Sprite:
     """
     return scene.add_object(
         Sprite(
-            texture=Image(Globals.resource.get_texture(asset("white.png"))),
+            texture=asset("white.png"),
             scale=(WIDTH, HEIGHT),
             anchor=("left", "top"),
             alpha=0,

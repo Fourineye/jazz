@@ -2,9 +2,9 @@
 
 import pygame
 
-from .drawable import DrawableObject
 from ..global_dict import Globals
 from ..utils import Image, Rect, Surface, Texture, Vec2
+from .drawable import DrawableObject
 
 
 class Sprite(DrawableObject):
@@ -24,6 +24,7 @@ class Sprite(DrawableObject):
         """
         super().__init__(name, **kwargs)
 
+        self._texture: Texture | Image | str | None = None
         texture_arg = kwargs.get("texture", "default")
         if isinstance(texture_arg, (Texture, Image, Surface)):
             self.texture = texture_arg
@@ -41,21 +42,45 @@ class Sprite(DrawableObject):
         dest = Rect(
             self.draw_pos + offset, self._size.elementwise() * self._scale
         )
-        if isinstance(self._texture, Texture):
-            self._texture.draw(
+        self._draw_texture(self._texture, dest, -self._draw_offset)
+
+    def _draw_texture(self, texture: Texture | Image, dest: Rect, origin: Vec2) -> None:
+        """Draws a Texture or Image with this sprite's rotation, flips, and alpha.
+
+        Both kinds are drawn the same way: a positive rotation turns clockwise on
+        screen, matching `facing` and the colliders, and the sprite pivots on
+        `origin`. The texture is shared with other sprites, so its settings are
+        applied again on every draw. An opaque texture is switched to alpha
+        blending when the sprite is translucent, since the default blend mode
+        ignores alpha.
+
+        Args:
+            texture (Texture | Image): The asset to draw.
+            dest (Rect): Destination rectangle in screen space.
+            origin (Vec2): Rotation pivot relative to the top-left of `dest`.
+        """
+        if self._alpha < 255 and texture.blend_mode == pygame.BLENDMODE_NONE:
+            texture.blend_mode = pygame.BLENDMODE_BLEND
+        texture.alpha = self._alpha
+        # pygame treats a falsy origin as "rotate about the centre", and a zero
+        # Vector2 is falsy, so the pivot is passed as a tuple
+        pivot = (origin.x, origin.y)
+        if isinstance(texture, Texture):
+            # pygame-ce accepts float origins; its stub says Iterable[int]
+            texture.draw(
                 None,
                 dest,
                 self.rotation,
-                -self._draw_offset,
+                pivot,  # pyright: ignore[reportArgumentType]
                 self.flip_x,
                 self.flip_y,
             )
         else:
-            self._texture.flip_x = self.flip_x
-            self._texture.flip_y = self.flip_y
-            self._texture.angle = -self.rotation
-            self._texture.alpha = self._alpha
-            self._texture.draw(None, dest)
+            texture.flip_x = self.flip_x
+            texture.flip_y = self.flip_y
+            texture.angle = self.rotation
+            texture.origin = pivot
+            texture.draw(None, dest)
 
     def _on_load(self) -> None:
         """Engine hook. Resolves a deferred texture key before the object's on_load runs."""
@@ -75,7 +100,7 @@ class Sprite(DrawableObject):
         return self._texture
 
     @texture.setter
-    def texture(self, new_texture: str | Texture | Image | Surface) -> None:
+    def texture(self, new_texture: str | Texture | Image | Surface | None) -> None:
         """Sets the texture asset, refreshing dimensions and offsets.
 
         Args:

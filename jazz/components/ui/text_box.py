@@ -1,10 +1,12 @@
 """TextBox UI component for single-line text input."""
 
 import pygame
+
+from ...global_dict import Globals
+from ...utils import Color, Texture, Vec2
 from ..sprite import Sprite
 from .label import Label
-from ...global_dict import Globals
-from ...utils import Color, Rect, Surface, Vec2, Texture
+
 
 class TextBox(Sprite):
     """Event-driven interactive input TextBox component supporting keyboard entry and focus toggles."""
@@ -273,7 +275,7 @@ class TextBox(Sprite):
 
         self._text.set_text(visible_text)
         
-        self._cursor.local_pos = (
+        self._cursor.local_pos = Vec2(
             self._text.local_pos.x + self._text._size.x,
             self._text.local_pos.y
         )

@@ -1,3 +1,5 @@
+"""AnimatedSprite component that plays frames from a sprite sheet or frame list."""
+
 from ..global_dict import Globals
 from ..utils import Image, JazzException, Surface, Texture, Vec2
 from .sprite import Sprite
@@ -12,14 +14,20 @@ class AnimatedSprite(Sprite):
         Args:
             name (str, optional): The name of the animated sprite object. Defaults to "AnimatedSprite".
             animation_frames (list[int], optional): Sequence indices of frames to play. Defaults to [-1] (plays all).
-            spritesheet (str | list, optional): Slices/images source of the frames. Defaults to None.
+            spritesheet (str | list, optional): Slices/images source of the frames. Defaults to None,
+                which plays the single frame given by `texture`.
+            texture (str | Texture | Image | Surface, optional): Frame used when no spritesheet
+                is given. Defaults to "default".
+            animation (str, optional): ID of an animation resource registered with the
+                ResourceManager. It supplies the spritesheet, frames, fps, and oneshot flag
+                where they are not passed directly. Defaults to None.
             sprite_dim (tuple, optional): Dimensions of each frame cell in pixels. Defaults to (0, 0).
             sprite_offset (tuple, optional): Slicing offset in pixels. Defaults to (0, 0).
             playing (bool, optional): Auto-start playback flag. Defaults to True.
             oneshot (bool, optional): Loop disable flag. Defaults to False.
             animation_fps (int, optional): Playback frame rate. Defaults to 30.
         """
-        super().__init__(**kwargs)
+        super().__init__(name, **kwargs)
         self.animation_frames: list[int] = kwargs.get("animation_frames", [-1])
         self._sprite_dim: Vec2 = Vec2(kwargs.get("sprite_dim", (0, 0)))
         self._sprite_offset: Vec2 = Vec2(kwargs.get("sprite_offset", (0, 0)))
@@ -48,9 +56,10 @@ class AnimatedSprite(Sprite):
             self._spritesheet_key = spritesheet_arg
 
         if spritesheet_arg is None:
-            self._sheet: list[Image | Texture] = [self._texture]
-        else:
-            self._sheet = self._parse_spritesheet(spritesheet_arg)
+            # No sheet: play the single texture given by the `texture` argument
+            single = self._texture if self._texture is not None else "default"
+            spritesheet_arg = [single]
+        self._sheet: list[Image | Texture] = self._parse_spritesheet(spritesheet_arg)
 
         if self.animation_frames[0] == -1:
             self.animation_frames = [i for i in range(len(self._sheet))]
@@ -110,6 +119,10 @@ class AnimatedSprite(Sprite):
             spritesheet (str | list, optional): Slices/images source of the frames. Defaults to None.
             animation_frames (list[int], optional): Sequence indices of frames to play. Defaults to None.
             fps (int, optional): Playback frame rate. Defaults to None.
+
+        Raises:
+            IndexError: If a frame index is outside the sprite sheet.
+            ValueError: If fps is negative.
         """
         if spritesheet is not None:
             self._sheet = self._parse_spritesheet(spritesheet)
@@ -117,7 +130,7 @@ class AnimatedSprite(Sprite):
         if animation_frames is not None:
             for frame in animation_frames:
                 if not 0 <= frame < len(self._sheet):
-                    raise Exception(f"Frame {frame} out  of bounds")
+                    raise IndexError(f"Frame {frame} out of bounds for a sheet of {len(self._sheet)} frames")
             self.animation_frames = animation_frames
         else:
             self.animation_frames = [i for i in range(len(self._sheet))]
@@ -163,9 +176,12 @@ class AnimatedSprite(Sprite):
 
         Args:
             fps (int): Frame rate value.
+
+        Raises:
+            ValueError: If fps is negative.
         """
         if fps < 0:
-            raise Exception(f"invalid fps {fps}, fps must be greater than 0")
+            raise ValueError(f"Invalid fps {fps}, fps must not be negative")
         self.animation_fps = fps
 
 

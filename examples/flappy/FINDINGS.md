@@ -19,12 +19,14 @@ Engine issues found while building the Flappy Bird example, checked against jazz
 - **Where:** `jazz/components/sprite.py`, `Sprite.render`
 - **What:** The `Image` branch sets `self._texture.alpha = self._alpha` before drawing, but the `Texture` branch never applies alpha. A Sprite loaded from a file path (a `Texture`) with `alpha=0` still draws fully opaque.
 - **Impact:** You can't fade sprites loaded from disk (fade-ins, flashes, fading overlays). Sprites using spritesheet frames (`Image`) fade correctly.
+- **Fixed:** `Sprite._draw_texture` applies alpha to both kinds, and switches an opaque texture to alpha blending when the sprite is translucent.
 
 ## 3. Rotation direction differs between `Texture` and `Image` sprites
 
 - **Where:** `jazz/components/sprite.py`, `Sprite.render` (also `Button.render`)
 - **What:** The `Texture` branch passes `self.rotation` to `Texture.draw`, while the `Image` branch sets `Image.angle = -self.rotation`. At `rotation=90`, a Sprite loaded from a file turns clockwise but an `AnimatedSprite` frame turns counter-clockwise.
 - **Impact:** The same `rotation` value turns an `AnimatedSprite` the opposite way from a plain `Sprite`.
+- **Fixed:** Both kinds now turn clockwise for a positive `rotation`, matching `facing` and the colliders, and both pivot on the anchor point.
 
 ## 4. Rotated spritesheet frames show pixels from neighbouring frames
 
@@ -32,16 +34,15 @@ Engine issues found while building the Flappy Bird example, checked against jazz
 - **What:** Frames are sliced as `Image` sub-regions of one shared texture, with no inset on the sampling area. When a frame is rotated and scaled, SDL's nearest-neighbour sampling can read the texel column just outside the frame, which belongs to the adjacent frame.
 - **Impact:** A tightly packed sheet shows thin stray lines along the edges of rotated `AnimatedSprite` frames. Here, the dying bird (rotated to 90°) showed the previous frame's beak column as a line beside its tail. Frames that aren't rotated are unaffected.
 - **Suggested engine fix:** Inset the sampling rect slightly, or document that sheets used with rotation need padding between frames.
+- **Addressed:** `Image.srcrect` is an integer rect, so a fractional inset isn't possible. `make_sprite_sheet` now documents the problem and takes `spacing` for sheets with gaps between frames.
 
 ## Workarounds used in the game
 
-jazz itself was left unchanged. Each bug is worked around in the example code:
+Bugs #2 and #3 are fixed in jazz, and their workarounds were removed. The others are still worked around in the example code:
 
 | Bug | Workaround | Where |
 |---|---|---|
 | #1 Group | Pipes are tracked in a plain list. Hits are told apart by a custom `kind` property (`properties={"kind": "pipe"}`), not by Group membership. | `scenes/game.py`, `objects/pipes.py` |
-| #2 alpha | The hit-flash overlay wraps its texture in `Image(...)`, so `alpha` is applied and can be tweened. | `objects/ui.py` `add_flash` |
-| #3 rotation | The bird's tilt is negated before it's applied to its `AnimatedSprite`. | `objects/bird.py` `set_tilt` |
 | #4 frame bleeding | Each bird frame sits in a 19x14 cell with a 1px transparent border. | `generate_assets.py` `make_bird`, `objects/bird.py` |
 
 ## API notes (not bugs, but easy to trip on)

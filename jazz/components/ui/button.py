@@ -1,17 +1,18 @@
-import pygame
-from typing import Callable
+"""Button UI component with unpressed, hover, and pressed states."""
 
-from ..sprite import Sprite
-from .label import Label
+from collections.abc import Callable
+from typing import ClassVar
+
 from ...global_dict import Globals
 from ...primatives import Draw
-from ...utils import Color, Rect, Vec2, Surface
-from pygame._sdl2 import Texture
+from ...utils import Color, Image, Rect, Surface, Texture, Vec2
+from ..sprite import Sprite
+from .label import Label
 
 
 class Button(Sprite):
     """Event-driven interactive Button UI component supporting unpressed, hover, and pressed states."""
-    STATES = ["UNPRESSED", "HOVER", "PRESSED"]
+    STATES: ClassVar[list[str]] = ["UNPRESSED", "HOVER", "PRESSED"]
     UNPRESSED = 0
     HOVER = 1
     PRESSED = 2
@@ -113,13 +114,13 @@ class Button(Sprite):
         """Initializes target position bounds and updates nested child label positions on scene mount."""
         super().on_load()
         if self._label is not None:
-            self._label.pos = self.rect.center
+            self._label.pos = Vec2(self.rect.center)
 
     def _engine_update(self, delta: float) -> None:
         """Monitors mouse cursor interaction events to resolve button hover and click states.
 
         Args:
-            _delta (float): Unused engine timing delta value.
+            delta (float): Unused engine timing delta value.
         """
         mouse_pos = Globals.mouse.pos
         if self.visible:
@@ -163,15 +164,20 @@ class Button(Sprite):
         self._callback = callback
 
     @property
-    def texture(self):
-        """Texture | Image: Gets the active Texture or Image asset."""
+    def texture(self) -> Texture | Image | str | None:
+        """Texture | Image | str | None: Gets the active Texture or Image asset."""
         return self._texture
 
     @texture.setter
-    def texture(self, new_texture) -> None:
-        """Sets the texture asset, preserving the logical size of the button."""
+    def texture(self, new_texture: str | Texture | Image | Surface | None) -> None:
+        """Sets the texture asset, preserving the logical size of a styled button.
+
+        Args:
+            new_texture (str | Texture | Image | Surface | None): Asset key, source
+                image surface, or None to clear the texture.
+        """
         logical_size = Vec2(self._size) if hasattr(self, "_size") else None
-        Sprite.texture.fset(self, new_texture)
+        Sprite.texture.__set__(self, new_texture)
         if getattr(self, "_is_styled", False) and logical_size is not None:
             self._size = logical_size
             self._hardware_offset()
@@ -184,33 +190,20 @@ class Button(Sprite):
         """
         if not self.visible:
             return
-            
-        if getattr(self, "_is_styled", False) and self.texture is not None:
+
+        texture = self.texture
+        if getattr(self, "_is_styled", False) and isinstance(texture, (Texture, Image)):
+            # Styled textures include shadow padding around the button area
             shadow_offset = self._kwargs.get("shadow_offset", (1, 2))
             shadow_blur = self._kwargs.get("shadow_blur", 2)
-            pad_x = abs(shadow_offset[0]) + shadow_blur * 2
-            pad_y = abs(shadow_offset[1]) + shadow_blur * 2
-            
-            dest_pos = self.draw_pos + offset - Vec2(pad_x, pad_y).elementwise() * self._scale
-            dest_size = Vec2(self.texture.width, self.texture.height).elementwise() * self._scale
-            dest = Rect(dest_pos, dest_size)
-            
-            if isinstance(self.texture, Texture):
-                origin = -self._draw_offset + Vec2(pad_x, pad_y).elementwise() * self._scale
-                self.texture.draw(
-                    None,
-                    dest,
-                    self.rotation,
-                    origin,
-                    self.flip_x,
-                    self.flip_y,
-                )
-            else:
-                self.texture.flip_x = self.flip_x
-                self.texture.flip_y = self.flip_y
-                self.texture.angle = -self.rotation
-                self.texture.alpha = self._alpha
-                self.texture.draw(None, dest)
+            pad = Vec2(
+                abs(shadow_offset[0]) + shadow_blur * 2,
+                abs(shadow_offset[1]) + shadow_blur * 2,
+            ).elementwise() * self._scale
+
+            dest_size = Vec2(texture.get_rect().size).elementwise() * self._scale
+            dest = Rect(self.draw_pos + offset - pad, dest_size)
+            self._draw_texture(texture, dest, -self._draw_offset + pad)
         else:
             super().render(offset)
 

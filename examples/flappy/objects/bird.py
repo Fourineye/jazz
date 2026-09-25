@@ -84,14 +84,13 @@ class Bird(Area):
         """Rotates the bird's sprite. Positive angles tip the beak down.
 
         The sprite is rotated rather than the Area so the collider keeps its
-        orientation. The angle is negated because jazz turns spritesheet frames
-        (Image) the opposite way to plain Textures, see FINDINGS.md #3.
+        orientation.
 
         Args:
             degrees (float): Tilt in degrees, clockwise on screen.
         """
         self.tilt = degrees
-        self.sprite.rotation = -degrees
+        self.sprite.rotation = degrees
 
     def die(self) -> None:
         """Marks the bird dead and freezes its wings."""

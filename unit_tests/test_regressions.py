@@ -8,12 +8,28 @@ from unittest import mock
 
 import pygame
 
-from jazz import Application, Area, Body, Button, GameObject, Label, Ray, Scene, Sprite, TextBox, Timer, VBox, Vec2
+from jazz import (
+    AnimatedSprite,
+    Application,
+    Area,
+    Body,
+    Button,
+    GameObject,
+    Label,
+    ProgressBar,
+    Ray,
+    Scene,
+    Sprite,
+    TextBox,
+    Timer,
+    VBox,
+    Vec2,
+)
 from jazz.engine.input_handler import InputHandler, Keyboard
 from jazz.engine.resource_manager import ResourceManager
 from jazz.engine.serializer import Serializer
 from jazz.engine.sound_manager import SoundManager
-from jazz.utils import Color, JazzException, Surface, Texture
+from jazz.utils import Color, Image, JazzException, Surface, Texture
 from unit_tests.support import JazzTestCase
 
 
@@ -297,6 +313,57 @@ class TestRegressions(JazzTestCase):
         resource.add_texture(Surface((34, 16)), "sheet")
         frames = resource.make_sprite_sheet("sheet", (16, 16), spacing=(2, 0))
         self.assertEqual([frame.srcrect.x for frame in frames], [0, 18])
+
+    # Component bug fixes from the roadmap
+    def _texture(self, size=(8, 8)) -> Texture:
+        return Texture.from_surface(self.app._renderer, Surface(size))
+
+    def test_animated_sprite_keeps_name(self):
+        self.assertEqual(AnimatedSprite(name="bird", texture=self._texture()).name, "bird")
+        self.assertEqual(AnimatedSprite(texture=self._texture()).name, "AnimatedSprite")
+
+    def test_sprite_applies_alpha_to_plain_texture(self):
+        texture = self._texture()
+        self.assertEqual(texture.blend_mode, pygame.BLENDMODE_NONE)
+        sprite = Sprite(texture=texture, alpha=100)
+        sprite._render(Vec2())
+        self.assertEqual(texture.alpha, 100)
+        self.assertEqual(texture.blend_mode, pygame.BLENDMODE_BLEND)
+
+    def test_texture_and_image_rotate_the_same_way(self):
+        sprite = Sprite(texture=self._texture(), rotation=30)
+        fake = mock.Mock(spec=Texture, blend_mode=pygame.BLENDMODE_BLEND)
+        sprite._draw_texture(fake, sprite.rect, -sprite._draw_offset)
+        self.assertEqual(fake.draw.call_args.args[2], 30)
+
+        top_left = Sprite(texture=self._texture(), rotation=30, anchor=("left", "top"))
+        top_left._draw_texture(fake, top_left.rect, -top_left._draw_offset)
+        self.assertEqual(tuple(fake.draw.call_args.args[3]), (0, 0))
+
+        image = Image(self._texture())
+        image_sprite = Sprite(texture=image, rotation=30, anchor=("left", "top"))
+        image_sprite._render(Vec2())
+        self.assertEqual(image.angle, 30)
+        self.assertEqual(image.origin, (0, 0))
+
+    def test_draw_pos_setter_survives_offset_recalculation(self):
+        sprite = Sprite(texture=self._texture((10, 10)))
+        sprite.draw_pos = Vec2(100, 50)
+        sprite.scale = (2, 2)
+        sprite._render(Vec2())
+        self.assertEqual(sprite.pos, Vec2(105, 55))
+        self.assertEqual(sprite.rect.topleft, (95, 45))
+
+    def test_alpha_setter_rejects_out_of_range(self):
+        with self.assertRaises(ValueError):
+            Sprite(texture=self._texture()).alpha = 300
+
+    def test_progress_bar_clamps_value(self):
+        with mock.patch("jazz.components.ui.progress_bar.map_range", wraps=lambda *a: a[0] * 0) as mapped:
+            ProgressBar(value=150, max_value=100)
+            ProgressBar(value=5, max_value=0)
+        self.assertEqual(mapped.call_count, 1)
+        self.assertEqual(mapped.call_args.args[0], 100)
 
 
 if __name__ == "__main__":

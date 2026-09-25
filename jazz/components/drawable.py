@@ -4,7 +4,7 @@ import pygame
 
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
-from ..utils import Rect, Vec2
+from ..utils import Vec2
 
 
 class DrawableObject(GameObject):
@@ -121,13 +121,17 @@ class DrawableObject(GameObject):
         return Vec2(self.pos + self._draw_offset)
 
     @draw_pos.setter
-    def draw_pos(self, new_offset: Vec2 | tuple[float, float]) -> None:
-        """Sets a manual draw offset.
+    def draw_pos(self, new_pos: Vec2 | tuple[float, float]) -> None:
+        """Moves the object so that its top-left drawing corner is at `new_pos`.
+
+        The anchor offset is kept, so the object's `pos` changes instead.
 
         Args:
-            new_offset (Vec2 | tuple): The new drawing offset.
+            new_pos (Vec2 | tuple): The new top-left drawing position.
         """
-        self._draw_offset = Vec2(new_offset)
+        if self._img_dirty:
+            self._hardware_offset()
+        self.pos = Vec2(new_pos) - self._draw_offset
 
     @property
     def flip_x(self) -> bool:
@@ -166,11 +170,19 @@ class DrawableObject(GameObject):
 
     @alpha.setter
     def alpha(self, new_alpha: int) -> None:
+        """Sets the opacity.
+
+        Args:
+            new_alpha (int): Opacity between 0 and 255.
+
+        Raises:
+            ValueError: If new_alpha is outside 0 to 255.
+        """
         if 0 <= new_alpha <= 255:
             self._alpha = new_alpha
             self._img_dirty = True
         else:
-            raise Exception("Invalid alpha value")
+            raise ValueError(f"Invalid alpha value {new_alpha}, expected 0 to 255")
 
     def on_transform_change(self) -> None:
         """Clears rendering cache triggers on coordinate updates."""
