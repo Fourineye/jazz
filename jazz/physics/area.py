@@ -1,5 +1,4 @@
 from ..global_dict import Globals
-from ..utils import Vec2, dist_to
 from ._physics_object import PhysicsObject
 
 
@@ -22,8 +21,11 @@ class Area(PhysicsObject):
         self._active = kwargs.get("active", True)
         self._entered_cache = {}
 
-    def _engine_update(self, delta: float) -> None:
-        """Engine updates and queries overlapping candidates each frame if sensor is active.
+    def _engine_late_update(self, delta: float) -> None:
+        """Engine hook. Refreshes `entered` each frame if the sensor is active.
+
+        Runs in the late update phase, after every object's update and the scene's
+        update hook, so objects moved during the frame are tested at their new position.
 
         Args:
             delta (float): Time in seconds since the last frame.

@@ -109,8 +109,18 @@ class GameScene(FlappyScene):
         self.spawn_pipe()
         self.spawn_timer = self.add_object(Timer(PIPE_INTERVAL, self.spawn_pipe, one_shot=False))
 
+    def late_update(self, delta: float) -> None:
+        """Resolves what the bird is touching once the engine has refreshed its overlaps.
+
+        Args:
+            delta (float): Time in seconds since the last frame.
+        """
+        super().late_update(delta)
+        if self.state == PLAYING and not self._paused:
+            self.resolve_contacts()
+
     def update_playing(self, delta: float) -> None:
-        """Moves the bird and pipes, then resolves what the bird is touching.
+        """Moves the bird and pipes. Contacts are resolved in late_update.
 
         Args:
             delta (float): Time in seconds since the last frame.
@@ -127,9 +137,13 @@ class GameScene(FlappyScene):
             self.pipes.remove(pipe)
             pipe.queue_kill()
 
-        # Query after moving: the engine refreshes Area.entered before Scene.update
-        # runs, so it would be a frame behind (see FINDINGS.md)
-        for obj in self.bird.get_entered():
+    def resolve_contacts(self) -> None:
+        """Scores gates the bird passed through and crashes it into pipes, the ground or the ceiling.
+
+        Reads Bird.entered, which the engine refreshes after Scene.update, so it
+        reflects where the bird and pipes moved to this frame.
+        """
+        for obj in self.bird.entered:
             kind = getattr(obj, "kind", None)
             if kind == "gate" and not obj.scored:
                 obj.scored = True

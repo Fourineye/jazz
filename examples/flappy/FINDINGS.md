@@ -46,7 +46,7 @@ jazz itself was left unchanged. Each bug is worked around in the example code:
 
 ## API notes (not bugs, but easy to trip on)
 
-- **`Area.entered` is a frame behind for anything moved in `Scene.update`.** The engine refreshes `entered` in each object's `_engine_update`, which runs before the scene's `update` hook. Objects moved in `Scene.update` are tested at last frame's position; a fast-falling bird was caught ~29px inside the ground. The game sets `active=False` on the bird and calls `get_entered()` right after moving it.
+- **`Area.entered` is refreshed in the late update phase (fixed in the engine).** It used to be refreshed in `_engine_update`, before the scene's `update` hook, so objects moved in `Scene.update` were tested at last frame's position and a fast-falling bird was caught ~29px inside the ground. The engine now refreshes it after `Scene.update`. The game moves everything in `update` and reads `bird.entered` in `late_update`. Reading `entered` in `update` still gives last frame's result.
 - **`Scene.create_timer` returns `None`**, so a repeating timer made with it can't be cancelled. The game builds a `Timer` itself with `add_object(Timer(...))` so it keeps a reference and can `queue_kill()` it.
 - **Every `Scene.__init__` calls `Globals.sound.clear_sounds()`**, which stops any sound still playing. A transition sound played just before switching scenes gets cut off, so the game plays its swoosh from the new scene's `on_load`.
 - **`Tween` loops restart from the start value** rather than ping-ponging. A custom easing callable (`sin(2πt)`) makes a looping bob that returns to its start.

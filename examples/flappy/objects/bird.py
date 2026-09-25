@@ -26,8 +26,6 @@ class Bird(Area):
         kwargs.setdefault("layers", LAYER_NONE)
         # Senses both the obstacle and the score gate layers
         kwargs.setdefault("collision_layers", "0011")
-        # The game scene calls get_entered() itself after moving the bird
-        kwargs.setdefault("active", False)
         super().__init__(**kwargs)
         self.velocity: float = 0.0
         self.tilt: float = 0.0

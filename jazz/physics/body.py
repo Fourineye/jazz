@@ -1,7 +1,6 @@
 from ..global_dict import Globals
-from ..utils import Vec2, dist_to
+from ..utils import Vec2
 from ._physics_object import PhysicsObject
-
 
 
 class Body(PhysicsObject):

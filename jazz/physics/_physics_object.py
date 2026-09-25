@@ -2,10 +2,16 @@
 
 from typing import Any
 
-from .colliders import CircleCollider, PolyCollider, RayCollider, RectCollider, Collider
 from ..engine.base_object import GameObject
 from ..global_dict import Globals
-from ..utils import COLLIDER_RECT, COLLIDER_POLY, COLLIDER_CIRCLE, COLLIDER_RAY, JazzException
+from ..utils import (
+    COLLIDER_CIRCLE,
+    COLLIDER_POLY,
+    COLLIDER_RAY,
+    COLLIDER_RECT,
+    JazzException,
+)
+from .colliders import CircleCollider, Collider, PolyCollider, RayCollider, RectCollider
 
 
 class PhysicsObject(GameObject):
@@ -19,6 +25,7 @@ class PhysicsObject(GameObject):
             collision_layers (str | int, optional): Binary string or int mask of layers this object collides with. Defaults to "0001".
         """
         kwargs.setdefault("name", "PhysicsObject")
+        self._collider: Collider | None = None
         super().__init__(**kwargs)
         
         layers_val = kwargs.get("layers", "0001")
@@ -33,8 +40,22 @@ class PhysicsObject(GameObject):
         else:
             self.collision_layers = coll_layers_val
             
-        self.collider: Collider | None = None
         self._moved_this_frame_val: bool = True
+
+    @property
+    def collider(self) -> Collider:
+        """Collider: The shape used for this object's collision checks.
+
+        Raises:
+            JazzException: If no collider has been added yet.
+        """
+        if self._collider is None:
+            raise JazzException(f"{self.name} has no collider. Call add_collider in __init__ or on_load.")
+        return self._collider
+
+    @collider.setter
+    def collider(self, collider: Collider) -> None:
+        self._collider = collider
 
     @property
     def _moved_this_frame(self) -> bool:
@@ -63,8 +84,8 @@ class PhysicsObject(GameObject):
         """
         super()._on_load()
         Globals.scene.mark_moved(self)
-        if self.collider is None:
-            raise (JazzException("Physics Object does not have collider"))
+        if self._collider is None:
+            raise JazzException(f"{self.name} has no collider. Call add_collider in __init__ or on_load.")
         Globals.scene.add_physics_object(self, self._layers)
 
     def add_collider(self, type: int | str, **kwargs) -> None:
@@ -78,19 +99,19 @@ class PhysicsObject(GameObject):
             JazzException: Raises an exception if an invalid type is given.
         """
         if type == COLLIDER_RECT or type == "Rect":
-            self.collider = RectCollider(**kwargs)
+            self._collider = RectCollider(**kwargs)
         elif type == COLLIDER_CIRCLE or type == "Circle":
-            self.collider = CircleCollider(**kwargs)
+            self._collider = CircleCollider(**kwargs)
         elif type == COLLIDER_POLY or type in ("Polygon", "Poly"):
-            self.collider = PolyCollider(**kwargs)
+            self._collider = PolyCollider(**kwargs)
         elif type == COLLIDER_RAY or type == "Ray":
-            self.collider = RayCollider(**kwargs)
+            self._collider = RayCollider(**kwargs)
         else:
             raise JazzException("Invalid collider type")
-        self.add_child(self.collider)
+        self.add_child(self._collider)
 
     def add_child(self, obj: Any) -> Any:
-        """Adds a child object, assigning collider reference if not present.
+        """Adds a child object. The first Collider added becomes this object's collider.
 
         Args:
             obj (Any): Object to add as a child.
@@ -99,8 +120,8 @@ class PhysicsObject(GameObject):
             Any: The added child object.
         """
         res = super().add_child(obj)
-        if getattr(self, "collider", None) is None and hasattr(obj, "collider"):
-            self.collider = getattr(obj, "collider", None)
+        if self._collider is None and isinstance(obj, Collider):
+            self._collider = obj
         return res
 
 from ..engine.serializer import Serializer

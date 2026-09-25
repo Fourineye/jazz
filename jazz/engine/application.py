@@ -174,7 +174,6 @@ class Application:
         self._window.destroy()
         pygame.quit()
         Application.instance = None
-        Application.instance = None
 
     def stop(self) -> None:
         """Sets the neccessary flags to stop the main game loop"""

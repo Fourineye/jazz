@@ -3,9 +3,10 @@ Module to provide a base for active game entities.
 """
 from typing import TYPE_CHECKING
 
-from ._physics_object import PhysicsObject
 from ..global_dict import Globals
-from ..utils import Vec2, dist_to
+from ..utils import JazzException, Vec2
+from ._physics_object import PhysicsObject
+from .colliders import Collider, RayCollider
 
 if TYPE_CHECKING:
     from .. import GameObject
@@ -23,11 +24,27 @@ class Ray(PhysicsObject):
         """
         kwargs.setdefault("name", "Ray")
         super().__init__(**kwargs)
-        length = kwargs.get("length", 1)
-        self.add_collider("Ray", length=length)
+        self._ray_collider = RayCollider(length=kwargs.get("length", 1))
+        self.add_child(self._ray_collider)
         self._active = kwargs.get("active", True)
         self.collision_point = None
         self.collision_object = None
+
+    @property
+    def collider(self) -> RayCollider:
+        """RayCollider: The line segment collider created in __init__.
+
+        Raises:
+            JazzException: If set to a collider that is not a RayCollider.
+        """
+        return self._ray_collider
+
+    @collider.setter
+    def collider(self, collider: Collider) -> None:
+        if not isinstance(collider, RayCollider):
+            raise JazzException(f"{self.name}'s collider must be a RayCollider, not {type(collider).__name__}")
+        self._ray_collider = collider
+        self._collider = collider
 
     def _engine_update(self, delta: float) -> None:
         """Triggers raycast collision check if marked active.
@@ -98,7 +115,7 @@ class Ray(PhysicsObject):
         return self.collider.length
 
     @length.setter
-    def length(self, length: float | int) -> None:
+    def length(self, length: float) -> None:
         self.collider.length = length
 
 

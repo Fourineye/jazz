@@ -6,7 +6,7 @@ import types
 import unittest
 from unittest import mock
 
-from jazz import Application, Body, GameObject, Label, Scene, Sprite, TextBox, VBox, Vec2
+from jazz import Application, Area, Body, GameObject, Label, Scene, Sprite, TextBox, VBox, Vec2
 from jazz.engine.serializer import Serializer
 from jazz.engine.sound_manager import SoundManager
 from jazz.utils import JazzException
@@ -129,6 +129,22 @@ class TestRegressions(JazzTestCase):
 
         body = self.scene.add_object(QuietBody())
         self.assertTrue(any(body in grid._objects for grid in self.scene._physics_world.values()))
+
+    # Area overlap timing
+    def test_area_sees_object_moved_in_scene_update(self):
+        area = Area(pos=(0, 0), layers="0000", collision_layers="0001")
+        area.add_collider(0, w=10, h=10)
+        body = Body(pos=(40, 0), layers="0001", collision_layers="0000")
+        body.add_collider(0, w=5, h=5)
+        self.scene.add_object(area)
+        self.scene.add_object(body)
+
+        def move_body(delta):
+            body.pos = Vec2(2, 2)
+
+        self.enter_patch(mock.patch.object(self.scene, "update", move_body))
+        self.scene._game_update(0.1)
+        self.assertIn(body, area.entered)
 
     # Child process and kill flags
     def test_child_queue_kill(self):

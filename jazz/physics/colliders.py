@@ -1,21 +1,26 @@
 import pygame
 
 from ..engine.base_object import GameObject
+from ..primatives import Draw
 from ..utils import (
+    Color,
+    JazzException,
     Rect,
     Vec2,
-    Color,
     direction_to,
-    dist_to,
     line_circle,
     line_intersection,
-    JazzException
 )
-from ..primatives import Draw
 
 
 class Collider(GameObject):
-    """Base class for collision shapes in the Jazz Engine scene graph."""
+    """Base class for collision shapes in the Jazz Engine scene graph.
+
+    Attributes:
+        _rect_padding (int): Pixels added to the bounding rect's width and height, so flat shapes still produce a rect that can overlap others.
+    """
+
+    _rect_padding = 0
 
     def __init__(self, **kwargs) -> None:
         """Initializes the Collider component.
@@ -41,6 +46,7 @@ class Collider(GameObject):
         self._bottom = 0
         self._center = Vec2()
         self._rot_cache = 1000000
+        self._bounds_dirty = True
 
         self._vertices_dirty = True
         self._cached_vertices = []
@@ -50,8 +56,7 @@ class Collider(GameObject):
     def on_transform_change(self) -> None:
         """Updates internal dirty flags, recalculates world bounding box, and computes local shape properties if not already cached."""
         self._vertices_dirty = True
-        if self._parent is not None:
-            if hasattr(self._parent, "_moved_this_frame"):
+        if self._parent is not None and hasattr(self._parent, "_moved_this_frame"):
                 self._parent._moved_this_frame = True
 
         if not self._edges:
@@ -106,17 +111,8 @@ class Collider(GameObject):
         Returns:
             tuple[float, float]: The minimum and maximum projected values.
         """
-        min_v, max_v = None, None
-        for vert in self.vertices:
-            proj = (vert).dot(axis)
-            if min_v is None:
-                min_v = proj
-                max_v = proj
-            if proj < min_v:
-                min_v = proj
-            if proj > max_v:
-                max_v = proj
-        return min_v, max_v
+        projections = [vert.dot(axis) for vert in self.vertices]
+        return min(projections), max(projections)
 
     def collide_circle(self, collider: "Collider") -> bool:
         """Performs a quick bounding-radius collision test against another collider.
@@ -145,73 +141,70 @@ class Collider(GameObject):
 
     def __collide_rect(self, collider: "Collider") -> bool:
         """Internal helper to test bounding box overlaps."""
-        if (
-            (self.top) < (collider.bottom)
-            and (self.bottom) > (collider.top)
-            and (self.left) < (collider.right)
-            and (self.right) > (collider.left)
-        ):
-            return True
-        else:
-            return False
+        return bool(self.top < collider.bottom and self.bottom > collider.top and self.left < collider.right and self.right > collider.left)
 
     def get_rect(self) -> pygame.Rect:
         """Calculates and returns the bounding pygame.Rect of the collider.
 
-        Uses cached bounds if rotation hasn't changed.
+        Bounds are stored relative to the position, so they are only recomputed
+        when the rotation changes or `_bounds_dirty` is set by a change to the
+        local shape.
 
         Returns:
             Rect: Bounding rectangle in world coordinates.
         """
-        if self._rot_cache == self.rotation:
-            return pygame.Rect(
-                self.left,
-                self.top,
-                self.right - self.left,
-                self.bottom - self.top,
+        if self._bounds_dirty or self._rot_cache != self.rotation:
+            left, right, top, bottom = (
+                self.x,
+                self.x,
+                self.y,
+                self.y,
             )
-        left, right, top, bottom = (
-            self.x,
-            self.x,
-            self.y,
-            self.y,
-        )
-        vertices = self.vertices
-        for vert in vertices:
-            left = min(vert.x, left)
-            right = max(vert.x, right)
-            top = min(vert.y, top)
-            bottom = max(vert.y, bottom)
-        self._left = left - self.x
-        self._right = right - self.x
-        self._top = top - self.y
-        self._bottom = bottom - self.y
-        self._rot_cache = self.rotation
+            vertices = self.vertices
+            for vert in vertices:
+                left = min(vert.x, left)
+                right = max(vert.x, right)
+                top = min(vert.y, top)
+                bottom = max(vert.y, bottom)
+            self._left = left - self.x
+            self._right = right - self.x
+            self._top = top - self.y
+            self._bottom = bottom - self.y
+            self._rot_cache = self.rotation
+            self._bounds_dirty = False
         return pygame.Rect(
             self.left,
             self.top,
-            self.right - self.left,
-            self.bottom - self.top,
+            self.right - self.left + self._rect_padding,
+            self.bottom - self.top + self._rect_padding,
         )
 
     def collide_sat(self, collider: "Collider | pygame.Rect") -> tuple[float, Vec2]:
         """Runs the Separating Axis Theorem (SAT) algorithm against another collider.
 
         Args:
-            collider (Collider): The other collider to check.
+            collider (Collider | pygame.Rect): The other collider to check. A Rect is converted to a RectCollider, and an object with a `collider` attribute uses that collider.
 
         Returns:
             tuple[float, Vec2]: Minimum penetration depth and the normalized collision normal pointing towards the other collider. Returns (0, Vec2()) if not colliding.
+
+        Raises:
+            JazzException: If collider is not a Collider, a pygame.Rect, or an object with a Collider in its collider attribute.
         """
+        original = collider
+        if isinstance(collider, pygame.Rect):
+            collider = RectCollider.from_rect(collider)
+            collider.on_transform_change()
         if not isinstance(collider, Collider):
             collider = getattr(collider, "collider", None)
-        if isinstance(collider, pygame.Rect):
-            collider = RectCollider(
-                collider.center, collider.width, collider.height
+        if not isinstance(collider, Collider):
+            if hasattr(original, "collider"):
+                reason = f"its 'collider' attribute is {type(collider).__name__}, not a Collider"
+            else:
+                reason = "expected a Collider, a pygame.Rect, or an object with a 'collider' attribute"
+            raise JazzException(
+                f"{self.name}.collide_sat received {type(original).__name__}: {reason}"
             )
-        if collider is None:
-            print("Invalid collider")
-            return False
 
         axes = self.normals + collider.normals
         if self._size == 1:
@@ -278,10 +271,10 @@ class Collider(GameObject):
     @property
     def normals(self):
         """list[Vec2]: Gets the list of unique edge normals of the shape."""
-        _ = self.edges
+        edges = self.edges
         if self._cached_normals is None:
             normals = []
-            for edge in self._cached_edges:
+            for edge in edges:
                 new = True
                 new_normal = Vec2(edge[1] - edge[0]).normalize().rotate(90)
                 for normal in normals:
@@ -332,12 +325,12 @@ class Collider(GameObject):
 class RectCollider(Collider):
     """Collider shape representing a rectangle."""
 
-    def __init__(self, w: float | int = 0, h: float | int = 0, **kwargs) -> None:
+    def __init__(self, w: float = 0, h: float = 0, **kwargs) -> None:
         """Initializes the RectCollider.
 
         Args:
-            w (float | int): Width of the rectangle.
-            h (float | int): Height of the rectangle.
+            w (float): Width of the rectangle.
+            h (float): Height of the rectangle.
         """
         self._w = float(w)
         self._h = float(h)
@@ -369,11 +362,11 @@ class RectCollider(Collider):
 class CircleCollider(Collider):
     """Collider shape representing a circle."""
 
-    def __init__(self, radius: float | int = 0, **kwargs) -> None:
+    def __init__(self, radius: float = 0, **kwargs) -> None:
         """Initializes the CircleCollider.
 
         Args:
-            radius (float | int, optional): The radius of the circle. Defaults to 0.
+            radius (float, optional): The radius of the circle. Defaults to 0.
         """
         self._radius = radius
         kwargs["radius"] = radius
@@ -407,7 +400,7 @@ class CircleCollider(Collider):
             offset (Vec2): Viewport offset.
         """
         super().render_debug(offset)
-        Draw.circle(self.pos + offset, self._radius, Color("white"), 2)
+        Draw.circle(self.pos + offset, int(self._radius), Color("white"), 2)
 
     def get_rect(self) -> pygame.Rect:
         """Calculates bounding box of the circle.
@@ -450,10 +443,13 @@ class PolyCollider(Collider):
                 self._vertices[i] = vert
             self._center = Vec2()
             self._vertices_dirty = True
+            self._bounds_dirty = True
 
 
 class RayCollider(Collider):
     """Collider representing a single line segment raycast."""
+
+    _rect_padding = 1
 
     def __init__(self, **kwargs) -> None:
         """Initializes the RayCollider.
@@ -473,10 +469,11 @@ class RayCollider(Collider):
         return self._length
 
     @length.setter
-    def length(self, length: float | int) -> None:
+    def length(self, length: float) -> None:
         self._length = length
         self._vertices[1] = Vec2(length, 0)
-        self._vertices_dirty = True
+        self._bounds_dirty = True
+        self.on_transform_change()
 
     def collide_ray(self, collider: Collider) -> Vec2 | None:
         """Calculates collision intersection points of the ray segment with another collider.
@@ -513,43 +510,6 @@ class RayCollider(Collider):
                         closest_dist_sq = dist_sq
                 return closest_collision
         return None
-
-    def get_rect(self) -> pygame.Rect:
-        """Calculates bounding box of the ray segment.
-
-        Returns:
-            Rect: Bounding rectangle.
-        """
-        if self._rot_cache == self.rotation:
-            return pygame.Rect(
-                self.left,
-                self.top,
-                self.right - self.left + 1,
-                self.bottom - self.top + 1,
-            )
-        left, right, top, bottom = (
-            self.x,
-            self.x,
-            self.y,
-            self.y,
-        )
-        vertices = self.vertices
-        for vert in vertices:
-            left = min(vert.x, left)
-            right = max(vert.x, right)
-            top = min(vert.y, top)
-            bottom = max(vert.y, bottom)
-        self._left = left - self.x
-        self._right = right - self.x
-        self._top = top - self.y
-        self._bottom = bottom - self.y
-        self._rot_cache = self.rotation
-        return pygame.Rect(
-            self.left,
-            self.top,
-            self.right - self.left + 1,
-            self.bottom - self.top + 1,
-        )
 
 
 from ..engine.serializer import Serializer

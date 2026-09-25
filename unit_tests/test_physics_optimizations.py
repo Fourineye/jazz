@@ -1,11 +1,13 @@
 import unittest
 
-from jazz.physics.colliders import RectCollider
+import pygame
+
+from jazz.physics.colliders import PolyCollider, RayCollider, RectCollider
 from jazz.physics._physics_object import PhysicsObject
 from jazz.physics.body import Body
 from jazz.physics.area import Area
 from jazz.global_dict import Globals
-from jazz.utils import Vec2
+from jazz.utils import JazzException, Vec2
 from unit_tests.support import JazzTestCase
 
 
@@ -33,6 +35,36 @@ class TestPhysicsOptimizations(JazzTestCase):
         
         # Access again, should be cached again
         self.assertIs(collider.vertices, v2)
+
+    def test_ray_length_updates_bounds(self):
+        ray = RayCollider(length=10)
+        self.assertEqual(ray.get_rect().width, 11)
+        ray.length = 100
+        self.assertEqual(ray.get_rect().width, 101)
+
+    def test_poly_recenter_updates_bounds(self):
+        poly = PolyCollider([Vec2(0, 0), Vec2(10, 0), Vec2(10, 10), Vec2(0, 10)])
+        poly.on_transform_change()
+        self.assertEqual(poly.get_rect().topleft, (0, 0))
+        poly.recenter()
+        self.assertEqual(poly.get_rect().topleft, (-5, -5))
+
+    def test_collide_sat_with_rect(self):
+        collider = RectCollider(20, 20, pos=(0, 0))
+        depth, normal = collider.collide_sat(pygame.Rect(5, 5, 20, 20))
+        self.assertEqual(depth, 5)
+        self.assertEqual(normal, Vec2(1, 0))
+
+    def test_collide_sat_invalid_type(self):
+        collider = RectCollider(20, 20, name="Box")
+        with self.assertRaisesRegex(JazzException, r"Box\.collide_sat received Vector2: expected a Collider"):
+            collider.collide_sat(Vec2(0, 0))
+
+    def test_collide_sat_missing_collider(self):
+        collider = RectCollider(20, 20, name="Box")
+        obj = PhysicsObject(name="Empty")
+        with self.assertRaisesRegex(JazzException, r"Empty has no collider\. Call add_collider"):
+            collider.collide_sat(obj)
 
     def test_integer_mask_layers(self):
         # Verify mask layer conversion from string to integer

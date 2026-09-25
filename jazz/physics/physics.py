@@ -9,7 +9,7 @@ class PhysicsGrid:
 
     def __init__(self) -> None:
         """Initializes the PhysicsGrid with default size, objects list, bounds, and cell registry."""
-        self._objects: list["PhysicsObject"] = []
+        self._objects: list[PhysicsObject] = []
         self._grid_size = 50
         self.grid = {}
         self._object_bounds = {}
@@ -18,7 +18,7 @@ class PhysicsGrid:
     def __repr__(self) -> str:
         return f"\nGrid: {self._objects}"
 
-    def set_bounds(self, x_min: float | int, y_min: float | int, x_max: float | int, y_max: float | int) -> None:
+    def set_bounds(self, x_min: float, y_min: float, x_max: float, y_max: float) -> None:
         """Sets bounding box limits for the grid area.
 
         Args:
@@ -122,7 +122,7 @@ class PhysicsGrid:
             }
             self.add_to_grid(physics_object, bounds=new_bounds, cells=new_cells)
 
-    def get_grid_cell(self, x: float | int, y: float | int) -> list["PhysicsObject"]:
+    def get_grid_cell(self, x: float, y: float) -> list["PhysicsObject"]:
         """Retrieves list of physics objects indexed inside a specific cell coordinate.
 
         Args:
@@ -134,7 +134,7 @@ class PhysicsGrid:
         """
         return self.grid.get(f"{int(x)}.{int(y)}", [])
 
-    def get_grid_cells(self, x: float | int, y: float | int, w: float | int, h: float | int) -> list["PhysicsObject"]:
+    def get_grid_cells(self, x: float, y: float, w: float, h: float) -> list["PhysicsObject"]:
         """Retrieves list of unique physics objects registered in a rectangular block of cells.
 
         Args:
@@ -148,7 +148,7 @@ class PhysicsGrid:
         """
         cells = set()
         if not self._objects:
-            return cells
+            return list(cells)
         for x_offset in range(int(w)):
             for y_offset in range(int(h)):
                 # print(x + x_offset, y + y_offset)
@@ -174,9 +174,8 @@ class PhysicsGrid:
         h = int(rect.bottom // self._grid_size - y)
         physics_objects = self.get_grid_cells(x - 1, y - 1, w + 3, h + 3)
         for physics_object in physics_objects:
-            if physics_object is not collider:
-                if physics_object.collider.collide_rect(collider.collider):
-                    collisions.add(physics_object)
+            if physics_object is not collider and physics_object.collider.collide_rect(collider.collider):
+                collisions.add(physics_object)
         # print(collisions)
         return list(collisions)
 
@@ -196,8 +195,7 @@ class PhysicsGrid:
         h = int(collider.bottom // self._grid_size - y)
         physics_objects = self.get_grid_cells(x - 1, y - 1, w + 3, h + 3)
         for physics_object in physics_objects:
-            if physics_object.collider is not collider:
-                if physics_object.collider.collide_rect(collider):
-                    collisions.add(physics_object)
+            if physics_object.collider is not collider and physics_object.collider.collide_rect(collider):
+                collisions.add(physics_object)
         # print(collisions)
         return list(collisions)
